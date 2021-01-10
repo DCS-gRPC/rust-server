@@ -34,7 +34,7 @@ dofile(GRPC.basePath .. [[methods\trigger.lua]])
 --
 -- RPC request handler
 --
-function handleRequest(method, params)
+local function handleRequest(method, params)
   local fn = GRPC.methods[method]
 
   if type(fn) == "function" then
@@ -57,7 +57,7 @@ end
 --
 -- execute gRPC requests every ~0.02 seconds
 --
-function next()
+local function next()
   local i = 0
   while grpc.next(handleRequest) do
     i = i + 1
@@ -77,5 +77,33 @@ timer.scheduleFunction(function()
     return timer.getTime() + .02 -- return time of next call
   end
 end, nil, timer.getTime() + .02)
+
+--
+-- listen to DCS events
+--
+local function identifier(obj)
+  if obj == nil then
+    return nil
+  end
+  return obj:getName()
+end
+
+local function onEvent(event)
+  if event.id == world.event.S_EVENT_MISSION_END then
+    grpc.stop()
+    stopped = true
+  end
+end
+
+local eventHandler = {}
+function eventHandler:onEvent(event)
+  if not stopped then
+    local ok, err = pcall(onEvent, event)
+    if not ok then
+      env.error("[GRPC] Error in event handler: "..tostring(err))
+    end
+  end
+end
+world.addEventHandler(eventHandler)
 
 env.info("[GRPC] loaded ...")

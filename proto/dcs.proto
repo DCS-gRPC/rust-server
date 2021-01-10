@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package dcs;
+
+message OutTextRequest {
+  string text = 1;
+  int32 display_time = 2;
+  bool clear_view = 3;
+}
+
+message OutTextResponse {
+  bool success = 1;
+}
+
+service Mission {
+  // https://wiki.hoggitworld.com/view/DCS_func_outText
+  rpc OutText (OutTextRequest) returns (OutTextResponse) {}
+}

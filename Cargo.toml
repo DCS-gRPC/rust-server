@@ -2,6 +2,7 @@
 name = "dcs-grpc-server"
 version = "0.1.0"
 authors = ["Markus Ast <m@rkusa.st>"]
+license = "AGPL-3.0-or-later"
 edition = "2018"
 
 [lib]

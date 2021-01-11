@@ -1,14 +1,14 @@
 #![allow(dead_code)]
 #![recursion_limit = "256"]
 
+mod rpc;
 mod server;
-mod service;
 
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, RwLock};
 use std::thread;
 
-use dcs_module_rpc::RPC;
+use dcs_module_ipc::IPC;
 use mlua::prelude::*;
 use mlua::{Function, Value};
 use once_cell::sync::Lazy;
@@ -19,7 +19,7 @@ static INITIALIZED: Lazy<AtomicBool> = Lazy::new(|| AtomicBool::new(false));
 static SERVER: Lazy<RwLock<Option<Server>>> = Lazy::new(|| RwLock::new(None));
 
 struct Server {
-    rpc: RPC<usize>,
+    ipc: IPC<usize>,
     shutdown_signal: oneshot::Sender<()>,
 }
 
@@ -74,17 +74,17 @@ fn start(lua: &Lua, (): ()) -> LuaResult<()> {
 
     log::info!("Starting ...");
 
-    let rpc = RPC::new();
+    let ipc = IPC::new();
     let (tx, rx) = oneshot::channel();
 
     let mut server = SERVER.write().unwrap();
     *server = Some(Server {
         shutdown_signal: tx,
-        rpc: rpc.clone(),
+        ipc: ipc.clone(),
     });
 
     // Spawn an executor thread that waits for the shutdown signal
-    thread::spawn(|| crate::server::run(rpc, rx));
+    thread::spawn(|| crate::server::run(ipc, rx));
 
     log::info!("Started ...");
 
@@ -105,8 +105,8 @@ fn stop(_: &Lua, _: ()) -> LuaResult<()> {
 }
 
 fn next(lua: &Lua, callback: Function) -> LuaResult<bool> {
-    if let Some(Server { ref rpc, .. }) = *SERVER.read().unwrap() {
-        if let Some(mut next) = rpc.try_next() {
+    if let Some(Server { ref ipc, .. }) = *SERVER.read().unwrap() {
+        if let Some(mut next) = ipc.try_next() {
             let method = next.method().to_string();
             let params = next
                 .params(lua)

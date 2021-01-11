@@ -1,6 +1,6 @@
 use dcs::mission_server::{Mission, MissionServer};
 use dcs::*;
-use dcs_module_rpc::RPC;
+use dcs_module_ipc::IPC;
 use tonic::transport::server::Router;
 use tonic::transport::{self, Server};
 use tonic::{Request, Response, Status};
@@ -9,25 +9,25 @@ pub mod dcs {
     tonic::include_proto!("dcs");
 }
 
-pub struct Service {
-    rpc: RPC<usize>,
+pub struct RPC {
+    ipc: IPC<usize>,
 }
 
-impl Service {
+impl RPC {
     pub fn builder(
-        rpc: RPC<usize>,
-    ) -> Router<MissionServer<Service>, transport::server::Unimplemented> {
-        Server::builder().add_service(MissionServer::new(Service { rpc }))
+        ipc: IPC<usize>,
+    ) -> Router<MissionServer<RPC>, transport::server::Unimplemented> {
+        Server::builder().add_service(MissionServer::new(RPC { ipc }))
     }
 }
 
 #[tonic::async_trait]
-impl Mission for Service {
+impl Mission for RPC {
     async fn out_text(
         &self,
         request: Request<OutTextRequest>,
     ) -> Result<Response<OutTextResponse>, Status> {
-        self.rpc
+        self.ipc
             .notification("outText", Some(request.into_inner()))
             .await
             .map_err(|err| Status::internal(err.to_string()))?;
@@ -40,7 +40,7 @@ impl Mission for Service {
         request: Request<GetUserFlagRequest>,
     ) -> Result<Response<GetUserFlagResponse>, Status> {
         let res: GetUserFlagResponse = self
-            .rpc
+            .ipc
             .request("getUserFlag", Some(request.into_inner()))
             .await
             .map_err(|err| Status::internal(err.to_string()))?;
@@ -51,7 +51,7 @@ impl Mission for Service {
         &self,
         request: Request<SetUserFlagRequest>,
     ) -> Result<Response<SetUserFlagResponse>, Status> {
-        self.rpc
+        self.ipc
             .notification("setUserFlag", Some(request.into_inner()))
             .await
             .map_err(|err| Status::internal(err.to_string()))?;

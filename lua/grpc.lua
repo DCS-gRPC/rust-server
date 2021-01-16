@@ -95,7 +95,8 @@ local function onEvent(event)
   elseif event.id == world.event.S_EVENT_SHOT then
     grpc.event({
       time = event.time,
-      shot = {
+      event = {
+        type = "shot",
         initiator = identifier(event.initiator),
         weapon = event.weapon:getName(),
       },
@@ -119,7 +120,8 @@ local function onEvent(event)
       end
       grpc.event({
         time = event.time,
-        hit = {
+        event = {
+          type = "hit",
           initiator = identifier(event.initiator),
           weapon = weapon,
           target = target,
@@ -132,7 +134,8 @@ local function onEvent(event)
   elseif event.id == world.event.S_EVENT_TAKEOFF then
     grpc.event({
       time = event.time,
-      takeoff = {
+      event = {
+        type = "takeoff",
         initiator = identifier(event.initiator),
         place = identifier(event.place),
       },
@@ -141,7 +144,8 @@ local function onEvent(event)
   elseif event.id == world.event.S_EVENT_LAND then
     grpc.event({
       time = event.time,
-      land = {
+      event = {
+        type = "land",
         initiator = identifier(event.initiator),
         place = identifier(event.place),
       },
@@ -150,7 +154,8 @@ local function onEvent(event)
   elseif event.id == world.event.S_EVENT_CRASH then
     grpc.event({
       time = event.time,
-      crash = {
+      event = {
+        type = "crash",
         initiator = identifier(event.initiator),
       },
     })
@@ -158,7 +163,8 @@ local function onEvent(event)
   elseif event.id == world.event.S_EVENT_EJECTION then
     grpc.event({
       time = event.time,
-      ejection = {
+      event = {
+        type = "ejection",
         initiator = identifier(event.initiator),
       },
     })
@@ -166,13 +172,16 @@ local function onEvent(event)
   elseif event.id == world.event.S_EVENT_REFUELING then
     grpc.event({
       time = event.time,
-      refueling = {
+      event = {
+        type = "refueling",
         initiator = identifier(event.initiator),
       },
     })
 
   elseif event.id == world.event.S_EVENT_DEAD then
-    local payload = {}
+    local payload = {
+      type = "dead",
+    }
     if event.target:getCategory() == 2 then -- weapon
       payload.id = event.target:getName()
     else
@@ -181,13 +190,14 @@ local function onEvent(event)
 
     grpc.event({
       time = event.time,
-      dead = payload,
+      event = payload,
     })
 
   elseif event.id == world.event.S_EVENT_PILOT_DEAD then
     grpc.event({
       time = event.time,
-      pilotDead = {
+      event = {
+        type = "pilotDead",
         initiator = identifier(event.initiator),
       },
     })
@@ -195,7 +205,8 @@ local function onEvent(event)
   elseif event.id == world.event.S_EVENT_BASE_CAPTURED then
     grpc.event({
       time = event.time,
-      baseCapture = {
+      event = {
+        type = "baseCapture",
         initiator = identifier(event.initiator),
         place = identifier(event.place),
       },
@@ -204,13 +215,17 @@ local function onEvent(event)
   elseif event.id == world.event.S_EVENT_MISSION_START then
     grpc.event({
       time = event.time,
-      missionStart = {},
+      event = {
+        type = "missionStart",
+      },
     })
 
   elseif event.id == world.event.S_EVENT_MISSION_END then
     grpc.event({
       time = event.time,
-      missionEnd = {},
+      event = {
+        type = "missionEnd",
+      },
     })
 
     grpc.stop()
@@ -221,7 +236,8 @@ local function onEvent(event)
   elseif event.id == world.event.S_EVENT_REFUELING_STOP then
     grpc.event({
       time = event.time,
-      refuelingStop = {
+      event = {
+        type = "refuelingStop",
         initiator = identifier(event.initiator),
       },
     })
@@ -229,7 +245,8 @@ local function onEvent(event)
   elseif event.id == world.event.S_EVENT_BIRTH then
     grpc.event({
       time = event.time,
-      birth = {
+      event = {
+        type = "birth",
         initiator = identifier(event.initiator),
       },
     })
@@ -237,7 +254,8 @@ local function onEvent(event)
   elseif event.id == world.event.S_EVENT_HUMAN_FAILURE then
     grpc.event({
       time = event.time,
-      systemFailure = {
+      event = {
+        type = "systemFailure",
         initiator = identifier(event.initiator),
       },
     })
@@ -245,7 +263,8 @@ local function onEvent(event)
   elseif event.id == world.event.S_EVENT_ENGINE_STARTUP then
     grpc.event({
       time = event.time,
-      engineStartup = {
+      event = {
+        type = "engineStartup",
         initiator = identifier(event.initiator),
       },
     })
@@ -253,7 +272,8 @@ local function onEvent(event)
   elseif event.id == world.event.S_EVENT_ENGINE_SHUTDOWN  then
     grpc.event({
       time = event.time,
-      engineShutdown = {
+      event = {
+        type = "engineShutdown",
         initiator = identifier(event.initiator),
       },
     })
@@ -261,7 +281,8 @@ local function onEvent(event)
   elseif event.id == world.event.S_EVENT_PLAYER_ENTER_UNIT then
     grpc.event({
       time = event.time,
-      playerEnterUnit = {
+      event = {
+        type = "playerEnterUnit",
         initiator = identifier(event.initiator),
       },
     })
@@ -269,7 +290,8 @@ local function onEvent(event)
   elseif event.id == world.event.S_EVENT_PLAYER_LEAVE_UNIT then
     grpc.event({
       time = event.time,
-      playerLeaveUnit = {
+      event = {
+        type = "playerLeaveUnit",
         initiator = identifier(event.initiator),
       },
     })
@@ -279,7 +301,8 @@ local function onEvent(event)
   elseif event.id == world.event.S_EVENT_SHOOTING_START then
     grpc.event({
       time = event.time,
-      shootingStart = {
+      event = {
+        type = "shootingStart",
         initiator = identifier(event.initiator),
       },
     })
@@ -287,51 +310,67 @@ local function onEvent(event)
   elseif event.id == world.event.S_EVENT_SHOOTING_END then
     grpc.event({
       time = event.time,
-      shootingEnd = {
+      event = {
+        type = "shootingEnd",
         initiator = identifier(event.initiator),
       },
     })
 
   elseif event.id == world.event.S_EVENT_MARK_ADDED then
+    local payload = {
+      type = "markAdd",
+      initiator = identifier(event.initiator),
+      id = event.idx,
+      -- x and z are rotated here compared to group/unit coords
+      pos = { x = event.pos.z, y = event.pos.y, z = event.pos.x },
+      text = event.text,
+    }
+    if event.groupID > -1 and event.groupID then
+      payload.groupId = event.groupId
+    elseif event.coalition > -1 and event.coalition then
+      payload.coalition = event.coalition
+    end
     grpc.event({
       time = event.time,
-      markAdd = {
-        initiator = identifier(event.initiator),
-        groupId = event.groupID > -1 and event.groupID or nil,
-        coalition = event.coalition > -1 and event.coalition or nil,
-        id = event.idx,
-        -- x and z are rotated here compared to group/unit coords
-        pos = { x = event.pos.z, y = event.pos.y, z = event.pos.x },
-        text = event.text,
-      },
+      event = payload,
     })
 
   elseif event.id == world.event.S_EVENT_MARK_CHANGE then
+    local payload = {
+      type = "markChange",
+      initiator = identifier(event.initiator),
+      id = event.idx,
+      -- x and z are rotated here compared to group/unit coords
+      pos = { x = event.pos.z, y = event.pos.y, z = event.pos.x },
+      text = event.text,
+    }
+    if event.groupID > -1 and event.groupID then
+      payload.groupId = event.groupId
+    elseif event.coalition > -1 and event.coalition then
+      payload.coalition = event.coalition
+    end
     grpc.event({
       time = event.time,
-      markChange = {
-        initiator = identifier(event.initiator),
-        groupId = event.groupID > -1 and event.groupID or nil,
-        coalition = event.coalition > -1 and event.coalition or nil,
-        id = event.idx,
-        -- x and z are rotated here compared to group/unit coords
-        pos = { x = event.pos.z, y = event.pos.y, z = event.pos.x },
-        text = event.text,
-      },
+      event = payload,
     })
 
   elseif event.id == world.event.S_EVENT_MARK_REMOVED then
+    local payload = {
+      type = "markRemove",
+      initiator = identifier(event.initiator),
+      id = event.idx,
+      -- x and z are rotated here compared to group/unit coords
+      pos = { x = event.pos.z, y = event.pos.y, z = event.pos.x },
+      text = event.text,
+    }
+    if event.groupID > -1 and event.groupID then
+      payload.groupId = event.groupId
+    elseif event.coalition > -1 and event.coalition then
+      payload.coalition = event.coalition
+    end
     grpc.event({
       time = event.time,
-      markRemove = {
-        initiator = identifier(event.initiator),
-        groupId = event.groupID > -1 and event.groupID or nil,
-        coalition = event.coalition > -1 and event.coalition or nil,
-        id = event.idx,
-        -- x and z are rotated here compared to group/unit coords
-        pos = { x = event.pos.z, y = event.pos.y, z = event.pos.x },
-        text = event.text,
-      },
+      event = payload,
     })
 
   else

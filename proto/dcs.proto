@@ -204,10 +204,12 @@ message Event {
   message MarkAddEvent {
     // The unit that added the mark.
     string initiator = 1;
-    // The group the mark's visibility is restricted for.
-    uint64 group_id = 2;
-    // The coalition the mark's visibility is restricted for.
-    Coalition coalition = 3;
+    oneof visibility {
+      // The group the mark's visibility is restricted for.
+      uint64 group_id = 2;
+      // The coalition the mark's visibility is restricted for.
+      Coalition coalition = 3;
+    }
     // The mark's id.
     uint32 id = 4;
     // The position the mark has been added at.
@@ -220,10 +222,12 @@ message Event {
   message MarkChangeEvent {
     // The unit that changed the mark.
     string initiator = 1;
-    // The group the mark's visibility is restricted for.
-    uint64 group_id = 2;
-    // The coalition the mark's visibility is restricted for.
-    Coalition coalition = 3;
+    oneof visibility {
+      // The group the mark's visibility is restricted for.
+      uint64 group_id = 2;
+      // The coalition the mark's visibility is restricted for.
+      Coalition coalition = 3;
+    }
     // The mark's id.
     uint32 id = 4;
     // The position of the changed mark.
@@ -236,10 +240,12 @@ message Event {
   message MarkRemoveEvent {
     // The unit that removed the mark.
     string initiator = 1;
-    // The group the mark's visibility is restricted for.
-    uint64 group_id = 2;
-    // The coalition the mark's visibility is restricted for.
-    Coalition coalition = 3;
+    oneof visibility {
+      // The group the mark's visibility is restricted for.
+      uint64 group_id = 2;
+      // The coalition the mark's visibility is restricted for.
+      Coalition coalition = 3;
+    }
     // The mark's id.
     uint32 id = 4;
     // The position the mark has been removed from.

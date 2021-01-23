@@ -6,20 +6,23 @@ mod server;
 
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, RwLock};
-use std::thread;
+use std::time::Duration;
 
 use dcs_module_ipc::IPC;
-use mlua::prelude::*;
+use mlua::{prelude::*, LuaSerdeExt};
 use mlua::{Function, Value};
 use once_cell::sync::Lazy;
+use rpc::dcs::Event;
 use thiserror::Error;
+use tokio::runtime::Runtime;
 use tokio::sync::oneshot;
 
 static INITIALIZED: Lazy<AtomicBool> = Lazy::new(|| AtomicBool::new(false));
 static SERVER: Lazy<RwLock<Option<Server>>> = Lazy::new(|| RwLock::new(None));
 
 struct Server {
-    ipc: IPC<usize>,
+    ipc: IPC<Event>,
+    runtime: Runtime,
     shutdown_signal: oneshot::Sender<()>,
 }
 
@@ -77,16 +80,18 @@ fn start(lua: &Lua, (): ()) -> LuaResult<()> {
     let ipc = IPC::new();
     let (tx, rx) = oneshot::channel();
 
+    // Spawn an executor thread that waits for the shutdown signal
+    let runtime = Runtime::new()?;
+    runtime.spawn(crate::server::run(ipc.clone(), rx));
+
     let mut server = SERVER.write().unwrap();
     *server = Some(Server {
+        ipc,
+        runtime,
         shutdown_signal: tx,
-        ipc: ipc.clone(),
     });
 
-    // Spawn an executor thread that waits for the shutdown signal
-    thread::spawn(|| crate::server::run(ipc, rx));
-
-    log::info!("Started ...");
+    log::info!("Started");
 
     Ok(())
 }
@@ -95,11 +100,16 @@ fn stop(_: &Lua, _: ()) -> LuaResult<()> {
     log::info!("Stopping ...");
 
     if let Some(Server {
-        shutdown_signal, ..
+        runtime,
+        shutdown_signal,
+        ..
     }) = SERVER.write().unwrap().take()
     {
         let _ = shutdown_signal.send(());
+        runtime.shutdown_timeout(Duration::from_secs(5));
     }
+
+    log::info!("Stopped");
 
     Ok(())
 }
@@ -149,6 +159,24 @@ fn next(lua: &Lua, callback: Function) -> LuaResult<bool> {
     Ok(false)
 }
 
+fn event(lua: &Lua, event: Value) -> LuaResult<()> {
+    let event: Event = lua
+        .from_value(event)
+        .map_err(|err| mlua::Error::ExternalError(Arc::new(Error::DeserializeParams(err))))?;
+
+    if let Some(Server {
+        ref ipc,
+        ref runtime,
+        ..
+    }) = *SERVER.read().unwrap()
+    {
+        log::debug!("Received event: {:#?}", event);
+        runtime.block_on(ipc.event(event));
+    }
+
+    Ok(())
+}
+
 #[derive(Debug, Error)]
 pub enum Error {
     #[error("Failed to deserialize params: {0}")]
@@ -170,6 +198,7 @@ pub fn dcs_grpc_server(lua: &Lua) -> LuaResult<LuaTable> {
     exports.set("start", lua.create_function(start)?)?;
     exports.set("stop", lua.create_function(stop)?)?;
     exports.set("next", lua.create_function(next)?)?;
+    exports.set("event", lua.create_function(event)?)?;
     Ok(exports)
 }
 

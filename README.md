@@ -33,3 +33,9 @@ Test the running server via:
 ```bash
 grpcurl -plaintext -proto ./proto/dcs.proto -d "{\"text\": \"Works!\", \"display_time\": 10, \"clear_view\": false}" [::1]:50051 dcs.Mission/OutText
 ```
+
+or watch the mission event stream via:
+
+```bash
+grpcurl -plaintext -proto ./proto/dcs.proto -d "{}" [::1]:50051 dcs.Mission/StreamEvents
+```

@@ -8,9 +8,7 @@ message OutTextRequest {
   bool clear_view = 3;
 }
 
-message OutTextResponse {
-  bool success = 1;
-}
+message OutTextResponse {}
 
 message GetUserFlagRequest {
   string flag = 1;
@@ -25,17 +23,276 @@ message SetUserFlagRequest {
   uint32 value = 2;
 }
 
-message SetUserFlagResponse {
-  bool success = 1;
+message SetUserFlagResponse {}
+
+message StreamEventsRequest {}
+
+message Event {
+  enum ObjectCategory {
+    UNIT = 0;
+    WEAPON = 1;
+    STATIC = 2;
+    SCENERY = 3;
+    BASE = 4;
+    CARGO = 5;
+  }
+
+  enum Coalition {
+    NEUTRAL = 0;
+    RED = 1;
+    BLUE = 2;
+  }
+
+  message Target {
+    ObjectCategory category = 1;
+    oneof target {
+      uint64 id = 2;
+      string name = 3;
+    }
+  }
+
+  message Position {
+    double lat = 1;
+    double lon = 2;
+    double alt = 3; // in meters
+  }
+
+  // Occurs when a unit fires a weapon (but no machine gun- or autocannon-based
+  // weapons - those are handled by [ShootingStartEvent]).
+  message ShotEvent {
+    // The unit that fired the weapon.
+    string initiator = 1;
+    // The weapon that has been fired.
+    uint64 weapon = 2;
+  }
+
+  // Occurs when an object is hit by a weapon.
+  message HitEvent {
+    // The unit that fired the weapon.
+    string initiator = 1;
+    // The weapon that the target has been hit with.
+    uint64 weapon = 2;
+    // The object that has been hit.
+    Target target = 3;
+  }
+
+  // Occurs when an aircraft takes off from an airbase, farp, or ship.
+  message TakeoffEvent {
+    // The unit that took off.
+    string initiator = 1;
+    // The airbase, farp or ship the unit took off from.
+    string place = 2;
+  }
+
+  // Occurs when an aircraft lands at an airbase, farp or ship.
+  message LandEvent {
+    // The unit that landed.
+    string initiator = 1;
+    // The airbase, farp or ship the unit landed at.
+    string place = 2;
+  }
+
+  // Occurs when an aircraft crashes into the ground and is completely
+  // destroyed.
+  message CrashEvent {
+    // The unit that crashed.
+    string initiator = 1;
+  }
+
+  // Occurs when a pilot ejects from its aircraft.
+  message EjectionEvent {
+    // The unit a pilot ejected from.
+    string initiator = 1;
+  }
+
+  // Occurs when an aircraft connects with a tanker and begins taking on fuel.
+  message RefuelingEvent {
+    // The unit that is receiving fuel.
+    string initiator = 1;
+  }
+
+  // Occurs when an object is completely destroyed.
+  message DeadEvent {
+    // The unit that has been destroyed.
+    oneof initiator {
+      uint64 id = 2;
+      string name = 3;
+    }
+  }
+
+  // Occurs when a pilot of an aircraft is killed. Can occur either if the
+  // player is alive and crashes (in this case both this and the [CrashEvent]
+  // event will be fired) or if a weapon kills the pilot without completely
+  // destroying the plane.
+  message PilotDeadEvent {
+    // The unit the pilot has died in.
+    string initiator = 1;
+  }
+
+  // Occurs when a ground unit captures either an airbase or a farp.
+  message BaseCaptureEvent {
+    // The unit that captured the base.
+    string initiator = 1;
+    // The airbase that was captured, can be a FARP or Airbase
+    string place = 2;
+  }
+
+  // Occurs when the mission starts.
+  message MissionStartEvent {}
+
+  // Occurs when the mission stops.
+  message MissionEndEvent {}
+
+  // Occurs when an aircraft is finished taking fuel.
+  message RefuelingStopEvent {
+    // he unit that was receiving fuel.
+    string initiator = 1;
+  }
+
+  // Occurs when any object is spawned into the mission.
+  message BirthEvent {
+    // The unit that was spawned.
+    string initiator = 1;
+  }
+
+  // Occurs when a system fails on a human controlled aircraft occurs.
+  message SystemFailureEvent {
+    // The unit the system failure occurred in.
+    string initiator = 1;
+  }
+
+  // Occurs when any aircraft starts its engines.
+  message EngineStartupEvent {
+    // The unit that starts its engines.
+    string initiator = 1;
+  }
+
+  message EngineShutdownEvent {
+    // Occurs when any aircraft shuts down its engines.
+    string initiator = 1;
+  }
+
+  // Occurs when a player takes direct control of a unit.
+  message PlayerEnterUnitEvent {
+    // The unit the player took control of.
+    string initiator = 1;
+  }
+
+  // Occurs when a player relieves direct control of a unit.
+  message PlayerLeaveUnitEvent {
+    // The unit the player relieves control of.
+    string initiator = 1;
+  }
+
+  // Occurs when a unit begins firing a machine gun- or autocannon-based weapon
+  // (weapons with a high rate of fire). Other weapons are handled by
+  // [ShotEvent].
+  message ShootingStartEvent {
+    // The unit that started firing.
+    string initiator = 1;
+  }
+
+  // Occurs when a unit stops firing a machine gun- or autocannon-based weapon.
+  // Event will always correspond with a [ShootingStartEvent] event.
+  message ShootingEndEvent {
+    // The unit that was shooting and has no stopped firing.
+    string initiator = 1;
+  }
+
+  // Occurs when marks get added to the mission by players or scripting
+  // functions.
+  message MarkAddEvent {
+    // The unit that added the mark.
+    string initiator = 1;
+    oneof visibility {
+      // The group the mark's visibility is restricted for.
+      uint64 group_id = 2;
+      // The coalition the mark's visibility is restricted for.
+      Coalition coalition = 3;
+    }
+    // The mark's id.
+    uint32 id = 4;
+    // The position the mark has been added at.
+    Position pos = 5;
+    // The mark's label.
+    string text = 6;
+  }
+
+  // Occurs when marks got changed.
+  message MarkChangeEvent {
+    // The unit that changed the mark.
+    string initiator = 1;
+    oneof visibility {
+      // The group the mark's visibility is restricted for.
+      uint64 group_id = 2;
+      // The coalition the mark's visibility is restricted for.
+      Coalition coalition = 3;
+    }
+    // The mark's id.
+    uint32 id = 4;
+    // The position of the changed mark.
+    Position pos = 5;
+    // The mark's label.
+    string text = 6;
+  }
+
+  // Occurs when marks get removed.
+  message MarkRemoveEvent {
+    // The unit that removed the mark.
+    string initiator = 1;
+    oneof visibility {
+      // The group the mark's visibility is restricted for.
+      uint64 group_id = 2;
+      // The coalition the mark's visibility is restricted for.
+      Coalition coalition = 3;
+    }
+    // The mark's id.
+    uint32 id = 4;
+    // The position the mark has been removed from.
+    Position pos = 5;
+    // The mark's label.
+    string text = 6;
+  }
+
+  // The event's mission time.
+  double time = 1;
+  oneof event {
+    ShotEvent shot = 4;
+    HitEvent hit = 5;
+    TakeoffEvent takeoff = 6;
+    LandEvent land = 7;
+    CrashEvent crash = 8;
+    EjectionEvent ejection = 9;
+    RefuelingEvent refueling = 10;
+    DeadEvent dead = 11;
+    PilotDeadEvent pilot_dead = 12;
+    BaseCaptureEvent base_capture = 13;
+    MissionStartEvent mission_start = 14;
+    MissionEndEvent mission_end = 15;
+    RefuelingStopEvent refueling_stop = 16;
+    BirthEvent birth = 17;
+    SystemFailureEvent system_failure = 18;
+    EngineStartupEvent engine_startup = 19;
+    EngineShutdownEvent engine_shutdown = 20;
+    PlayerEnterUnitEvent player_enter_unit = 21;
+    PlayerLeaveUnitEvent player_leave_unit = 22;
+    ShootingStartEvent shooting_start = 23;
+    ShootingEndEvent shooting_end = 24;
+    MarkAddEvent mark_add = 25;
+    MarkChangeEvent mark_change = 26;
+    MarkRemoveEvent mark_remove = 27;
+  }
 }
 
 service Mission {
   // https://wiki.hoggitworld.com/view/DCS_func_outText
-  rpc OutText (OutTextRequest) returns (OutTextResponse) {}
+  rpc OutText(OutTextRequest) returns (OutTextResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_getUserFlag
-  rpc GetUserFlag (GetUserFlagRequest) returns (GetUserFlagResponse) {}
+  rpc GetUserFlag(GetUserFlagRequest) returns (GetUserFlagResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_setUserFlag
-  rpc SetUserFlag (SetUserFlagRequest) returns (SetUserFlagResponse) {}
+  rpc SetUserFlag(SetUserFlagRequest) returns (SetUserFlagResponse) {}
+
+  rpc StreamEvents(StreamEventsRequest) returns (stream Event) {}
 }

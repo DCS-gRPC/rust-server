@@ -1,28 +1,28 @@
 use std::time::Duration;
 
+use crate::rpc::dcs::Event;
 use crate::rpc::RPC;
 use dcs_module_ipc::IPC;
 use futures::FutureExt;
 use tokio::sync::oneshot::Receiver;
-use tokio::time::delay_for;
+use tokio::time::sleep;
 use tonic::transport;
 
-#[tokio::main]
-pub async fn run(ipc: IPC<usize>, mut shutdown_signal: Receiver<()>) {
+pub async fn run(ipc: IPC<Event>, mut shutdown_signal: Receiver<()>) {
     loop {
         match try_run(ipc.clone(), &mut shutdown_signal).await {
             Ok(_) => break,
             Err(err) => {
                 log::error!("{}", err);
                 log::info!("Restarting gIPC Server in 10 seconds ...");
-                delay_for(Duration::from_secs(10)).await;
+                sleep(Duration::from_secs(10)).await;
             }
         }
     }
 }
 
 async fn try_run(
-    ipc: IPC<usize>,
+    ipc: IPC<Event>,
     shutdown_signal: &mut Receiver<()>,
 ) -> Result<(), transport::Error> {
     log::info!("Staring gRPC Server ...");

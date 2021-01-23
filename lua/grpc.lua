@@ -88,6 +88,15 @@ local function identifier(obj)
   return obj:getName()
 end
 
+local function toLatLonPosition(pos)
+  local lat, lon, alt = coord.LOtoLL(pos)
+  return {
+    lat = lat,
+    lon = lon,
+    alt = alt,
+  }
+end
+
 local function onEvent(event)
   if (event.id ~= world.event.S_EVENT_MISSION_START and event.id ~= world.event.S_EVENT_MISSION_END and event.id ~= world.event.S_EVENT_TOOK_CONTROL and event.id ~= world.event.S_EVENT_MARK_ADDED and event.id ~= world.event.S_EVENT_MARK_CHANGE and event.id ~= S_EVENT_MARK_REMOVED) and event.initiator == nil then
     env.info("[GRPC] Ignoring event (id: "..tostring(event.id)..") with missing initiator")
@@ -321,8 +330,7 @@ local function onEvent(event)
       type = "markAdd",
       initiator = identifier(event.initiator),
       id = event.idx,
-      -- x and z are rotated here compared to group/unit coords
-      pos = { x = event.pos.z, y = event.pos.y, z = event.pos.x },
+      pos = toLatLonPosition(event.pos),
       text = event.text,
     }
     if event.groupID > -1 and event.groupID then
@@ -340,8 +348,7 @@ local function onEvent(event)
       type = "markChange",
       initiator = identifier(event.initiator),
       id = event.idx,
-      -- x and z are rotated here compared to group/unit coords
-      pos = { x = event.pos.z, y = event.pos.y, z = event.pos.x },
+      pos = toLatLonPosition(event.pos),
       text = event.text,
     }
     if event.groupID > -1 and event.groupID then
@@ -359,8 +366,7 @@ local function onEvent(event)
       type = "markRemove",
       initiator = identifier(event.initiator),
       id = event.idx,
-      -- x and z are rotated here compared to group/unit coords
-      pos = { x = event.pos.z, y = event.pos.y, z = event.pos.x },
+      pos = toLatLonPosition(event.pos),
       text = event.text,
     }
     if event.groupID > -1 and event.groupID then

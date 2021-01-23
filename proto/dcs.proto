@@ -52,9 +52,9 @@ message Event {
   }
 
   message Position {
-    double x = 1;
-    double y = 2; // alt
-    double z = 3; // y
+    double lat = 1;
+    double lon = 2;
+    double alt = 3; // in meters
   }
 
   // Occurs when a unit fires a weapon (but no machine gun- or autocannon-based

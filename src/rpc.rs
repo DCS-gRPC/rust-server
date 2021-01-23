@@ -96,7 +96,7 @@ mod tests {
     fn test_optional_field_deserialization() {
         let event: Event = serde_json::from_str(
             r#"{"time":4.2,"event":{"type":"markAdd","initiator":"Unit1",
-            "coalition":2,"id":42,"pos":{"x":1,"y":2,"z":3},"text":"Test"}}"#,
+            "coalition":2,"id":42,"pos":{"lat":1,"lon":2,"alt":3},"text":"Test"}}"#,
         )
         .unwrap();
         assert_eq!(
@@ -110,9 +110,9 @@ mod tests {
                     )),
                     id: 42,
                     pos: Some(event::Position {
-                        x: 1.0,
-                        y: 2.0,
-                        z: 3.0
+                        lat: 1.0,
+                        lon: 2.0,
+                        alt: 3.0
                     }),
                     text: "Test".to_string(),
                 })),

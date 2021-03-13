@@ -65,6 +65,18 @@ impl Mission for RPC {
         Ok(Response::new(SetUserFlagResponse {}))
     }
 
+    async fn get_radar(
+        &self,
+        request: Request<GetRadarRequest>,
+    ) -> Result<Response<GetRadarResponse>, Status> {
+        let res: GetRadarResponse = self
+            .ipc
+            .request("getRadar", Some(request.into_inner()))
+            .await
+            .map_err(|err| Status::internal(err.to_string()))?;
+        Ok(Response::new(res))
+    }
+
     async fn stream_events(
         &self,
         _request: Request<StreamEventsRequest>,
@@ -77,6 +89,8 @@ impl Mission for RPC {
 
 #[cfg(test)]
 mod tests {
+    use super::dcs::Coalition;
+    use super::dcs::Position;
     use super::dcs::{event, Event};
 
     #[test]
@@ -106,10 +120,10 @@ mod tests {
                 event: Some(event::Event::MarkAdd(event::MarkAddEvent {
                     initiator: "Unit1".to_string(),
                     visibility: Some(event::mark_add_event::Visibility::Coalition(
-                        event::Coalition::Blue.into()
+                        Coalition::Blue.into()
                     )),
                     id: 42,
-                    pos: Some(event::Position {
+                    pos: Some(Position {
                         lat: 1.0,
                         lon: 2.0,
                         alt: 3.0

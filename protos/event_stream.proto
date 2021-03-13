@@ -1,60 +1,18 @@
 syntax = "proto3";
 
+import "common.proto";
+
 package dcs;
-
-message OutTextRequest {
-  string text = 1;
-  int32 display_time = 2;
-  bool clear_view = 3;
-}
-
-message OutTextResponse {}
-
-message GetUserFlagRequest {
-  string flag = 1;
-}
-
-message GetUserFlagResponse {
-  uint32 value = 1;
-}
-
-message SetUserFlagRequest {
-  string flag = 1;
-  uint32 value = 2;
-}
-
-message SetUserFlagResponse {}
 
 message StreamEventsRequest {}
 
 message Event {
-  enum ObjectCategory {
-    UNIT = 0;
-    WEAPON = 1;
-    STATIC = 2;
-    SCENERY = 3;
-    BASE = 4;
-    CARGO = 5;
-  }
-
-  enum Coalition {
-    NEUTRAL = 0;
-    RED = 1;
-    BLUE = 2;
-  }
-
   message Target {
     ObjectCategory category = 1;
     oneof target {
       uint64 id = 2;
       string name = 3;
     }
-  }
-
-  message Position {
-    double lat = 1;
-    double lon = 2;
-    double alt = 3; // in meters
   }
 
   // Occurs when a unit fires a weapon (but no machine gun- or autocannon-based
@@ -282,17 +240,4 @@ message Event {
     MarkChangeEvent mark_change = 26;
     MarkRemoveEvent mark_remove = 27;
   }
-}
-
-service Mission {
-  // https://wiki.hoggitworld.com/view/DCS_func_outText
-  rpc OutText(OutTextRequest) returns (OutTextResponse) {}
-
-  // https://wiki.hoggitworld.com/view/DCS_func_getUserFlag
-  rpc GetUserFlag(GetUserFlagRequest) returns (GetUserFlagResponse) {}
-
-  // https://wiki.hoggitworld.com/view/DCS_func_setUserFlag
-  rpc SetUserFlag(SetUserFlagRequest) returns (SetUserFlagResponse) {}
-
-  rpc StreamEvents(StreamEventsRequest) returns (stream Event) {}
 }

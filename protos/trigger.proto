@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package dcs;
+
+message OutTextRequest {
+  string text = 1;
+  int32 display_time = 2;
+  bool clear_view = 3;
+}
+
+message OutTextResponse {}
+
+message GetUserFlagRequest {
+  string flag = 1;
+}
+
+message GetUserFlagResponse {
+  uint32 value = 1;
+}
+
+message SetUserFlagRequest {
+  string flag = 1;
+  uint32 value = 2;
+}
+
+message SetUserFlagResponse {}

@@ -27,7 +27,7 @@ async fn try_run(
 ) -> Result<(), transport::Error> {
     log::info!("Staring gRPC Server ...");
 
-    let addr = "[::1]:50051".parse().unwrap();
+    let addr = "0.0.0.0:50051".parse().unwrap();
     RPC::builder(ipc)
         .serve_with_shutdown(addr, shutdown_signal.map(|_| ()))
         .await?;

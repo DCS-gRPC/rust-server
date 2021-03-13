@@ -30,6 +30,7 @@ end
 
 GRPC.methods = {}
 dofile(GRPC.basePath .. [[methods\trigger.lua]])
+dofile(GRPC.basePath .. [[methods\unit.lua]])
 
 --
 -- RPC request handler

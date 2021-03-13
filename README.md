@@ -13,6 +13,15 @@
 make build
 ```
 
+You may need to use the following in powershell
+
+```
+$env:LUA_LIB_NAME="lua"
+$env:LUA_LIB=(Get-Item -Path ".\").FullName+"/lua/lua5.1/"
+$env:LUA_INC=(Get-Item -Path ".\").FullName+"/lua/lua5.1/include"
+cargo build
+```
+
 ### Mission Setup
 
 Add the following script to your mission (adjust the paths to match your repo location):

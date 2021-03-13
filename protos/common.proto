@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package dcs;
+
+enum ObjectCategory {
+  DUMMY = 0; // Proto must start at 0 but the category index starts at 1 so add a dummy value
+  UNIT = 1;
+  WEAPON = 2;
+  STATIC = 3;
+  SCENERY = 4;
+  BASE = 5;
+  CARGO = 6;
+}
+
+enum Coalition {
+  NEUTRAL = 0;
+  RED = 1;
+  BLUE = 2;
+}
+
+message Position {
+  double lat = 1;
+  double lon = 2;
+  double alt = 3; // in meters
+}
+
+message Object {
+}
+
+message Unit {
+}
+
+message Weapon {
+}
+
+message Static {
+}
+
+message Scenery {
+}
+
+message Airbase {
+}
+
+message Cargo {
+}

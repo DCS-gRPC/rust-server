@@ -1,5 +1,6 @@
 --
 -- RPC trigger actions
+-- https://wiki.hoggitworld.com/view/DCS_singleton_trigger
 --
 
 GRPC.methods.outText = function(params)

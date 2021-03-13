@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+import "event_stream.proto";
+import "trigger.proto";
+import "unit.proto";
+
+package dcs;
+
+service Mission {
+  // https://wiki.hoggitworld.com/view/DCS_func_outText
+  rpc OutText(OutTextRequest) returns (OutTextResponse) {}
+
+  // https://wiki.hoggitworld.com/view/DCS_func_getUserFlag
+  rpc GetUserFlag(GetUserFlagRequest) returns (GetUserFlagResponse) {}
+
+  // https://wiki.hoggitworld.com/view/DCS_func_setUserFlag 
+  rpc SetUserFlag(SetUserFlagRequest) returns (SetUserFlagResponse) {}
+  
+  // https://wiki.hoggitworld.com/view/DCS_func_getRadar
+  rpc GetRadar(GetRadarRequest) returns (GetRadarResponse) {}
+
+  rpc StreamEvents(StreamEventsRequest) returns (stream Event) {}
+}

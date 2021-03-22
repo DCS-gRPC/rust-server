@@ -22,6 +22,27 @@ impl RPC {
     ) -> Router<MissionServer<RPC>, transport::server::Unimplemented> {
         Server::builder().add_service(MissionServer::new(RPC { ipc }))
     }
+
+    pub async fn request<I, O>(&self, method: &str, request: Request<I>) -> Result<O, Status>
+    where
+        I: serde::Serialize + Send + Sync + 'static,
+        for<'de> O: serde::Deserialize<'de> + Send + Sync + std::fmt::Debug + 'static,
+    {
+        self.ipc
+            .request(method, Some(request.into_inner()))
+            .await
+            .map_err(to_status)
+    }
+
+    pub async fn notification<I>(&self, method: &str, request: Request<I>) -> Result<(), Status>
+    where
+        I: serde::Serialize + Send + Sync + 'static,
+    {
+        self.ipc
+            .notification(method, Some(request.into_inner()))
+            .await
+            .map_err(to_status)
+    }
 }
 
 #[tonic::async_trait]
@@ -33,11 +54,7 @@ impl Mission for RPC {
         &self,
         request: Request<OutTextRequest>,
     ) -> Result<Response<OutTextResponse>, Status> {
-        self.ipc
-            .notification("outText", Some(request.into_inner()))
-            .await
-            .map_err(|err| Status::internal(err.to_string()))?;
-
+        self.notification("outText", request).await?;
         Ok(Response::new(OutTextResponse {}))
     }
 
@@ -45,11 +62,7 @@ impl Mission for RPC {
         &self,
         request: Request<GetUserFlagRequest>,
     ) -> Result<Response<GetUserFlagResponse>, Status> {
-        let res: GetUserFlagResponse = self
-            .ipc
-            .request("getUserFlag", Some(request.into_inner()))
-            .await
-            .map_err(|err| Status::internal(err.to_string()))?;
+        let res: GetUserFlagResponse = self.request("getUserFlag", request).await?;
         Ok(Response::new(res))
     }
 
@@ -57,11 +70,7 @@ impl Mission for RPC {
         &self,
         request: Request<SetUserFlagRequest>,
     ) -> Result<Response<SetUserFlagResponse>, Status> {
-        self.ipc
-            .notification("setUserFlag", Some(request.into_inner()))
-            .await
-            .map_err(|err| Status::internal(err.to_string()))?;
-
+        self.notification("setUserFlag", request).await?;
         Ok(Response::new(SetUserFlagResponse {}))
     }
 
@@ -69,11 +78,7 @@ impl Mission for RPC {
         &self,
         request: Request<GetRadarRequest>,
     ) -> Result<Response<GetRadarResponse>, Status> {
-        let res: GetRadarResponse = self
-            .ipc
-            .request("getRadar", Some(request.into_inner()))
-            .await
-            .map_err(|err| Status::internal(err.to_string()))?;
+        let res: GetRadarResponse = self.request("getRadar", request).await?;
         Ok(Response::new(res))
     }
 
@@ -84,6 +89,20 @@ impl Mission for RPC {
         Ok(Response::new(Box::pin(
             self.ipc.events().await.map(|e| Ok(e)),
         )))
+    }
+}
+
+fn to_status(err: dcs_module_ipc::Error) -> Status {
+    use dcs_module_ipc::Error;
+    match err {
+        Error::Script { kind, message } => match kind.as_deref() {
+            Some("INVALID_ARGUMENT") => Status::invalid_argument(message),
+            Some("NOT_FOUND") => Status::not_found(message),
+            Some("ALREADY_EXISTS") => Status::already_exists(message),
+            Some("UNIMPLEMENTED") => Status::unimplemented(message),
+            _ => Status::internal(message),
+        },
+        err => Status::internal(err.to_string()),
     }
 }
 

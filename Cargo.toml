@@ -9,7 +9,7 @@ edition = "2018"
 crate-type = ["cdylib"]
 
 [dependencies]
-dcs-module-ipc = "0.3"
+dcs-module-ipc = "0.4"
 futures = "0.3"
 log4rs = "1.0"
 log = "0.4"

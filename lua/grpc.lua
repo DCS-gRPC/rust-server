@@ -27,7 +27,49 @@ end
 
 GRPC.error = function(msg)
   return {
-    error = msg
+    error = {
+      message = msg,
+    }
+  }
+end
+
+--- The client specified an invalid argument
+GRPC.errorInvalidArgument = function(msg)
+  return {
+    error = {
+      type = "INVALID_ARGUMENT",
+      message = msg,
+    }
+  }
+end
+
+--- Some requested entity was not found.
+GRPC.errorNotFound = function(msg)
+  return {
+    error = {
+      type = "NOT_FOUND",
+      message = msg,
+    }
+  }
+end
+
+--- The entity that a client attempted to create already exists.
+GRPC.errorAlreadyExists = function(msg)
+  return {
+    error = {
+      type = "ALREADY_EXISTS",
+      message = msg,
+    }
+  }
+end
+
+--- The operation is not implemented or is not supported/enabled in this service.
+GRPC.errorUnimplemented = function(msg)
+  return {
+    error = {
+      type = "UNIMPLEMENTED",
+      message = msg,
+    }
   }
 end
 

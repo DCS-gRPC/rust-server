@@ -10,7 +10,7 @@ local GRPC = GRPC
 GRPC.methods.getRadar = function(params)
   local unit = Unit.getByName(params.name)
   if unit == nil then
-    return GRPC.error("Could not find unit with name '" .. params.name .. "'")
+    return GRPC.errorNotFound("Could not find unit with name '" .. params.name .. "'")
   end
     
   local active, object = unit:getRadar() 

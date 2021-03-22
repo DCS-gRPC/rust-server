@@ -133,10 +133,13 @@ fn next(lua: &Lua, callback: Function) -> LuaResult<bool> {
             }
 
             let result: LuaTable = callback.call((method.as_str(), params))?;
-            let error: Option<String> = result.get("error")?;
+            let error: Option<LuaTable> = result.get("error")?;
 
             if let Some(error) = error {
-                next.error(error);
+                let message: String = error.get("message")?;
+                let kind: Option<String> = error.get("type")?;
+
+                next.error(message, kind);
                 return Ok(true);
             }
 

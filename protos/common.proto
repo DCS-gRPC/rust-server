@@ -24,10 +24,17 @@ message Position {
   double alt = 3; // in meters
 }
 
+// Returned if a sub-type listed below cannot be found
 message Object {
 }
 
 message Unit {
+  string id = 1;
+  string name = 2;
+  string callsign = 3;
+  Coalition coalition = 4;
+  string type = 5;
+  Position position = 6;
 }
 
 message Weapon {
@@ -44,3 +51,5 @@ message Airbase {
 
 message Cargo {
 }
+
+// End of Object subtypes

@@ -5,7 +5,7 @@
 
 local Unit = Unit
 local Object = Object
-local next = next 
+local GRPC = GRPC
 
 GRPC.methods.getRadar = function(params)
   local unit = Unit.getByName(params.name)
@@ -16,43 +16,33 @@ GRPC.methods.getRadar = function(params)
   local active, object = unit:getRadar() 
   
   if object == nil then
-    env.info("[GRPC]" .. params.name .. " has no radar target")
     return GRPC.success({   
       active = active
     })
   end
-  
-  env.info("[GRPC]" .. params.name .. "'s Target is " .. object:getCallsign() .. ", ID: " .. object:getID() .. ", Category: " .. object:getCategory() )
    
   local category = object:getCategory()
-  local grpc_hash = {}
-  local object_hash = {}
+  local grpcTable = {}
   
   if(category == Object.Category.UNIT) then
-    -- TODO, fill out the hash for this object
-    grpc_hash["unit"] = object_hash 
+    grpcTable["unit"] = GRPC.exporters.unit(object) 
   elseif(category == Object.Category.WEAPON) then
-    -- TODO, fill out the hash for this object
-    grpc_hash["weapon"] = object_hash 
+    grpcTable["weapon"] = GRPC.exporters.weapon(object) 
   elseif(category == Object.Category.STATIC) then
-    -- TODO, fill out the hash for this object
-    grpc_hash["static"] = object_hash 
+    grpcTable["static"] = GRPC.exporters.static(object) 
   elseif(category == Object.Category.BASE) then
-    -- TODO, fill out the hash for this object
-    grpc_hash["airbase"] = object_hash 
+    grpcTable["airbase"] = GRPC.exporters.airbase(object) 
   elseif(category == Object.Category.SCENERY) then
-    -- TODO, fill out the hash for this object
-    grpc_hash["scenery"] = object_hash 
+    grpcTable["scenery"] = GRPC.exporters.scenery(object) 
   elseif(category == Object.Category.Cargo) then
-    -- TODO, fill out the hash for this object
-    grpc_hash["cargo"] = object_hash 
+    grpcTable["cargo"] = GRPC.exporters.cargo(object) 
   else
     env.info("[GRPC] Could not determine object category of object with ID: " .. object:getID() .. ", Category: " .. category)   
-    grpc_hash["object"] = {}   
+    grpcTable["object"] = GRPC.exporters.object(object)
   end
   
   return GRPC.success({   
     active = active,
-    target = grpc_hash 
+    target = grpcTable 
   })
 end

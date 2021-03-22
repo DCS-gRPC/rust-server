@@ -9,6 +9,13 @@ grpc.start()
 local stopped = false
 
 --
+-- Export methods
+--
+
+GRPC.exporters = {}
+dofile(GRPC.basePath .. [[exporters\object.lua]])
+
+--
 -- Helper methods
 --
 

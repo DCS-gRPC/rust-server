@@ -13,9 +13,9 @@ service Mission {
   // https://wiki.hoggitworld.com/view/DCS_func_getUserFlag
   rpc GetUserFlag(GetUserFlagRequest) returns (GetUserFlagResponse) {}
 
-  // https://wiki.hoggitworld.com/view/DCS_func_setUserFlag 
+  // https://wiki.hoggitworld.com/view/DCS_func_setUserFlag
   rpc SetUserFlag(SetUserFlagRequest) returns (SetUserFlagResponse) {}
-  
+
   // https://wiki.hoggitworld.com/view/DCS_func_getRadar
   rpc GetRadar(GetRadarRequest) returns (GetRadarResponse) {}
 

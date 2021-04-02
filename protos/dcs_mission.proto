@@ -3,6 +3,7 @@ syntax = "proto3";
 import "event_stream.proto";
 import "trigger.proto";
 import "unit.proto";
+import "world.proto";
 
 package dcs;
 
@@ -18,6 +19,9 @@ service Mission {
 
   // https://wiki.hoggitworld.com/view/DCS_func_getRadar
   rpc GetRadar(GetRadarRequest) returns (GetRadarResponse) {}
+
+  // https://wiki.hoggitworld.com/view/DCS_func_getAirbases
+  rpc GetAirbases(GetAirbasesRequest) returns (GetAirbasesResponse) {}
 
   rpc StreamEvents(StreamEventsRequest) returns (stream Event) {}
 }

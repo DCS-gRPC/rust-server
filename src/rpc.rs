@@ -82,6 +82,18 @@ impl Mission for RPC {
         Ok(Response::new(res))
     }
 
+    async fn get_airbases(
+        &self,
+        request: Request<GetAirbasesRequest>,
+    ) -> Result<Response<GetAirbasesResponse>, Status> {
+        let res: GetAirbasesResponse = self
+            .ipc
+            .request("getAirbases", Some(request.into_inner()))
+            .await
+            .map_err(|err| Status::internal(err.to_string()))?;
+        Ok(Response::new(res))
+    }
+
     async fn stream_events(
         &self,
         _request: Request<StreamEventsRequest>,

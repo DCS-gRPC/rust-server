@@ -48,3 +48,12 @@ or watch the mission event stream via:
 ```bash
 grpcurl -plaintext -import-path ./protos -proto ./protos/dcs_mission.proto -d "{}" 127.0.0.1:50051 dcs.Mission/StreamEvents
 ```
+
+### Troublshooting
+
+### Linker Error 1104
+
+If you see `LINK : fatal error LNK1104: cannot open file` when running
+`cargo build` make sure that there is no running DCS mission as that
+locks the DLL files. Exit the mission (You do *not* have to exit DCS)
+then re-run the command before restarting the mission.

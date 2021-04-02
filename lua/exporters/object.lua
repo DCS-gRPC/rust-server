@@ -19,11 +19,11 @@ end
 
 GRPC.exporters.unit = function(unit)
   return {
-    id = unit:getID()
-    name = unit:getName()
-    callsign = unit:getCallsign()
-    coalition = unit:getCoalition();
-    type = unit:getTypeName()
+    id = unit:getID(),
+    name = unit:getName(),
+    callsign = unit:getCallsign(),
+    coalition = unit:getCoalition(),
+    type = unit:getTypeName(),
     position = toLatLonPosition(unit:getPoint())
   }
 end
@@ -37,7 +37,20 @@ GRPC.exporters.static = function(static)
 end
 
 GRPC.exporters.airbase = function(airbase)
-  return {}
+  local a = {
+    name = airbase:getName(),
+    callsign = airbase:getCallsign(),
+    coalition = airbase:getCoalition(),
+    category = airbase:getDesc()['category'],
+    displayName = airbase:getDesc()['displayName'],
+    position = toLatLonPosition(airbase:getPoint()),
+  }
+
+  if airbase:getUnit() then
+    a.id = airbase:getUnit():getID()
+  end
+
+  return a
 end
 
 GRPC.exporters.scenery = function(scenery)

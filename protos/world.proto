@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+import "common.proto";
+
+package dcs;
+
+message GetAirbasesRequest {
+  optional Coalition coalition = 1;
+}
+
+message GetAirbasesResponse {
+  repeated Airbase airbases = 1;
+}

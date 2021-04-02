@@ -12,6 +12,12 @@ enum ObjectCategory {
   CARGO = 6;
 }
 
+enum AirbaseCategory {
+	AIRDROME = 0;
+	HELIPAD = 1;
+	SHIP = 2;
+}
+
 enum Coalition {
   NEUTRAL = 0;
   RED = 1;
@@ -47,6 +53,13 @@ message Scenery {
 }
 
 message Airbase {
+	string id = 1;
+	string name = 2;
+	string callsign = 3;
+	Coalition coalition = 4;
+	Position position = 6;
+	AirbaseCategory category = 7;
+	string display_name = 8;
 }
 
 message Cargo {

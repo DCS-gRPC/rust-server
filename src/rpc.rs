@@ -86,11 +86,7 @@ impl Mission for RPC {
         &self,
         request: Request<GetAirbasesRequest>,
     ) -> Result<Response<GetAirbasesResponse>, Status> {
-        let res: GetAirbasesResponse = self
-            .ipc
-            .request("getAirbases", Some(request.into_inner()))
-            .await
-            .map_err(|err| Status::internal(err.to_string()))?;
+        let res: GetAirbasesResponse = self.request("getAirbases", request).await?;
         Ok(Response::new(res))
     }
 

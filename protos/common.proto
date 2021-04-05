@@ -53,7 +53,7 @@ message Scenery {
 }
 
 message Airbase {
-  string id = 1;
+  optional string id = 1;
   string name = 2;
   string callsign = 3;
   Coalition coalition = 4;

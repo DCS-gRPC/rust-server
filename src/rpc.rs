@@ -120,9 +120,9 @@ fn to_status(err: dcs_module_ipc::Error) -> Status {
 
 #[cfg(test)]
 mod tests {
-    use super::dcs::Coalition;
-    use super::dcs::Position;
-    use super::dcs::{event, Event};
+    use super::dcs::{
+        event, Airbase, AirbaseCategory, Coalition, Event, GetAirbasesResponse, Position,
+    };
 
     #[test]
     fn test_event_deserialization() {
@@ -138,7 +138,7 @@ mod tests {
     }
 
     #[test]
-    fn test_optional_field_deserialization() {
+    fn test_enum_deserialization() {
         let event: Event = serde_json::from_str(
             r#"{"time":4.2,"event":{"type":"markAdd","initiator":"Unit1",
             "coalition":2,"id":42,"pos":{"lat":1,"lon":2,"alt":3},"text":"Test"}}"#,
@@ -161,6 +161,50 @@ mod tests {
                     }),
                     text: "Test".to_string(),
                 })),
+            }
+        );
+    }
+
+    #[test]
+    fn test_optional_field_deserialization() {
+        let resp: GetAirbasesResponse = serde_json::from_str(
+            r#"
+
+                {
+                    "airbases": [
+                        {
+                            "coalition": 0,
+                            "name": "Anapa-Vityazevo",
+                            "callsign": "Anapa-Vityazevo",
+                            "position": {
+                                "lon": 37.35978347755592,
+                                "lat": 45.01317473377168,
+                                "alt": 43.00004196166992
+                            },
+                            "category": 0,
+                            "displayName": "Anapa-Vityazevo"
+                        }
+                    ]
+                }
+            "#,
+        )
+        .unwrap();
+        assert_eq!(
+            resp,
+            GetAirbasesResponse {
+                airbases: vec![Airbase {
+                    id: None,
+                    name: "Anapa-Vityazevo".to_string(),
+                    callsign: "Anapa-Vityazevo".to_string(),
+                    coalition: Coalition::Neutral.into(),
+                    position: Some(Position {
+                        lon: 37.35978347755592,
+                        lat: 45.01317473377168,
+                        alt: 43.00004196166992
+                    }),
+                    category: AirbaseCategory::Airdrome.into(),
+                    display_name: "Anapa-Vityazevo".to_string(),
+                }]
             }
         );
     }

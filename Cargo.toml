@@ -25,4 +25,4 @@ tonic = "0.4"
 serde_json = "1.0"
 
 [build-dependencies]
-tonic-build = "0.3"
+tonic-build = "0.4"

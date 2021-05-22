@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package dcs;
+
+message MissionAssignmentRequest {
+	string unit_name = 1;
+	string mission_type = 2;
+}
+
+message MissionAssignmentResponse {}
+
+message MissionJoinRequest {
+	string unit_name = 1;
+	int32 mission_code = 2;
+}
+
+message MissionJoinResponse {}

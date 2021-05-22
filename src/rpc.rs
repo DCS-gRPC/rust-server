@@ -90,6 +90,23 @@ impl Mission for RPC {
         Ok(Response::new(res))
     }
 
+    async fn request_mission_assignment(
+        &self,
+        request: Request<MissionAssignmentRequest>,
+    ) -> Result<Response<MissionAssignmentResponse>, Status> {
+        self.notification("requestMissionAssignment", request)
+            .await?;
+        Ok(Response::new(MissionAssignmentResponse {}))
+    }
+
+    async fn join_mission(
+        &self,
+        request: Request<MissionJoinRequest>,
+    ) -> Result<Response<MissionJoinResponse>, Status> {
+        self.notification("joinMission", request).await?;
+        Ok(Response::new(MissionJoinResponse {}))
+    }
+
     async fn stream_events(
         &self,
         _request: Request<StreamEventsRequest>,

@@ -4,6 +4,7 @@ import "event_stream.proto";
 import "trigger.proto";
 import "unit.proto";
 import "world.proto";
+import "custom.proto";
 
 package dcs;
 
@@ -22,6 +23,12 @@ service Mission {
 
   // https://wiki.hoggitworld.com/view/DCS_func_getAirbases
   rpc GetAirbases(GetAirbasesRequest) returns (GetAirbasesResponse) {}
+
+  // DCT Function
+  rpc RequestMissionAssignment(MissionAssignmentRequest) returns (MissionAssignmentResponse) {}
+
+  // DCT Function
+  rpc JoinMission(MissionJoinRequest) returns (MissionJoinResponse) {}
 
   rpc StreamEvents(StreamEventsRequest) returns (stream Event) {}
 }

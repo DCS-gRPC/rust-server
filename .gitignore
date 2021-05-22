@@ -3,3 +3,5 @@
 !.github
 /target
 Cargo.lock
+scratchpad.txt
+grpcurl.exe

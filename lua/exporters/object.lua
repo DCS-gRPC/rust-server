@@ -24,7 +24,8 @@ GRPC.exporters.unit = function(unit)
     callsign = unit:getCallsign(),
     coalition = unit:getCoalition(),
     type = unit:getTypeName(),
-    position = toLatLonPosition(unit:getPoint())
+    position = toLatLonPosition(unit:getPoint()),
+    playerName = unit:getPlayerName()
   }
 end
 
@@ -43,7 +44,7 @@ GRPC.exporters.airbase = function(airbase)
     coalition = airbase:getCoalition(),
     category = airbase:getDesc()['category'],
     displayName = airbase:getDesc()['displayName'],
-    position = toLatLonPosition(airbase:getPoint()),
+    position = toLatLonPosition(airbase:getPoint())
   }
 
   if airbase:getUnit() then

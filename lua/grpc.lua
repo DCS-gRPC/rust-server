@@ -133,11 +133,18 @@ end, nil, timer.getTime() + .02)
 --
 -- listen to DCS events
 --
-local function identifier(obj)
-  if obj == nil then
+local function exporter(object)
+  if object == nil then
     return nil
   end
-  return obj:getName()
+
+  local category = object:getCategory()
+
+  if(category == Object.Category.UNIT) then
+    return GRPC.exporters.unit(object)
+  end
+
+  return object:getName()
 end
 
 local function toLatLonPosition(pos)
@@ -158,7 +165,7 @@ local function onEvent(event)
       time = event.time,
       event = {
         type = "shot",
-        initiator = identifier(event.initiator),
+        initiator = exporter(event.initiator),
         weapon = event.weapon:getName(),
       },
     })
@@ -183,7 +190,7 @@ local function onEvent(event)
         time = event.time,
         event = {
           type = "hit",
-          initiator = identifier(event.initiator),
+          initiator = exporter(event.initiator),
           weapon = weapon,
           target = target,
         },
@@ -197,8 +204,8 @@ local function onEvent(event)
       time = event.time,
       event = {
         type = "takeoff",
-        initiator = identifier(event.initiator),
-        place = identifier(event.place),
+        initiator = exporter(event.initiator),
+        place = exporter(event.place),
       },
     })
 
@@ -207,8 +214,8 @@ local function onEvent(event)
       time = event.time,
       event = {
         type = "land",
-        initiator = identifier(event.initiator),
-        place = identifier(event.place),
+        initiator = exporter(event.initiator),
+        place = exporter(event.place),
       },
     })
 
@@ -217,7 +224,7 @@ local function onEvent(event)
       time = event.time,
       event = {
         type = "crash",
-        initiator = identifier(event.initiator),
+        initiator = exporter(event.initiator),
       },
     })
 
@@ -226,7 +233,7 @@ local function onEvent(event)
       time = event.time,
       event = {
         type = "ejection",
-        initiator = identifier(event.initiator),
+        initiator = exporter(event.initiator),
       },
     })
 
@@ -235,7 +242,7 @@ local function onEvent(event)
       time = event.time,
       event = {
         type = "refueling",
-        initiator = identifier(event.initiator),
+        initiator = exporter(event.initiator),
       },
     })
 
@@ -259,7 +266,7 @@ local function onEvent(event)
       time = event.time,
       event = {
         type = "pilotDead",
-        initiator = identifier(event.initiator),
+        initiator = exporter(event.initiator),
       },
     })
 
@@ -268,8 +275,8 @@ local function onEvent(event)
       time = event.time,
       event = {
         type = "baseCapture",
-        initiator = identifier(event.initiator),
-        place = identifier(event.place),
+        initiator = exporter(event.initiator),
+        place = exporter(event.place),
       },
     })
 
@@ -299,7 +306,7 @@ local function onEvent(event)
       time = event.time,
       event = {
         type = "refuelingStop",
-        initiator = identifier(event.initiator),
+        initiator = exporter(event.initiator),
       },
     })
 
@@ -308,7 +315,7 @@ local function onEvent(event)
       time = event.time,
       event = {
         type = "birth",
-        initiator = identifier(event.initiator),
+        initiator = exporter(event.initiator),
       },
     })
 
@@ -317,7 +324,7 @@ local function onEvent(event)
       time = event.time,
       event = {
         type = "systemFailure",
-        initiator = identifier(event.initiator),
+        initiator = exporter(event.initiator),
       },
     })
 
@@ -326,7 +333,7 @@ local function onEvent(event)
       time = event.time,
       event = {
         type = "engineStartup",
-        initiator = identifier(event.initiator),
+        initiator = exporter(event.initiator),
       },
     })
 
@@ -335,7 +342,7 @@ local function onEvent(event)
       time = event.time,
       event = {
         type = "engineShutdown",
-        initiator = identifier(event.initiator),
+        initiator = exporter(event.initiator),
       },
     })
 
@@ -344,7 +351,7 @@ local function onEvent(event)
       time = event.time,
       event = {
         type = "playerEnterUnit",
-        initiator = identifier(event.initiator),
+        initiator = exporter(event.initiator),
       },
     })
 
@@ -353,7 +360,7 @@ local function onEvent(event)
       time = event.time,
       event = {
         type = "playerLeaveUnit",
-        initiator = identifier(event.initiator),
+        initiator = exporter(event.initiator),
       },
     })
 
@@ -364,7 +371,7 @@ local function onEvent(event)
       time = event.time,
       event = {
         type = "shootingStart",
-        initiator = identifier(event.initiator),
+        initiator = exporter(event.initiator),
       },
     })
 
@@ -373,14 +380,14 @@ local function onEvent(event)
       time = event.time,
       event = {
         type = "shootingEnd",
-        initiator = identifier(event.initiator),
+        initiator = exporter(event.initiator),
       },
     })
 
   elseif event.id == world.event.S_EVENT_MARK_ADDED then
     local payload = {
       type = "markAdd",
-      initiator = identifier(event.initiator),
+      initiator = exporter(event.initiator),
       id = event.idx,
       pos = toLatLonPosition(event.pos),
       text = event.text,
@@ -398,7 +405,7 @@ local function onEvent(event)
   elseif event.id == world.event.S_EVENT_MARK_CHANGE then
     local payload = {
       type = "markChange",
-      initiator = identifier(event.initiator),
+      initiator = exporter(event.initiator),
       id = event.idx,
       pos = toLatLonPosition(event.pos),
       text = event.text,
@@ -416,7 +423,7 @@ local function onEvent(event)
   elseif event.id == world.event.S_EVENT_MARK_REMOVED then
     local payload = {
       type = "markRemove",
-      initiator = identifier(event.initiator),
+      initiator = exporter(event.initiator),
       id = event.idx,
       pos = toLatLonPosition(event.pos),
       text = event.text,

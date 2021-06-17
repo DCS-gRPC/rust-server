@@ -134,7 +134,7 @@ fn to_status(err: dcs_module_ipc::Error) -> Status {
 #[cfg(test)]
 mod tests {
     use super::dcs::{
-        event, Airbase, AirbaseCategory, Coalition, Event, GetAirbasesResponse, Position,
+        event, Airbase, AirbaseCategory, Coalition, Event, GetAirbasesResponse, Position, Unit,
     };
 
     #[test]
@@ -153,8 +153,35 @@ mod tests {
     #[test]
     fn test_enum_deserialization() {
         let event: Event = serde_json::from_str(
-            r#"{"time":4.2,"event":{"type":"markAdd","initiator":"Unit1",
-            "coalition":2,"id":42,"pos":{"lat":1,"lon":2,"alt":3},"text":"Test"}}"#,
+            r#"
+                {
+	                "time": 4.2,
+	                "event": {
+		                "type": "markAdd",
+		                "initiator": {
+			                "id": "1",
+			                "name": "Aerial-1-1",
+			                "callsign": "Enfield11",
+			                "coalition": 2,
+			                "type": "FA-18C_hornet",
+			                "position": {
+				                "lat": 3,
+				                "lon": 2,
+				                "alt": 1
+			                },
+			                "playerName": "New callsign"
+		                },
+		                "coalition": 2,
+		                "id": 42,
+		                "pos": {
+			                "lat": 1,
+			                "lon": 2,
+			                "alt": 3
+		                },
+		                "text": "Test"
+	                }
+                }
+            "#,
         )
         .unwrap();
         assert_eq!(
@@ -162,7 +189,19 @@ mod tests {
             Event {
                 time: 4.2,
                 event: Some(event::Event::MarkAdd(event::MarkAddEvent {
-                    initiator: "Unit1".to_string(),
+                    initiator: Some(Unit {
+                        id: "1".to_string(),
+                        name: "Aerial-1-1".to_string(),
+                        callsign: "Enfield11".to_string(),
+                        r#type: "FA-18C_hornet".to_string(),
+                        coalition: Coalition::Blue.into(),
+                        position: Some(Position {
+                            lat: 3.0,
+                            lon: 2.0,
+                            alt: 1.0
+                        }),
+                        player_name: Some("New callsign".to_string())
+                    }),
                     visibility: Some(event::mark_add_event::Visibility::Coalition(
                         Coalition::Blue.into()
                     )),

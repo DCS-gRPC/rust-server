@@ -19,7 +19,7 @@ message Event {
   // weapons - those are handled by [ShootingStartEvent]).
   message ShotEvent {
     // The unit that fired the weapon.
-    string initiator = 1;
+    Unit initiator = 1;
     // The weapon that has been fired.
     uint64 weapon = 2;
   }
@@ -27,7 +27,7 @@ message Event {
   // Occurs when an object is hit by a weapon.
   message HitEvent {
     // The unit that fired the weapon.
-    string initiator = 1;
+    Unit initiator = 1;
     // The weapon that the target has been hit with.
     uint64 weapon = 2;
     // The object that has been hit.
@@ -37,7 +37,7 @@ message Event {
   // Occurs when an aircraft takes off from an airbase, farp, or ship.
   message TakeoffEvent {
     // The unit that took off.
-    string initiator = 1;
+    Unit initiator = 1;
     // The airbase, farp or ship the unit took off from.
     string place = 2;
   }
@@ -45,7 +45,7 @@ message Event {
   // Occurs when an aircraft lands at an airbase, farp or ship.
   message LandEvent {
     // The unit that landed.
-    string initiator = 1;
+    Unit initiator = 1;
     // The airbase, farp or ship the unit landed at.
     string place = 2;
   }
@@ -54,19 +54,19 @@ message Event {
   // destroyed.
   message CrashEvent {
     // The unit that crashed.
-    string initiator = 1;
+    Unit initiator = 1;
   }
 
   // Occurs when a pilot ejects from its aircraft.
   message EjectionEvent {
     // The unit a pilot ejected from.
-    string initiator = 1;
+    Unit initiator = 1;
   }
 
   // Occurs when an aircraft connects with a tanker and begins taking on fuel.
   message RefuelingEvent {
     // The unit that is receiving fuel.
-    string initiator = 1;
+    Unit initiator = 1;
   }
 
   // Occurs when an object is completely destroyed.
@@ -84,13 +84,13 @@ message Event {
   // destroying the plane.
   message PilotDeadEvent {
     // The unit the pilot has died in.
-    string initiator = 1;
+    Unit initiator = 1;
   }
 
   // Occurs when a ground unit captures either an airbase or a farp.
   message BaseCaptureEvent {
     // The unit that captured the base.
-    string initiator = 1;
+    Unit initiator = 1;
     // The airbase that was captured, can be a FARP or Airbase
     string place = 2;
   }
@@ -104,42 +104,42 @@ message Event {
   // Occurs when an aircraft is finished taking fuel.
   message RefuelingStopEvent {
     // he unit that was receiving fuel.
-    string initiator = 1;
+    Unit initiator = 1;
   }
 
   // Occurs when any object is spawned into the mission.
   message BirthEvent {
     // The unit that was spawned.
-    string initiator = 1;
+    Unit initiator = 1;
   }
 
   // Occurs when a system fails on a human controlled aircraft occurs.
   message SystemFailureEvent {
     // The unit the system failure occurred in.
-    string initiator = 1;
+    Unit initiator = 1;
   }
 
   // Occurs when any aircraft starts its engines.
   message EngineStartupEvent {
     // The unit that starts its engines.
-    string initiator = 1;
+    Unit initiator = 1;
   }
 
   message EngineShutdownEvent {
     // Occurs when any aircraft shuts down its engines.
-    string initiator = 1;
+    Unit initiator = 1;
   }
 
   // Occurs when a player takes direct control of a unit.
   message PlayerEnterUnitEvent {
     // The unit the player took control of.
-    string initiator = 1;
+    Unit initiator = 1;
   }
 
   // Occurs when a player relieves direct control of a unit.
   message PlayerLeaveUnitEvent {
     // The unit the player relieves control of.
-    string initiator = 1;
+    Unit initiator = 1;
   }
 
   // Occurs when a unit begins firing a machine gun- or autocannon-based weapon
@@ -147,21 +147,21 @@ message Event {
   // [ShotEvent].
   message ShootingStartEvent {
     // The unit that started firing.
-    string initiator = 1;
+    Unit initiator = 1;
   }
 
   // Occurs when a unit stops firing a machine gun- or autocannon-based weapon.
   // Event will always correspond with a [ShootingStartEvent] event.
   message ShootingEndEvent {
     // The unit that was shooting and has no stopped firing.
-    string initiator = 1;
+    Unit initiator = 1;
   }
 
   // Occurs when marks get added to the mission by players or scripting
   // functions.
   message MarkAddEvent {
     // The unit that added the mark.
-    string initiator = 1;
+    Unit initiator = 1;
     oneof visibility {
       // The group the mark's visibility is restricted for.
       uint64 group_id = 2;
@@ -179,7 +179,7 @@ message Event {
   // Occurs when marks got changed.
   message MarkChangeEvent {
     // The unit that changed the mark.
-    string initiator = 1;
+    Unit initiator = 1;
     oneof visibility {
       // The group the mark's visibility is restricted for.
       uint64 group_id = 2;
@@ -197,7 +197,7 @@ message Event {
   // Occurs when marks get removed.
   message MarkRemoveEvent {
     // The unit that removed the mark.
-    string initiator = 1;
+    Unit initiator = 1;
     oneof visibility {
       // The group the mark's visibility is restricted for.
       uint64 group_id = 2;

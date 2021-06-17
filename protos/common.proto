@@ -45,6 +45,9 @@ message Unit {
 }
 
 message Weapon {
+	string name = 2;
+	string type = 5;
+	Position position = 6;
 }
 
 message Static {

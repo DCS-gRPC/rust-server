@@ -141,6 +141,8 @@ local function exporter(object)
 
   if(category == Object.Category.UNIT) then
     return GRPC.exporters.unit(object)
+  elseif(category == Object.Category.WEAPON) then
+    return GRPC.exporters.weapon(object)
   end
 
   return object:getName()
@@ -165,7 +167,7 @@ local function onEvent(event)
       event = {
         type = "shot",
         initiator = exporter(event.initiator),
-        weapon = event.weapon:getName(),
+        weapon = exporter(event.weapon)
       },
     })
 
@@ -181,16 +183,12 @@ local function onEvent(event)
         target.name = event.target:getName()
       end
 
-      local weapon = nil
-      if event.weapon ~= nil then
-        weapon = event.weapon:getName()
-      end
       grpc.event({
         time = event.time,
         event = {
           type = "hit",
           initiator = exporter(event.initiator),
-          weapon = weapon,
+          weapon = exporter(event.weapon),
           target = target,
         },
       })

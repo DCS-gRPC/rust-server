@@ -21,7 +21,7 @@ message Event {
     // The unit that fired the weapon.
     Unit initiator = 1;
     // The weapon that has been fired.
-    uint64 weapon = 2;
+    Weapon weapon = 2;
   }
 
   // Occurs when an object is hit by a weapon.
@@ -29,7 +29,7 @@ message Event {
     // The unit that fired the weapon.
     Unit initiator = 1;
     // The weapon that the target has been hit with.
-    uint64 weapon = 2;
+    Weapon weapon = 2;
     // The object that has been hit.
     Target target = 3;
   }

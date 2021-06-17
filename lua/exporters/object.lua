@@ -30,7 +30,11 @@ GRPC.exporters.unit = function(unit)
 end
 
 GRPC.exporters.weapon = function(weapon)
-  return {}
+  return {
+    name = tostring(weapon:getName()),
+    type = weapon:getTypeName(),
+    position = toLatLonPosition(weapon:getPoint()),
+  }
 end
 
 GRPC.exporters.static = function(static)

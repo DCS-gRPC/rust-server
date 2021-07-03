@@ -19,7 +19,7 @@ end
 
 GRPC.exporters.unit = function(unit)
   return {
-    id = unit:getID(),
+    id = tonumber(unit:getID()),
     name = unit:getName(),
     callsign = unit:getCallsign(),
     coalition = unit:getCoalition(),
@@ -31,7 +31,7 @@ end
 
 GRPC.exporters.weapon = function(weapon)
   return {
-    name = tostring(weapon:getName()),
+    id = tonumber(weapon:getName()),
     type = weapon:getTypeName(),
     position = toLatLonPosition(weapon:getPoint()),
   }
@@ -52,7 +52,7 @@ GRPC.exporters.airbase = function(airbase)
   }
 
   if airbase:getUnit() then
-    a.id = airbase:getUnit():getID()
+    a.id = tonumber(airbase:getUnit():getID())
   end
 
   return a

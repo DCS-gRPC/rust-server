@@ -35,7 +35,7 @@ message Object {
 }
 
 message Unit {
-  string id = 1;
+  uint32 id = 1;
   string name = 2;
   string callsign = 3;
   Coalition coalition = 4;
@@ -45,9 +45,9 @@ message Unit {
 }
 
 message Weapon {
-	string name = 2;
-	string type = 5;
-	Position position = 6;
+	uint32 id = 1;
+	string type = 2;
+	Position position = 3;
 }
 
 message Static {
@@ -57,7 +57,7 @@ message Scenery {
 }
 
 message Airbase {
-  optional string id = 1;
+  optional uint32 id = 1;
   string name = 2;
   string callsign = 3;
   Coalition coalition = 4;

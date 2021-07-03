@@ -142,7 +142,7 @@ mod tests {
 	                "event": {
 		                "type": "markAdd",
 		                "initiator": {
-			                "id": "1",
+			                "id": 1,
 			                "name": "Aerial-1-1",
 			                "callsign": "Enfield11",
 			                "coalition": 2,
@@ -173,7 +173,7 @@ mod tests {
                 time: 4.2,
                 event: Some(event::Event::MarkAdd(event::MarkAddEvent {
                     initiator: Some(Unit {
-                        id: "1".to_string(),
+                        id: 1,
                         name: "Aerial-1-1".to_string(),
                         callsign: "Enfield11".to_string(),
                         r#type: "FA-18C_hornet".to_string(),

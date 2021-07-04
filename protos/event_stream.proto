@@ -8,10 +8,14 @@ message StreamEventsRequest {}
 
 message Event {
   message Target {
-    ObjectCategory category = 1;
     oneof target {
-      uint64 id = 2;
-      string name = 3;
+      Object object = 2;
+      Unit unit = 3;
+      Weapon weapon = 4;
+      Static static = 5;
+      Scenery scenery = 6;
+      Airbase airbase = 7;
+      Cargo cargo = 8;
     }
   }
 

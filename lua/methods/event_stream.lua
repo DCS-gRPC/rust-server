@@ -14,6 +14,31 @@ local function exporter(object)
   return object:getName()
 end
 
+local function typed_exporter(object)
+  local category = object:getCategory()
+  local grpcTable = {}
+
+  if(category == Object.Category.UNIT) then
+    grpcTable["unit"] = GRPC.exporters.unit(object)
+  elseif(category == Object.Category.WEAPON) then
+    grpcTable["weapon"] = GRPC.exporters.weapon(object)
+  elseif(category == Object.Category.STATIC) then
+    grpcTable["static"] = GRPC.exporters.static(object)
+  elseif(category == Object.Category.BASE) then
+    grpcTable["airbase"] = GRPC.exporters.airbase(object)
+  elseif(category == Object.Category.SCENERY) then
+    grpcTable["scenery"] = GRPC.exporters.scenery(object)
+  elseif(category == Object.Category.Cargo) then
+    grpcTable["cargo"] = GRPC.exporters.cargo(object)
+  else
+    env.info("[GRPC] Could not determine object category of object with ID: " .. object:getID() .. ", Category: " .. category)
+    grpcTable["object"] = GRPC.exporters.object(object)
+  end
+
+  return grpcTable
+
+end
+
 GRPC.onDcsEvent = function(event)
   if (event.id ~= world.event.S_EVENT_MISSION_START and event.id ~= world.event.S_EVENT_MISSION_END and event.id ~= world.event.S_EVENT_TOOK_CONTROL and event.id ~= world.event.S_EVENT_MARK_ADDED and event.id ~= world.event.S_EVENT_MARK_CHANGE and event.id ~= S_EVENT_MARK_REMOVED) and event.initiator == nil then
     env.info("[GRPC] Ignoring event (id: "..tostring(event.id)..") with missing initiator")
@@ -30,15 +55,8 @@ GRPC.onDcsEvent = function(event)
 
   elseif event.id == world.event.S_EVENT_HIT then
     if event.target ~= nil then
-      local target = {
-        -- minus one, because protobuf enums must start at zero
-        category = event.target:getCategory() - 1,
-      }
-      if target.category == 1 then -- weapon
-        target.id = event.target:getName()
-      else
-        target.name = event.target:getName()
-      end
+      local result = {}
+      result.target = typed_exporter(event.target)
 
       grpc.event({
         time = event.time,
@@ -46,7 +64,7 @@ GRPC.onDcsEvent = function(event)
           type = "hit",
           initiator = exporter(event.initiator),
           weapon = exporter(event.weapon),
-          target = target,
+          target = result,
         },
       })
     else

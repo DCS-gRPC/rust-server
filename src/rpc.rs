@@ -90,6 +90,14 @@ impl Mission for RPC {
         Ok(Response::new(res))
     }
 
+    async fn get_groups(
+        &self,
+        request: Request<GetGroupsRequest>,
+    ) -> Result<Response<GetGroupsResponse>, Status> {
+        let res: GetGroupsResponse = self.request("getGroups", request).await?;
+        Ok(Response::new(res))
+    }
+
     async fn request_mission_assignment(
         &self,
         request: Request<MissionAssignmentRequest>,

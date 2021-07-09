@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+import "common.proto";
+
+package dcs;
+
+message GetGroupsRequest {
+  Coalition coalition = 1;
+  optional GroupCategory category = 2;
+}
+
+message GetGroupsResponse {
+  repeated Group groups = 1;
+}

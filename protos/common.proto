@@ -18,6 +18,14 @@ enum AirbaseCategory {
   SHIP = 2;
 }
 
+enum GroupCategory {
+  GROUP_AIRPLANE = 0;
+  GROUP_HELICOPTER = 1;
+  GROUP_GROUND = 2;
+  GROUP_SHIP = 3;
+  GROUP_TRAIN = 4;
+}
+
 enum Coalition {
   NEUTRAL = 0;
   RED = 1;
@@ -42,6 +50,11 @@ message Unit {
   string type = 5;
   Position position = 6;
   optional string playerName = 7;
+}
+
+message Group {
+  uint32 id = 1;
+  string name = 2;
 }
 
 message Weapon {

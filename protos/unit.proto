@@ -20,3 +20,11 @@ message GetRadarResponse {
     Cargo cargo = 8;
   }
 }
+
+message GetUnitPositionRequest {
+  string name = 1;
+}
+
+message GetUnitPositionResponse {
+  Position position = 1;
+}

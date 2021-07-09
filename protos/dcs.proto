@@ -1,13 +1,14 @@
 syntax = "proto3";
 
 import "atmosphere.proto";
+import "coalitions.proto";
+import "common.proto";
+import "custom.proto";
 import "event_stream.proto";
+import "group.proto";
 import "trigger.proto";
 import "unit.proto";
 import "world.proto";
-import "custom.proto";
-import "common.proto";
-import "coalitions.proto";
 
 package dcs;
 
@@ -25,6 +26,9 @@ service Atmosphere {
 service Coalitions {
 	// https://wiki.hoggitworld.com/view/DCS_func_getPlayers
 	rpc GetPlayers(GetPlayersRequest) returns (GetPlayersResponse) {}
+
+	// https://wiki.hoggitworld.com/view/DCS_func_getGroups
+	rpc GetGroups(GetGroupsRequest) returns (GetGroupsResponse) {}
 }
 
 service Custom {
@@ -42,7 +46,7 @@ service Mission {
 
 	// Streams unit updates
 	// TODO https://github.com/DCS-gRPC/rust-server/issues/8
-	// Envisioned RPC Signature: 
+	// Envisioned RPC Signature:
 	// rpc StreamUnits(StreamUnitsRequest) returns (stream Unit) {}
 }
 
@@ -87,9 +91,17 @@ service Triggers {
 	rpc SignalFlare(SignalFlareRequest) returns (EmptyResponse) {}
 }
 
+service Groups {
+	// https://wiki.hoggitworld.com/view/DCS_func_getUnits
+	rpc GetUnits(GetUnitsRequest) returns (GetUnitsResponse) {}
+}
+
 service Units {
 	// https://wiki.hoggitworld.com/view/DCS_func_getRadar
 	rpc GetRadar(GetRadarRequest) returns (GetRadarResponse) {}
+
+	// https://wiki.hoggitworld.com/view/DCS_func_getPoint
+	rpc GetPosition(GetUnitPositionRequest) returns (GetUnitPositionResponse) {}
 }
 
 service World {

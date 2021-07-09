@@ -4,6 +4,7 @@ use crate::shutdown::{AbortableStream, ShutdownHandle};
 use dcs::atmosphere_server::Atmosphere;
 use dcs::coalitions_server::Coalitions;
 use dcs::custom_server::Custom;
+use dcs::groups_server::Groups;
 use dcs::mission_server::Mission;
 use dcs::triggers_server::Triggers;
 use dcs::units_server::Units;
@@ -231,6 +232,25 @@ impl Coalitions for RPC {
         let res: GetPlayersResponse = self.request("getPlayers", request).await?;
         Ok(Response::new(res))
     }
+
+    async fn get_groups(
+        &self,
+        request: Request<GetGroupsRequest>,
+    ) -> Result<Response<GetGroupsResponse>, Status> {
+        let res: GetGroupsResponse = self.request("getGroups", request).await?;
+        Ok(Response::new(res))
+    }
+}
+
+#[tonic::async_trait]
+impl Groups for RPC {
+    async fn get_units(
+        &self,
+        request: Request<GetUnitsRequest>,
+    ) -> Result<Response<GetUnitsResponse>, Status> {
+        let res: GetUnitsResponse = self.request("getUnits", request).await?;
+        Ok(Response::new(res))
+    }
 }
 
 #[tonic::async_trait]
@@ -240,6 +260,14 @@ impl Units for RPC {
         request: Request<GetRadarRequest>,
     ) -> Result<Response<GetRadarResponse>, Status> {
         let res: GetRadarResponse = self.request("getRadar", request).await?;
+        Ok(Response::new(res))
+    }
+
+    async fn get_position(
+        &self,
+        request: Request<GetUnitPositionRequest>,
+    ) -> Result<Response<GetUnitPositionResponse>, Status> {
+        let res: GetUnitPositionResponse = self.request("getUnitPosition", request).await?;
         Ok(Response::new(res))
     }
 }

@@ -20,6 +20,15 @@ GRPC.exporters.unit = function(unit)
   }
 end
 
+GRPC.exporters.group = function(group)
+  return {
+    id = tonumber(group:getID()),
+    name = group:getName(),
+    coalition = group:getCoalition(),
+    category = group:getCategory(),
+  }
+end
+
 GRPC.exporters.weapon = function(weapon)
   return {
     id = tonumber(weapon:getName()),

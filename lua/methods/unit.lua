@@ -46,3 +46,16 @@ GRPC.methods.getRadar = function(params)
     target = grpcTable
   })
 end
+
+GRPC.methods.getUnitPosition = function(params)
+  -- https://wiki.hoggitworld.com/view/DCS_func_getByName
+  local unit = Unit.getByName(params.name)
+  if unit == nil then
+    return GRPC.errorNotFound("unit does not exist")
+  end
+
+  return GRPC.success({
+    -- https://wiki.hoggitworld.com/view/DCS_func_getPoint
+    position = GRPC.toLatLonPosition(unit:getPoint()),
+  })
+end

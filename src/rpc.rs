@@ -1,7 +1,11 @@
 use std::pin::Pin;
 
 use crate::shutdown::{AbortableStream, ShutdownHandle};
+use dcs::coalitions_server::Coalitions;
+use dcs::custom_server::Custom;
 use dcs::mission_server::Mission;
+use dcs::triggers_server::Triggers;
+use dcs::units_server::Units;
 use dcs::*;
 use dcs_module_ipc::IPC;
 use futures_util::{Stream, StreamExt};
@@ -11,6 +15,7 @@ pub mod dcs {
     tonic::include_proto!("dcs");
 }
 
+#[derive(Clone)]
 pub struct RPC {
     ipc: IPC<Event>,
     shutdown_signal: ShutdownHandle,
@@ -51,6 +56,18 @@ impl Mission for RPC {
     type StreamEventsStream =
         Pin<Box<dyn Stream<Item = Result<Event, tonic::Status>> + Send + Sync + 'static>>;
 
+    async fn stream_events(
+        &self,
+        _request: Request<StreamEventsRequest>,
+    ) -> Result<Response<Self::StreamEventsStream>, Status> {
+        let events = self.ipc.events().await;
+        let stream = AbortableStream::new(self.shutdown_signal.signal(), events.map(Ok));
+        Ok(Response::new(Box::pin(stream)))
+    }
+}
+
+#[tonic::async_trait]
+impl Triggers for RPC {
     async fn out_text(
         &self,
         request: Request<OutTextRequest>,
@@ -74,15 +91,10 @@ impl Mission for RPC {
         self.notification("setUserFlag", request).await?;
         Ok(Response::new(SetUserFlagResponse {}))
     }
+}
 
-    async fn get_radar(
-        &self,
-        request: Request<GetRadarRequest>,
-    ) -> Result<Response<GetRadarResponse>, Status> {
-        let res: GetRadarResponse = self.request("getRadar", request).await?;
-        Ok(Response::new(res))
-    }
-
+#[tonic::async_trait]
+impl Coalitions for RPC {
     async fn get_airbases(
         &self,
         request: Request<GetAirbasesRequest>,
@@ -90,7 +102,21 @@ impl Mission for RPC {
         let res: GetAirbasesResponse = self.request("getAirbases", request).await?;
         Ok(Response::new(res))
     }
+}
 
+#[tonic::async_trait]
+impl Units for RPC {
+    async fn get_radar(
+        &self,
+        request: Request<GetRadarRequest>,
+    ) -> Result<Response<GetRadarResponse>, Status> {
+        let res: GetRadarResponse = self.request("getRadar", request).await?;
+        Ok(Response::new(res))
+    }
+}
+
+#[tonic::async_trait]
+impl Custom for RPC {
     async fn request_mission_assignment(
         &self,
         request: Request<MissionAssignmentRequest>,
@@ -106,15 +132,6 @@ impl Mission for RPC {
     ) -> Result<Response<MissionJoinResponse>, Status> {
         self.notification("joinMission", request).await?;
         Ok(Response::new(MissionJoinResponse {}))
-    }
-
-    async fn stream_events(
-        &self,
-        _request: Request<StreamEventsRequest>,
-    ) -> Result<Response<Self::StreamEventsStream>, Status> {
-        let events = self.ipc.events().await;
-        let stream = AbortableStream::new(self.shutdown_signal.signal(), events.map(Ok));
-        Ok(Response::new(Box::pin(stream)))
     }
 }
 

@@ -7,18 +7,6 @@ package dcs;
 message StreamEventsRequest {}
 
 message Event {
-  message Target {
-    oneof target {
-      Object object = 2;
-      Unit unit = 3;
-      Weapon weapon = 4;
-      Static static = 5;
-      Scenery scenery = 6;
-      Airbase airbase = 7;
-      Cargo cargo = 8;
-    }
-  }
-
   // Occurs when a unit fires a weapon (but no machine gun- or autocannon-based
   // weapons - those are handled by [ShootingStartEvent]).
   message ShotEvent {

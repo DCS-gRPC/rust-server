@@ -106,6 +106,14 @@ impl Mission for RPC {
         Ok(Response::new(res))
     }
 
+    async fn get_unit_position(
+        &self,
+        request: Request<GetUnitPositionRequest>,
+    ) -> Result<Response<GetUnitPositionResponse>, Status> {
+        let res: GetUnitPositionResponse = self.request("getUnitPosition", request).await?;
+        Ok(Response::new(res))
+    }
+
     async fn request_mission_assignment(
         &self,
         request: Request<MissionAssignmentRequest>,
@@ -211,11 +219,6 @@ mod tests {
                         callsign: "Enfield11".to_string(),
                         r#type: "FA-18C_hornet".to_string(),
                         coalition: Coalition::Blue.into(),
-                        position: Some(Position {
-                            lat: 3.0,
-                            lon: 2.0,
-                            alt: 1.0
-                        }),
                         player_name: Some("New callsign".to_string())
                     }),
                     visibility: Some(event::mark_add_event::Visibility::Coalition(

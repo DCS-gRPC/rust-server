@@ -48,8 +48,7 @@ message Unit {
   string callsign = 3;
   Coalition coalition = 4;
   string type = 5;
-  Position position = 6;
-  optional string playerName = 7;
+  optional string playerName = 6;
 }
 
 message Group {

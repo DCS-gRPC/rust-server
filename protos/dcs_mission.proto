@@ -32,6 +32,9 @@ service Mission {
   // https://wiki.hoggitworld.com/view/DCS_func_getUnits
   rpc GetUnits(GetUnitsRequest) returns (GetUnitsResponse) {}
 
+  // https://wiki.hoggitworld.com/view/DCS_func_getPoint
+  rpc GetUnitPosition(GetUnitPositionRequest) returns (GetUnitPositionResponse) {}
+
   // DCT Function
   rpc RequestMissionAssignment(MissionAssignmentRequest) returns (MissionAssignmentResponse) {}
 

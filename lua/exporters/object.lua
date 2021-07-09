@@ -17,6 +17,8 @@ local function toLatLonPosition(pos)
   }
 end
 
+GRPC.exporters.position = toLatLonPosition
+
 GRPC.exporters.unit = function(unit)
   return {
     id = tonumber(unit:getID()),
@@ -24,7 +26,6 @@ GRPC.exporters.unit = function(unit)
     callsign = unit:getCallsign(),
     coalition = unit:getCoalition(),
     type = unit:getTypeName(),
-    position = toLatLonPosition(unit:getPoint()),
     playerName = unit:getPlayerName()
   }
 end

@@ -7,6 +7,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .field_attribute("dcs.Event.MarkChangeEvent.visibility", "#[serde(flatten)]")
         .field_attribute("dcs.Event.MarkRemoveEvent.visibility", "#[serde(flatten)]")
         .build_server(true)
-        .compile(&["protos/dcs_mission.proto"], &["protos"])?;
+        .compile(&["protos/dcs.proto"], &["protos"])?;
     Ok(())
 }

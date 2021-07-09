@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+import "event_stream.proto";
+import "trigger.proto";
+import "unit.proto";
+import "world.proto";
+import "custom.proto";
+
+package dcs;
+
+service Coalitions {
+	// https://wiki.hoggitworld.com/view/DCS_func_getAirbases
+	rpc GetAirbases(GetAirbasesRequest) returns (GetAirbasesResponse) {}
+}
+
+service Custom {
+	// DCT Function
+	rpc RequestMissionAssignment(MissionAssignmentRequest) returns (MissionAssignmentResponse) {}
+
+	// DCT Function
+	rpc JoinMission(MissionJoinRequest) returns (MissionJoinResponse) {}
+}
+
+service Mission {
+	// Streams DCS game generated Events.
+	// See https://wiki.hoggitworld.com/view/Category:Events
+	rpc StreamEvents(StreamEventsRequest) returns (stream Event) {}
+
+	// Streams unit updates
+	// TODO https://github.com/DCS-gRPC/rust-server/issues/8
+	// Envisioned RPC Signature: 
+	// rpc StreamUnits(StreamUnitsRequest) returns (stream Unit) {}
+}
+
+service Triggers {
+	// https://wiki.hoggitworld.com/view/DCS_func_outText
+	rpc OutText(OutTextRequest) returns (OutTextResponse) {}
+
+	// https://wiki.hoggitworld.com/view/DCS_func_getUserFlag
+	rpc GetUserFlag(GetUserFlagRequest) returns (GetUserFlagResponse) {}
+
+	// https://wiki.hoggitworld.com/view/DCS_func_setUserFlag
+	rpc SetUserFlag(SetUserFlagRequest) returns (SetUserFlagResponse) {}
+}
+
+service Units {
+	// https://wiki.hoggitworld.com/view/DCS_func_getRadar
+	rpc GetRadar(GetRadarRequest) returns (GetRadarResponse) {}
+}

@@ -98,6 +98,14 @@ impl Mission for RPC {
         Ok(Response::new(res))
     }
 
+    async fn get_units(
+        &self,
+        request: Request<GetUnitsRequest>,
+    ) -> Result<Response<GetUnitsResponse>, Status> {
+        let res: GetUnitsResponse = self.request("getUnits", request).await?;
+        Ok(Response::new(res))
+    }
+
     async fn request_mission_assignment(
         &self,
         request: Request<MissionAssignmentRequest>,

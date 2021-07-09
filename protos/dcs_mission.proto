@@ -1,10 +1,12 @@
 syntax = "proto3";
 
+import "coalition.proto";
+import "custom.proto";
 import "event_stream.proto";
+import "group.proto";
 import "trigger.proto";
 import "unit.proto";
 import "world.proto";
-import "custom.proto";
 
 package dcs;
 
@@ -23,6 +25,15 @@ service Mission {
 
   // https://wiki.hoggitworld.com/view/DCS_func_getAirbases
   rpc GetAirbases(GetAirbasesRequest) returns (GetAirbasesResponse) {}
+
+  // https://wiki.hoggitworld.com/view/DCS_func_getGroups
+  rpc GetGroups(GetGroupsRequest) returns (GetGroupsResponse) {}
+
+  // https://wiki.hoggitworld.com/view/DCS_func_getUnits
+  rpc GetUnits(GetUnitsRequest) returns (GetUnitsResponse) {}
+
+  // https://wiki.hoggitworld.com/view/DCS_func_getPoint
+  rpc GetUnitPosition(GetUnitPositionRequest) returns (GetUnitPositionResponse) {}
 
   // DCT Function
   rpc RequestMissionAssignment(MissionAssignmentRequest) returns (MissionAssignmentResponse) {}

@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+import "common.proto";
+
+package dcs;
+
+message GetUnitsRequest {
+  string group_name = 2;
+}
+
+message GetUnitsResponse {
+  repeated Unit units = 1;
+}

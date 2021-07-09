@@ -78,11 +78,13 @@ end
 --
 
 GRPC.methods = {}
+dofile(GRPC.basePath .. [[methods\coalition.lua]])
+dofile(GRPC.basePath .. [[methods\custom.lua]])
+dofile(GRPC.basePath .. [[methods\event_stream.lua]])
+dofile(GRPC.basePath .. [[methods\group.lua]])
 dofile(GRPC.basePath .. [[methods\trigger.lua]])
 dofile(GRPC.basePath .. [[methods\unit.lua]])
 dofile(GRPC.basePath .. [[methods\world.lua]])
-dofile(GRPC.basePath .. [[methods\custom.lua]])
-dofile(GRPC.basePath .. [[methods\event_stream.lua]])
 
 --
 -- RPC request handler

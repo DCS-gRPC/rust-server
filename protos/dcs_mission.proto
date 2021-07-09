@@ -29,6 +29,15 @@ service Mission {
 
   // DCT Function
   rpc JoinMission(MissionJoinRequest) returns (MissionJoinResponse) {}
+}
 
-  rpc StreamEvents(StreamEventsRequest) returns (stream Event) {}
+service Streamer {
+	// Streams DCS game generated Events.
+	// See https://wiki.hoggitworld.com/view/Category:Events
+	rpc Events(StreamEventsRequest) returns (stream Event) {}
+
+	// Streams unit updates
+	// TODO https://github.com/DCS-gRPC/rust-server/issues/8
+	// Envisioned RPC Signature: 
+	// rpc Units(StreamUnitsRequest) returns (stream Unit) {}
 }

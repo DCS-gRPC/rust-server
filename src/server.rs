@@ -1,12 +1,15 @@
 use std::time::Duration;
 
-use crate::rpc::dcs::Event;
+use crate::rpc::dcs;
 use crate::rpc::RPC;
+use dcs::mission_server::MissionServer;
+use dcs::streamer_server::StreamerServer;
+use dcs::*;
 use dcs_module_ipc::IPC;
 use futures::FutureExt;
 use tokio::sync::oneshot::Receiver;
 use tokio::time::sleep;
-use tonic::transport;
+use tonic::transport::{self, Server};
 
 pub async fn run(ipc: IPC<Event>, mut shutdown_signal: Receiver<()>) {
     loop {
@@ -22,13 +25,19 @@ pub async fn run(ipc: IPC<Event>, mut shutdown_signal: Receiver<()>) {
 }
 
 async fn try_run(
-    ipc: IPC<Event>,
+    ipc_event: IPC<Event>,
     shutdown_signal: &mut Receiver<()>,
 ) -> Result<(), transport::Error> {
     log::info!("Staring gRPC Server ...");
 
     let addr = "0.0.0.0:50051".parse().unwrap();
-    RPC::builder(ipc)
+    Server::builder()
+        .add_service(MissionServer::new(RPC {
+            ipc: ipc_event.clone(),
+        }))
+        .add_service(StreamerServer::new(RPC {
+            ipc: ipc_event.clone(),
+        }))
         .serve_with_shutdown(addr, shutdown_signal.map(|_| ()))
         .await?;
 

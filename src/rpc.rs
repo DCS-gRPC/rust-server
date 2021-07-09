@@ -1,11 +1,10 @@
 use std::pin::Pin;
 
-use dcs::mission_server::{Mission, MissionServer};
+use dcs::mission_server::Mission;
+use dcs::streamer_server::Streamer;
 use dcs::*;
 use dcs_module_ipc::IPC;
 use futures::{Stream, StreamExt};
-use tonic::transport::server::Router;
-use tonic::transport::{self, Server};
 use tonic::{Request, Response, Status};
 
 pub mod dcs {
@@ -13,16 +12,10 @@ pub mod dcs {
 }
 
 pub struct RPC {
-    ipc: IPC<Event>,
+    pub ipc: IPC<Event>,
 }
 
 impl RPC {
-    pub fn builder(
-        ipc: IPC<Event>,
-    ) -> Router<MissionServer<RPC>, transport::server::Unimplemented> {
-        Server::builder().add_service(MissionServer::new(RPC { ipc }))
-    }
-
     pub async fn request<I, O>(&self, method: &str, request: Request<I>) -> Result<O, Status>
     where
         I: serde::Serialize + Send + Sync + 'static,
@@ -46,10 +39,22 @@ impl RPC {
 }
 
 #[tonic::async_trait]
-impl Mission for RPC {
-    type StreamEventsStream =
+impl Streamer for RPC {
+    type EventsStream =
         Pin<Box<dyn Stream<Item = Result<Event, tonic::Status>> + Send + Sync + 'static>>;
 
+    async fn events(
+        &self,
+        _request: Request<StreamEventsRequest>,
+    ) -> Result<Response<Self::EventsStream>, Status> {
+        Ok(Response::new(Box::pin(
+            self.ipc.events().await.map(|e| Ok(e)),
+        )))
+    }
+}
+
+#[tonic::async_trait]
+impl Mission for RPC {
     async fn out_text(
         &self,
         request: Request<OutTextRequest>,
@@ -105,15 +110,6 @@ impl Mission for RPC {
     ) -> Result<Response<MissionJoinResponse>, Status> {
         self.notification("joinMission", request).await?;
         Ok(Response::new(MissionJoinResponse {}))
-    }
-
-    async fn stream_events(
-        &self,
-        _request: Request<StreamEventsRequest>,
-    ) -> Result<Response<Self::StreamEventsStream>, Status> {
-        Ok(Response::new(Box::pin(
-            self.ipc.events().await.map(|e| Ok(e)),
-        )))
     }
 }
 

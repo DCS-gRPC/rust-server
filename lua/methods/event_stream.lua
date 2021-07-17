@@ -169,7 +169,7 @@ GRPC.onDcsEvent = function(event)
     })
 
     grpc.stop()
-    stopped = true
+    GRPC.stopped = true
 
   -- unimplemented: S_EVENT_TOOK_CONTROL
 

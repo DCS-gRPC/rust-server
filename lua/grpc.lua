@@ -6,7 +6,7 @@ env.info("[GRPC] loading ...")
 package.loaded["dcs_grpc_server"] = nil
 grpc = require "dcs_grpc_server"
 grpc.start()
-local stopped = false
+GRPC.stopped = false
 
 --
 -- Export methods
@@ -121,7 +121,7 @@ local function next()
 end
 
 timer.scheduleFunction(function()
-  if not stopped then
+  if not GRPC.stopped then
     local ok, err = pcall(next)
     if not ok then
       env.error("[GRPC] Error retrieving next command: "..tostring(err))
@@ -142,7 +142,7 @@ end
 
 local eventHandler = {}
 function eventHandler:onEvent(event)
-  if not stopped then
+  if not GRPC.stopped then
     local ok, err = pcall(GRPC.onDcsEvent, event)
     if not ok then
       env.error("[GRPC] Error in event handler: "..tostring(err))

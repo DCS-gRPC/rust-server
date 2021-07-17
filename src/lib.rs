@@ -3,11 +3,13 @@
 
 mod rpc;
 mod server;
+mod shutdown;
 
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, RwLock};
 use std::time::Duration;
 
+use crate::shutdown::Shutdown;
 use dcs_module_ipc::IPC;
 use mlua::{prelude::*, LuaSerdeExt};
 use mlua::{Function, Value};
@@ -23,7 +25,8 @@ static SERVER: Lazy<RwLock<Option<Server>>> = Lazy::new(|| RwLock::new(None));
 struct Server {
     ipc: IPC<Event>,
     runtime: Runtime,
-    shutdown_signal: oneshot::Sender<()>,
+    shutdown: Shutdown,
+    after_shutdown: oneshot::Sender<()>,
 }
 
 pub fn init(lua: &Lua) -> LuaResult<String> {
@@ -79,16 +82,18 @@ fn start(lua: &Lua, (): ()) -> LuaResult<()> {
 
     let ipc = IPC::new();
     let (tx, rx) = oneshot::channel();
+    let shutdown = Shutdown::new();
 
     // Spawn an executor thread that waits for the shutdown signal
     let runtime = Runtime::new()?;
-    runtime.spawn(crate::server::run(ipc.clone(), rx));
+    runtime.spawn(crate::server::run(ipc.clone(), shutdown.handle(), rx));
 
     let mut server = SERVER.write().unwrap();
     *server = Some(Server {
         ipc,
         runtime,
-        shutdown_signal: tx,
+        shutdown,
+        after_shutdown: tx,
     });
 
     log::info!("Started");
@@ -101,11 +106,17 @@ fn stop(_: &Lua, _: ()) -> LuaResult<()> {
 
     if let Some(Server {
         runtime,
-        shutdown_signal,
+        shutdown,
+        after_shutdown,
         ..
     }) = SERVER.write().unwrap().take()
     {
-        let _ = shutdown_signal.send(());
+        // graceful shutdown
+        runtime.block_on(shutdown.shutdown());
+        let _ = after_shutdown.send(());
+
+        // shutdown the async runtime, again give everything another 5 secs before forecefully
+        // killing everything
         runtime.shutdown_timeout(Duration::from_secs(5));
     }
 

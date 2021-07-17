@@ -1,11 +1,10 @@
 use std::pin::Pin;
 
-use dcs::mission_server::{Mission, MissionServer};
+use crate::shutdown::{AbortableStream, ShutdownHandle};
+use dcs::mission_server::Mission;
 use dcs::*;
 use dcs_module_ipc::IPC;
-use futures::{Stream, StreamExt};
-use tonic::transport::server::Router;
-use tonic::transport::{self, Server};
+use futures_util::{Stream, StreamExt};
 use tonic::{Request, Response, Status};
 
 pub mod dcs {
@@ -14,13 +13,15 @@ pub mod dcs {
 
 pub struct RPC {
     ipc: IPC<Event>,
+    shutdown_signal: ShutdownHandle,
 }
 
 impl RPC {
-    pub fn builder(
-        ipc: IPC<Event>,
-    ) -> Router<MissionServer<RPC>, transport::server::Unimplemented> {
-        Server::builder().add_service(MissionServer::new(RPC { ipc }))
+    pub fn new(ipc: IPC<Event>, shutdown_signal: ShutdownHandle) -> Self {
+        RPC {
+            ipc,
+            shutdown_signal,
+        }
     }
 
     pub async fn request<I, O>(&self, method: &str, request: Request<I>) -> Result<O, Status>
@@ -111,9 +112,9 @@ impl Mission for RPC {
         &self,
         _request: Request<StreamEventsRequest>,
     ) -> Result<Response<Self::StreamEventsStream>, Status> {
-        Ok(Response::new(Box::pin(
-            self.ipc.events().await.map(|e| Ok(e)),
-        )))
+        let events = self.ipc.events().await;
+        let stream = AbortableStream::new(self.shutdown_signal.signal(), events.map(Ok));
+        Ok(Response::new(Box::pin(stream)))
     }
 }
 

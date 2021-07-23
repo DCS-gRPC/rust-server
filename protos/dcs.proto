@@ -1,5 +1,6 @@
 syntax = "proto3";
 
+import "atmosphere.proto";
 import "event_stream.proto";
 import "trigger.proto";
 import "unit.proto";
@@ -9,6 +10,17 @@ import "common.proto";
 import "coalitions.proto";
 
 package dcs;
+
+service Atmosphere {
+	// https://wiki.hoggitworld.com/view/DCS_func_getWind
+	rpc GetWind(AtmosphereRequest) returns (GetWindResponse) {}
+
+	// https://wiki.hoggitworld.com/view/DCS_func_getWindWithTurbulence
+	rpc GetWindWithTurbulence(AtmosphereRequest) returns (GetWindResponse) {}
+
+	// https://wiki.hoggitworld.com/view/DCS_func_getWindWithTurbulence
+	rpc GetTemperatureAndPressure(AtmosphereRequest) returns (GetTemperatureAndPressureResponse) {}
+}
 
 service Coalitions {
 	// https://wiki.hoggitworld.com/view/DCS_func_getPlayers

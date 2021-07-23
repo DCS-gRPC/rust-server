@@ -6,6 +6,7 @@ use dcs::custom_server::Custom;
 use dcs::mission_server::Mission;
 use dcs::triggers_server::Triggers;
 use dcs::units_server::Units;
+use dcs::world_server::World;
 use dcs::*;
 use dcs_module_ipc::IPC;
 use futures_util::{Stream, StreamExt};
@@ -94,12 +95,23 @@ impl Triggers for RPC {
 }
 
 #[tonic::async_trait]
-impl Coalitions for RPC {
+impl World for RPC {
     async fn get_airbases(
         &self,
         request: Request<GetAirbasesRequest>,
     ) -> Result<Response<GetAirbasesResponse>, Status> {
         let res: GetAirbasesResponse = self.request("getAirbases", request).await?;
+        Ok(Response::new(res))
+    }
+}
+
+#[tonic::async_trait]
+impl Coalitions for RPC {
+    async fn get_players(
+        &self,
+        request: Request<GetPlayersRequest>,
+    ) -> Result<Response<GetPlayersResponse>, Status> {
+        let res: GetPlayersResponse = self.request("getPlayers", request).await?;
         Ok(Response::new(res))
     }
 }

@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+import "common.proto";
+
+package dcs;
+
+message GetPlayersRequest {
+	Coalition coalition = 1;
+}
+
+message GetPlayersResponse {
+	repeated Unit units = 1;
+}

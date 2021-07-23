@@ -5,12 +5,14 @@ import "trigger.proto";
 import "unit.proto";
 import "world.proto";
 import "custom.proto";
+import "common.proto";
+import "coalitions.proto";
 
 package dcs;
 
 service Coalitions {
-	// https://wiki.hoggitworld.com/view/DCS_func_getAirbases
-	rpc GetAirbases(GetAirbasesRequest) returns (GetAirbasesResponse) {}
+	// https://wiki.hoggitworld.com/view/DCS_func_getPlayers
+	rpc GetPlayers(GetPlayersRequest) returns (GetPlayersResponse) {}
 }
 
 service Custom {
@@ -46,4 +48,9 @@ service Triggers {
 service Units {
 	// https://wiki.hoggitworld.com/view/DCS_func_getRadar
 	rpc GetRadar(GetRadarRequest) returns (GetRadarResponse) {}
+}
+
+service World {
+	// https://wiki.hoggitworld.com/view/DCS_func_getAirbases
+	rpc GetAirbases(GetAirbasesRequest) returns (GetAirbasesResponse) {}
 }

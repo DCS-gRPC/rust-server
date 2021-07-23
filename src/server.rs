@@ -8,6 +8,7 @@ use dcs::custom_server::CustomServer;
 use dcs::mission_server::MissionServer;
 use dcs::triggers_server::TriggersServer;
 use dcs::units_server::UnitsServer;
+use dcs::world_server::WorldServer;
 use dcs::*;
 use dcs_module_ipc::IPC;
 use futures_util::FutureExt;
@@ -46,7 +47,8 @@ async fn try_run(
         .add_service(CustomServer::new(rpc.clone()))
         .add_service(MissionServer::new(rpc.clone()))
         .add_service(TriggersServer::new(rpc.clone()))
-        .add_service(UnitsServer::new(rpc))
+        .add_service(UnitsServer::new(rpc.clone()))
+        .add_service(WorldServer::new(rpc))
         .serve_with_shutdown(addr, after_shutdown.map(|_| ()))
         .await?;
 

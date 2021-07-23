@@ -78,6 +78,7 @@ end
 --
 
 GRPC.methods = {}
+dofile(GRPC.basePath .. [[methods\coalitions.lua]])
 dofile(GRPC.basePath .. [[methods\trigger.lua]])
 dofile(GRPC.basePath .. [[methods\unit.lua]])
 dofile(GRPC.basePath .. [[methods\world.lua]])

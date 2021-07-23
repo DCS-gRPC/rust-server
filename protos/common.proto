@@ -24,6 +24,8 @@ enum Coalition {
   BLUE = 2;
 }
 
+message EmptyResponse {}
+
 message Position {
   double lat = 1;
   double lon = 2;
@@ -31,8 +33,7 @@ message Position {
 }
 
 // Returned if a sub-type listed below cannot be found
-message Object {
-}
+message Object {}
 
 message Unit {
   uint32 id = 1;

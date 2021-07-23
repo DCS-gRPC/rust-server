@@ -72,9 +72,9 @@ impl Triggers for RPC {
     async fn out_text(
         &self,
         request: Request<OutTextRequest>,
-    ) -> Result<Response<OutTextResponse>, Status> {
+    ) -> Result<Response<EmptyResponse>, Status> {
         self.notification("outText", request).await?;
-        Ok(Response::new(OutTextResponse {}))
+        Ok(Response::new(EmptyResponse {}))
     }
 
     async fn get_user_flag(
@@ -88,9 +88,41 @@ impl Triggers for RPC {
     async fn set_user_flag(
         &self,
         request: Request<SetUserFlagRequest>,
-    ) -> Result<Response<SetUserFlagResponse>, Status> {
+    ) -> Result<Response<EmptyResponse>, Status> {
         self.notification("setUserFlag", request).await?;
-        Ok(Response::new(SetUserFlagResponse {}))
+        Ok(Response::new(EmptyResponse {}))
+    }
+
+    async fn mark_to_all(
+        &self,
+        request: Request<MarkToAllRequest>,
+    ) -> Result<Response<EmptyResponse>, Status> {
+        self.notification("markToAll", request).await?;
+        Ok(Response::new(EmptyResponse {}))
+    }
+
+    async fn mark_to_coalition(
+        &self,
+        request: Request<MarkToCoalitionRequest>,
+    ) -> Result<Response<EmptyResponse>, Status> {
+        self.notification("markToCoalition", request).await?;
+        Ok(Response::new(EmptyResponse {}))
+    }
+
+    async fn mark_to_group(
+        &self,
+        request: Request<MarkToGroupRequest>,
+    ) -> Result<Response<EmptyResponse>, Status> {
+        self.notification("markToGroup", request).await?;
+        Ok(Response::new(EmptyResponse {}))
+    }
+
+    async fn remove_mark(
+        &self,
+        request: Request<RemoveMarkRequest>,
+    ) -> Result<Response<EmptyResponse>, Status> {
+        self.notification("removeMark", request).await?;
+        Ok(Response::new(EmptyResponse {}))
     }
 }
 

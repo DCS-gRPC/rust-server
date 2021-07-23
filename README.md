@@ -54,13 +54,13 @@ dofile(GRPC.basePath .. [[grpc.lua]])
 Test the running server via [grpcurl](https://github.com/fullstorydev/grpcurl): (Remove the `.exe` when running on Linux)
 
 ```bash
-grpcurl.exe -plaintext -import-path ./protos -proto ./protos/dcs_mission.proto -d '{\"text\": \"Works!\", \"display_time\": 10, \"clear_view\": false}' 127.0.0.1:50051 dcs.Triggers/OutText
+grpcurl.exe -plaintext -import-path ./protos -proto ./protos/dcs.proto -d '{\"text\": \"Works!\", \"display_time\": 10, \"clear_view\": false}' 127.0.0.1:50051 dcs.Triggers/OutText
 ```
 
 or watch the mission event stream via:
 
 ```bash
-grpcurl.exe -plaintext -import-path ./protos -proto ./protos/dcs_mission.proto -d '{}' 127.0.0.1:50051 dcs.Mission/StreamEvents
+grpcurl.exe -plaintext -import-path ./protos -proto ./protos/dcs.proto -d '{}' 127.0.0.1:50051 dcs.Mission/StreamEvents
 ```
 
 ### Troublshooting

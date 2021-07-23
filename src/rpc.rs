@@ -1,6 +1,7 @@
 use std::pin::Pin;
 
 use crate::shutdown::{AbortableStream, ShutdownHandle};
+use dcs::atmosphere_server::Atmosphere;
 use dcs::coalitions_server::Coalitions;
 use dcs::custom_server::Custom;
 use dcs::mission_server::Mission;
@@ -123,6 +124,34 @@ impl Triggers for RPC {
     ) -> Result<Response<EmptyResponse>, Status> {
         self.notification("removeMark", request).await?;
         Ok(Response::new(EmptyResponse {}))
+    }
+}
+
+#[tonic::async_trait]
+impl Atmosphere for RPC {
+    async fn get_wind(
+        &self,
+        request: Request<AtmosphereRequest>,
+    ) -> Result<Response<GetWindResponse>, Status> {
+        let res: GetWindResponse = self.request("getWind", request).await?;
+        Ok(Response::new(res))
+    }
+
+    async fn get_wind_with_turbulence(
+        &self,
+        request: Request<AtmosphereRequest>,
+    ) -> Result<Response<GetWindResponse>, Status> {
+        let res: GetWindResponse = self.request("getWindWithTurbulence", request).await?;
+        Ok(Response::new(res))
+    }
+
+    async fn get_temperature_and_pressure(
+        &self,
+        request: Request<AtmosphereRequest>,
+    ) -> Result<Response<GetTemperatureAndPressureResponse>, Status> {
+        let res: GetTemperatureAndPressureResponse =
+            self.request("getTemperatureAndPressure", request).await?;
+        Ok(Response::new(res))
     }
 }
 

@@ -3,6 +3,7 @@ use std::time::Duration;
 use crate::rpc::dcs;
 use crate::rpc::RPC;
 use crate::shutdown::ShutdownHandle;
+use dcs::atmosphere_server::AtmosphereServer;
 use dcs::coalitions_server::CoalitionsServer;
 use dcs::custom_server::CustomServer;
 use dcs::mission_server::MissionServer;
@@ -43,6 +44,7 @@ async fn try_run(
     let addr = "0.0.0.0:50051".parse().unwrap();
     let rpc = RPC::new(ipc, shutdown_signal.clone());
     Server::builder()
+        .add_service(AtmosphereServer::new(rpc.clone()))
         .add_service(CoalitionsServer::new(rpc.clone()))
         .add_service(CustomServer::new(rpc.clone()))
         .add_service(MissionServer::new(rpc.clone()))

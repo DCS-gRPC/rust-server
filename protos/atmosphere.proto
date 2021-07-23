@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+import "common.proto";
+
+package dcs;
+
+message AtmosphereRequest {
+	Position position = 1;
+}
+
+message GetWindResponse {
+	float heading = 1;
+	float strength = 2;
+}
+
+message GetTemperatureAndPressureResponse {
+	float temperature = 1;
+	float pressure = 2;
+}

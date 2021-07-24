@@ -69,3 +69,23 @@ end
 GRPC.exporters.object = function(object)
   return {}
 end
+
+GRPC.exporters.markPanel = function(markPanel)
+  local mp = {
+    id = markPanel.idx, 
+    time = markPanel.time,
+    initiator = GRPC.exporters.unit(markPanel.initiator),
+    text = markPanel.text,
+    position = toLatLonPosition(markPanel.pos)
+  }
+
+  if (markPanel.coalition >= 0 and markPanel.coalition <= 2) then
+  	mp["coalition"] = markPanel.coalition;
+  end
+
+  if (markPanel.groupID > 0) then
+  	mp["groupId"] = markPanel.groupID;
+  end
+
+  return mp
+end

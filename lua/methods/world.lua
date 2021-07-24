@@ -27,3 +27,15 @@ GRPC.methods.getAirbases = function(params)
   end
   return GRPC.success({airbases = result})
 end
+
+GRPC.methods.getMarkPanels = function(params)
+  markPanels = world.getMarkPanels()
+
+  local result = {}
+
+  for i, markPanel in ipairs(markPanels) do
+    result[i] = GRPC.exporters.markPanel(markPanel)
+  end
+
+  return GRPC.success({markPanels = result})
+end

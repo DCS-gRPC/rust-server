@@ -212,6 +212,14 @@ impl World for RPC {
         let res: GetAirbasesResponse = self.request("getAirbases", request).await?;
         Ok(Response::new(res))
     }
+
+    async fn get_mark_panels(
+        &self,
+        request: Request<GetMarkPanelsRequest>,
+    ) -> Result<Response<GetMarkPanelsResponse>, Status> {
+        let res: GetMarkPanelsResponse = self.request("getMarkPanels", request).await?;
+        Ok(Response::new(res))
+    }
 }
 
 #[tonic::async_trait]

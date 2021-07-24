@@ -11,3 +11,9 @@ message GetAirbasesRequest {
 message GetAirbasesResponse {
   repeated Airbase airbases = 1;
 }
+
+message GetMarkPanelsRequest {}
+
+message GetMarkPanelsResponse {
+	repeated MarkPanel mark_panels = 1;
+}

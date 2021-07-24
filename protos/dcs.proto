@@ -95,4 +95,7 @@ service Units {
 service World {
 	// https://wiki.hoggitworld.com/view/DCS_func_getAirbases
 	rpc GetAirbases(GetAirbasesRequest) returns (GetAirbasesResponse) {}
+
+	// https://wiki.hoggitworld.com/view/DCS_func_getMarkPanels
+	rpc GetMarkPanels(GetMarkPanelsRequest) returns (GetMarkPanelsResponse) {}
 }

@@ -83,3 +83,13 @@ message Target {
 }
 
 // End of Object subtypes
+
+message MarkPanel {
+	uint32 id = 1; 
+	double time = 2; // I have no idea what this time value means
+	Unit initiator = 3;
+	optional Coalition coalition = 4;
+	optional uint32 group_id = 5;
+	optional string text = 6;
+	Position position = 7;
+}

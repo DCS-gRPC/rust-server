@@ -10,6 +10,20 @@ message OutTextRequest {
   bool clear_view = 3;
 }
 
+message OutTextForCoalitionRequest {
+	string text = 1;
+	int32 display_time = 2;
+	bool clear_view = 3;
+	Coalition coalition = 4;
+}
+
+message OutTextForGroupRequest {
+	string text = 1;
+	int32 display_time = 2;
+	bool clear_view = 3;
+	uint32 groupId = 4;
+}
+
 message GetUserFlagRequest {
   string flag = 1;
 }
@@ -51,4 +65,44 @@ message MarkToGroupRequest {
 
 message RemoveMarkRequest {
 	uint32 id = 1;
+}
+
+message ExplosionRequest {
+	Position position = 1;
+	uint32 power = 2;
+}
+
+message SmokeRequest {
+  // Putting this inside the request because we cannot
+  // have the same enum value in the same package.
+  enum SmokeColor {
+    GREEN = 0;
+    RED = 1;
+    WHITE = 2;
+    ORANGE = 3;
+    BLUE = 4;
+  }
+
+  Position position = 1;
+  SmokeColor color = 2;
+}
+
+message IlluminationBombRequest {
+  Position position = 1;
+  uint32 power = 2;
+}
+
+message SignalFlareRequest {
+	// Putting this inside the request because we cannot
+	// have the same enum value in the same package.
+	enum FlareColor {
+		GREEN = 0;
+		RED = 1;
+		WHITE = 2;
+		YELLOW = 3;
+	}
+
+	Position position = 1;
+	FlareColor color = 2;
+	uint32 azimuth = 3;
 }

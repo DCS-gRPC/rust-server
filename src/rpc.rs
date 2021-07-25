@@ -78,6 +78,22 @@ impl Triggers for RPC {
         Ok(Response::new(EmptyResponse {}))
     }
 
+    async fn out_text_for_coalition(
+        &self,
+        request: Request<OutTextForCoalitionRequest>,
+    ) -> Result<Response<EmptyResponse>, Status> {
+        self.notification("outTextForCoalition", request).await?;
+        Ok(Response::new(EmptyResponse {}))
+    }
+
+    async fn out_text_for_group(
+        &self,
+        request: Request<OutTextForGroupRequest>,
+    ) -> Result<Response<EmptyResponse>, Status> {
+        self.notification("outTextForGroup", request).await?;
+        Ok(Response::new(EmptyResponse {}))
+    }
+
     async fn get_user_flag(
         &self,
         request: Request<GetUserFlagRequest>,
@@ -123,6 +139,38 @@ impl Triggers for RPC {
         request: Request<RemoveMarkRequest>,
     ) -> Result<Response<EmptyResponse>, Status> {
         self.notification("removeMark", request).await?;
+        Ok(Response::new(EmptyResponse {}))
+    }
+
+    async fn explosion(
+        &self,
+        request: Request<ExplosionRequest>,
+    ) -> Result<Response<EmptyResponse>, Status> {
+        self.notification("explosion", request).await?;
+        Ok(Response::new(EmptyResponse {}))
+    }
+
+    async fn smoke(
+        &self,
+        request: Request<SmokeRequest>,
+    ) -> Result<Response<EmptyResponse>, Status> {
+        self.notification("smoke", request).await?;
+        Ok(Response::new(EmptyResponse {}))
+    }
+
+    async fn illumination_bomb(
+        &self,
+        request: Request<IlluminationBombRequest>,
+    ) -> Result<Response<EmptyResponse>, Status> {
+        self.notification("illuminationBomb", request).await?;
+        Ok(Response::new(EmptyResponse {}))
+    }
+
+    async fn signal_flare(
+        &self,
+        request: Request<SignalFlareRequest>,
+    ) -> Result<Response<EmptyResponse>, Status> {
+        self.notification("signalFlare", request).await?;
         Ok(Response::new(EmptyResponse {}))
     }
 }

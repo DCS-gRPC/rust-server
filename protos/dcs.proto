@@ -38,6 +38,12 @@ service Triggers {
 	// https://wiki.hoggitworld.com/view/DCS_func_outText
 	rpc OutText(OutTextRequest) returns (EmptyResponse) {}
 
+	// https://wiki.hoggitworld.com/view/DCS_func_outTextForCoalition
+	rpc OutTextForCoalition(OutTextForCoalitionRequest) returns (EmptyResponse) {}
+
+	// https://wiki.hoggitworld.com/view/DCS_func_outTextForGroup
+	rpc OutTextForGroup(OutTextForGroupRequest) returns (EmptyResponse) {}
+
 	// https://wiki.hoggitworld.com/view/DCS_func_getUserFlag
 	rpc GetUserFlag(GetUserFlagRequest) returns (GetUserFlagResponse) {}
 
@@ -55,6 +61,18 @@ service Triggers {
 
 	// https://wiki.hoggitworld.com/view/DCS_func_removeMark
 	rpc RemoveMark(RemoveMarkRequest) returns (EmptyResponse) {}
+
+	// https://wiki.hoggitworld.com/view/DCS_func_explosion
+	rpc Explosion(ExplosionRequest) returns (EmptyResponse) {}
+
+	// https://wiki.hoggitworld.com/view/DCS_func_smoke
+	rpc Smoke(SmokeRequest) returns (EmptyResponse) {}
+
+	// https://wiki.hoggitworld.com/view/DCS_func_illuminationBomb
+	rpc IlluminationBomb(IlluminationBombRequest) returns (EmptyResponse) {}
+
+	// https://wiki.hoggitworld.com/view/DCS_func_signalFlare
+	rpc SignalFlare(SignalFlareRequest) returns (EmptyResponse) {}
 }
 
 service Units {

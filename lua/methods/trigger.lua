@@ -9,6 +9,18 @@ GRPC.methods.outText = function(params)
   return GRPC.success(nil)
 end
 
+GRPC.methods.outTextForCoalition = function(params)
+  trigger.action.outTextForCoalition(params.coalition, params.text, params.displayTime, params.clearView)
+
+  return GRPC.success(nil)
+end
+
+GRPC.methods.outTextForGroup = function(params)
+  trigger.action.outTextForGroup(params.groupId, params.text, params.displayTime, params.clearView)
+
+  return GRPC.success(nil)
+end
+
 GRPC.methods.getUserFlag = function(params)
   return GRPC.success({
     value = trigger.misc.getUserFlag(params.flag),
@@ -46,6 +58,38 @@ end
 
 GRPC.methods.removeMark = function(params)
   trigger.action.removeMark(params.id)
+
+  return GRPC.success(nil)
+end
+
+GRPC.methods.explosion = function(params)
+  local point = coord.LLtoLO(params.position.lat, params.position.lon, params.position.alt)
+
+  trigger.action.explosion(point, params.power)
+
+  return GRPC.success(nil)
+end
+
+GRPC.methods.smoke = function(params)
+  local point = coord.LLtoLO(params.position.lat, params.position.lon, params.position.alt)
+
+  trigger.action.smoke(point, params.color)
+
+  return GRPC.success(nil)
+end
+
+GRPC.methods.illuminationBomb = function(params)
+  local point = coord.LLtoLO(params.position.lat, params.position.lon, params.position.alt)
+
+  trigger.action.illuminationBomb(point, params.power)
+
+  return GRPC.success(nil)
+end
+
+GRPC.methods.signalFlare = function(params)
+  local point = coord.LLtoLO(params.position.lat, params.position.lon, params.position.alt)
+
+  trigger.action.signalFlare(point, params.color, params.azimuth)
 
   return GRPC.success(nil)
 end

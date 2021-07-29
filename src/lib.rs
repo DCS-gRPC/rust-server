@@ -1,9 +1,10 @@
 #![allow(dead_code)]
 #![recursion_limit = "256"]
 
-mod rpc;
+pub mod rpc;
 mod server;
 mod shutdown;
+mod stream;
 
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, RwLock};

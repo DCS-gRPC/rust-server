@@ -4,7 +4,7 @@ import "common.proto";
 
 package dcs;
 
-message GetRadarRequest {
+message UnitName {
   string name = 1;
 }
 
@@ -21,10 +21,10 @@ message GetRadarResponse {
   }
 }
 
-message GetUnitPositionRequest {
-  string name = 1;
-}
-
 message GetUnitPositionResponse {
   Position position = 1;
+}
+
+message GetUnitPlayerNameResponse {
+  optional string player_name = 1;
 }

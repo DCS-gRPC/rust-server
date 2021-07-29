@@ -17,7 +17,9 @@ GRPC.methods.getUnits = function(params)
 
   local result = {}
   for i, unit in ipairs(units) do
-    result[i] = GRPC.exporters.unit(unit)
+    if params.active == nil or params.active == unit:isActive() then
+      result[i] = GRPC.exporters.unit(unit)
+    end
   end
 
   return GRPC.success({units = result})

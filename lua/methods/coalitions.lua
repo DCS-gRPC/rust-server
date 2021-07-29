@@ -18,12 +18,16 @@ GRPC.methods.getPlayers = function(params)
 end
 
 GRPC.methods.getGroups = function(params)
-  -- https://wiki.hoggitworld.com/view/DCS_func_getGroups
-  local groups = coalition.getGroups(params.coalition, params.category)
-
   local result = {}
-  for i, group in ipairs(groups) do
-    result[i] = GRPC.exporters.group(group)
+  for _, c in pairs(coalition.side) do
+    if params.coalition == nil or params.coalition == c then
+      -- https://wiki.hoggitworld.com/view/DCS_func_getGroups
+      local groups = coalition.getGroups(c, params.category)
+
+      for _, group in ipairs(groups) do
+        table.insert(result, GRPC.exporters.group(group))
+      end
+    end
   end
 
   return GRPC.success({groups = result})

@@ -8,15 +8,6 @@
 local GRPC = GRPC
 local coord = coord
 
-local function toLatLonPosition(pos)
-  local lat, lon, alt = coord.LOtoLL(pos)
-  return {
-    lat = lat,
-    lon = lon,
-    alt = alt,
-  }
-end
-
 GRPC.exporters.unit = function(unit)
   return {
     id = tonumber(unit:getID()),
@@ -24,7 +15,7 @@ GRPC.exporters.unit = function(unit)
     callsign = unit:getCallsign(),
     coalition = unit:getCoalition(),
     type = unit:getTypeName(),
-    position = toLatLonPosition(unit:getPoint()),
+    position = GRPC.toLatLonPosition(unit:getPoint()),
     playerName = unit:getPlayerName()
   }
 end
@@ -33,7 +24,7 @@ GRPC.exporters.weapon = function(weapon)
   return {
     id = tonumber(weapon:getName()),
     type = weapon:getTypeName(),
-    position = toLatLonPosition(weapon:getPoint()),
+    position = GRPC.toLatLonPosition(weapon:getPoint()),
   }
 end
 
@@ -48,7 +39,7 @@ GRPC.exporters.airbase = function(airbase)
     coalition = airbase:getCoalition(),
     category = airbase:getDesc()['category'],
     displayName = airbase:getDesc()['displayName'],
-    position = toLatLonPosition(airbase:getPoint())
+    position = GRPC.toLatLonPosition(airbase:getPoint())
   }
 
   if airbase:getUnit() then
@@ -76,7 +67,7 @@ GRPC.exporters.markPanel = function(markPanel)
     time = markPanel.time,
     initiator = GRPC.exporters.unit(markPanel.initiator),
     text = markPanel.text,
-    position = toLatLonPosition(markPanel.pos)
+    position = GRPC.toLatLonPosition(markPanel.pos)
   }
 
   if (markPanel.coalition >= 0 and markPanel.coalition <= 2) then

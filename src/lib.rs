@@ -174,9 +174,16 @@ fn next(lua: &Lua, callback: Function) -> LuaResult<bool> {
 }
 
 fn event(lua: &Lua, event: Value) -> LuaResult<()> {
-    let event: Event = lua
-        .from_value(event)
-        .map_err(|err| mlua::Error::ExternalError(Arc::new(Error::DeserializeParams(err))))?;
+    let event: Event = match lua.from_value(event) {
+        Ok(event) => event,
+        Err(err) => {
+            log::error!("failed to deserialize event: {}", err);
+            // In certain cases DCS crashes when we return an error back to Lua here (see
+            // https://github.com/DCS-gRPC/rust-server/issues/19), which we are working around
+            // by intercepting and logging the error instead.
+            return Ok(());
+        }
+    };
 
     if let Some(Server {
         ref ipc,

@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "common.proto";
+import "group.proto";
 
 package dcs;
 
@@ -14,7 +15,7 @@ message GetPlayersResponse {
 
 message GetGroupsRequest {
   optional Coalition coalition = 1;
-  optional Group.GroupCategory category = 2;
+  optional dcs.group.GroupCategory category = 2;
 }
 
 message GetGroupsResponse {

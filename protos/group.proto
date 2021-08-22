@@ -2,7 +2,15 @@ syntax = "proto3";
 
 import "common.proto";
 
-package dcs;
+package dcs.group;
+
+enum GroupCategory {
+  AIRPLANE = 0;
+  HELICOPTER = 1;
+  GROUND = 2;
+  SHIP = 3;
+  TRAIN = 4;
+}
 
 message GetUnitsRequest {
   string group_name = 1;

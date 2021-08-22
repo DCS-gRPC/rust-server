@@ -91,7 +91,7 @@ service Triggers {
 
 service Groups {
 	// https://wiki.hoggitworld.com/view/DCS_func_getUnits
-	rpc GetUnits(GetUnitsRequest) returns (GetUnitsResponse) {}
+	rpc GetUnits(dcs.group.GetUnitsRequest) returns (dcs.group.GetUnitsResponse) {}
 }
 
 service Units {

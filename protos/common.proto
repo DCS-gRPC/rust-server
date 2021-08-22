@@ -46,14 +46,6 @@ message Unit {
 }
 
 message Group {
-	enum GroupCategory {
-		AIRPLANE = 0;
-		HELICOPTER = 1;
-		GROUND = 2;
-		SHIP = 3;
-		TRAIN = 4;
-	}
-
   uint32 id = 1;
   string name = 2;
 }

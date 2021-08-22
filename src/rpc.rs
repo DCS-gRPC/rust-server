@@ -18,6 +18,10 @@ use tonic::{Request, Response, Status};
 
 pub mod dcs {
     tonic::include_proto!("dcs");
+
+    pub mod group {
+        tonic::include_proto!("dcs.group");
+    }
 }
 
 #[derive(Clone)]
@@ -280,9 +284,9 @@ impl Coalitions for RPC {
 impl Groups for RPC {
     async fn get_units(
         &self,
-        request: Request<GetUnitsRequest>,
-    ) -> Result<Response<GetUnitsResponse>, Status> {
-        let res: GetUnitsResponse = self.request("getUnits", request).await?;
+        request: Request<group::GetUnitsRequest>,
+    ) -> Result<Response<group::GetUnitsResponse>, Status> {
+        let res: group::GetUnitsResponse = self.request("getUnits", request).await?;
         Ok(Response::new(res))
     }
 }

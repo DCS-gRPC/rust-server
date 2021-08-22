@@ -3,12 +3,11 @@ use std::time::{Duration, Instant};
 
 use crate::rpc::dcs::coalitions_server::Coalitions;
 use crate::rpc::dcs::event::Event;
+use crate::rpc::dcs::group::GetUnitsRequest;
 use crate::rpc::dcs::groups_server::Groups;
 use crate::rpc::dcs::unit_update::{UnitGone, Update};
 use crate::rpc::dcs::units_server::Units;
-use crate::rpc::dcs::{
-    GetGroupsRequest, GetUnitsRequest, Position, StreamUnitsRequest, Unit, UnitName,
-};
+use crate::rpc::dcs::{GetGroupsRequest, Position, StreamUnitsRequest, Unit, UnitName};
 use crate::rpc::RPC;
 use futures_util::stream::StreamExt;
 use tokio::sync::mpsc::error::SendError;

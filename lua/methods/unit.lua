@@ -68,7 +68,7 @@ GRPC.methods.getUnitPlayerName = function(params)
   end
 
   return GRPC.success({
-    -- https://wiki.hoggitworld.com/view/DCS_func_getPoint
+    -- https://wiki.hoggitworld.com/view/DCS_func_getPlayerName
     playerName = unit:getPlayerName(),
   })
 end

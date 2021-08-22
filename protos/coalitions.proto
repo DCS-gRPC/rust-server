@@ -14,7 +14,7 @@ message GetPlayersResponse {
 }
 
 message GetGroupsRequest {
-  optional Coalition coalition = 1;
+  Coalition coalition = 1;
   optional dcs.group.GroupCategory category = 2;
 }
 

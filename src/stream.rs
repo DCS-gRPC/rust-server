@@ -7,7 +7,7 @@ use crate::rpc::dcs::group::GetUnitsRequest;
 use crate::rpc::dcs::groups_server::Groups;
 use crate::rpc::dcs::unit_update::{UnitGone, Update};
 use crate::rpc::dcs::units_server::Units;
-use crate::rpc::dcs::{GetGroupsRequest, Position, StreamUnitsRequest, Unit, UnitName};
+use crate::rpc::dcs::{Coalition, GetGroupsRequest, Position, StreamUnitsRequest, Unit, UnitName};
 use crate::rpc::RPC;
 use futures_util::stream::StreamExt;
 use tokio::sync::mpsc::error::SendError;
@@ -36,16 +36,27 @@ pub async fn stream_units(
     };
 
     // initial full-sync of all current units inside of the mission
-    let groups = state
-        .ctx
-        .rpc
-        .get_groups(Request::new(GetGroupsRequest {
-            category: None,
-            coalition: None,
-        }))
-        .await?
-        .into_inner()
-        .groups;
+    let groups = {
+        let mut groups = Vec::new();
+
+        for coalition in &[Coalition::Blue, Coalition::Red, Coalition::Neutral] {
+            groups.extend(
+                state
+                    .ctx
+                    .rpc
+                    .get_groups(Request::new(GetGroupsRequest {
+                        coalition: (*coalition).into(),
+                        category: None,
+                    }))
+                    .await?
+                    .into_inner()
+                    .groups,
+            );
+        }
+
+        groups
+    };
+
     for group in groups {
         let res = state
             .ctx

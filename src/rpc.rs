@@ -4,6 +4,7 @@ use crate::shutdown::{AbortableStream, ShutdownHandle};
 use dcs::atmosphere_server::Atmosphere;
 use dcs::coalitions_server::Coalitions;
 use dcs::custom_server::Custom;
+use dcs::groups_server::Groups;
 use dcs::mission_server::Mission;
 use dcs::triggers_server::Triggers;
 use dcs::units_server::Units;
@@ -11,10 +12,16 @@ use dcs::world_server::World;
 use dcs::*;
 use dcs_module_ipc::IPC;
 use futures_util::{Stream, StreamExt};
+use tokio::sync::mpsc;
+use tokio_stream::wrappers::ReceiverStream;
 use tonic::{Request, Response, Status};
 
 pub mod dcs {
     tonic::include_proto!("dcs");
+
+    pub mod group {
+        tonic::include_proto!("dcs.group");
+    }
 }
 
 #[derive(Clone)]
@@ -51,19 +58,51 @@ impl RPC {
             .await
             .map_err(to_status)
     }
+
+    pub async fn events(&self) -> impl Stream<Item = Event> {
+        self.ipc.events().await
+    }
 }
 
 #[tonic::async_trait]
 impl Mission for RPC {
     type StreamEventsStream =
         Pin<Box<dyn Stream<Item = Result<Event, tonic::Status>> + Send + Sync + 'static>>;
+    type StreamUnitsStream =
+        Pin<Box<dyn Stream<Item = Result<UnitUpdate, tonic::Status>> + Send + Sync + 'static>>;
 
     async fn stream_events(
         &self,
         _request: Request<StreamEventsRequest>,
     ) -> Result<Response<Self::StreamEventsStream>, Status> {
-        let events = self.ipc.events().await;
+        let events = self.events().await;
         let stream = AbortableStream::new(self.shutdown_signal.signal(), events.map(Ok));
+        Ok(Response::new(Box::pin(stream)))
+    }
+
+    async fn stream_units(
+        &self,
+        request: Request<StreamUnitsRequest>,
+    ) -> Result<Response<Self::StreamUnitsStream>, Status> {
+        let rpc = self.clone();
+        let (tx, rx) = mpsc::channel(128);
+        tokio::spawn(async move {
+            if let Err(crate::stream::Error::Status(err)) =
+                crate::stream::stream_units(request.into_inner(), rpc, tx.clone()).await
+            {
+                // ignore error, as we don't care at this point whether the channel is closed or not
+                let _ = tx.send(Err(err)).await;
+            }
+        });
+
+        let stream = AbortableStream::new(
+            self.shutdown_signal.signal(),
+            ReceiverStream::new(rx).map(|result| {
+                result.map(|update| UnitUpdate {
+                    update: Some(update),
+                })
+            }),
+        );
         Ok(Response::new(Box::pin(stream)))
     }
 }
@@ -231,15 +270,50 @@ impl Coalitions for RPC {
         let res: GetPlayersResponse = self.request("getPlayers", request).await?;
         Ok(Response::new(res))
     }
+
+    async fn get_groups(
+        &self,
+        request: Request<GetGroupsRequest>,
+    ) -> Result<Response<GetGroupsResponse>, Status> {
+        let res: GetGroupsResponse = self.request("getGroups", request).await?;
+        Ok(Response::new(res))
+    }
+}
+
+#[tonic::async_trait]
+impl Groups for RPC {
+    async fn get_units(
+        &self,
+        request: Request<group::GetUnitsRequest>,
+    ) -> Result<Response<group::GetUnitsResponse>, Status> {
+        let res: group::GetUnitsResponse = self.request("getUnits", request).await?;
+        Ok(Response::new(res))
+    }
 }
 
 #[tonic::async_trait]
 impl Units for RPC {
     async fn get_radar(
         &self,
-        request: Request<GetRadarRequest>,
+        request: Request<UnitName>,
     ) -> Result<Response<GetRadarResponse>, Status> {
         let res: GetRadarResponse = self.request("getRadar", request).await?;
+        Ok(Response::new(res))
+    }
+
+    async fn get_position(
+        &self,
+        request: Request<UnitName>,
+    ) -> Result<Response<GetUnitPositionResponse>, Status> {
+        let res: GetUnitPositionResponse = self.request("getUnitPosition", request).await?;
+        Ok(Response::new(res))
+    }
+
+    async fn get_player_name(
+        &self,
+        request: Request<UnitName>,
+    ) -> Result<Response<GetUnitPlayerNameResponse>, Status> {
+        let res: GetUnitPlayerNameResponse = self.request("getUnitPlayerName", request).await?;
         Ok(Response::new(res))
     }
 }

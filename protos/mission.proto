@@ -233,3 +233,32 @@ message Event {
     MarkRemoveEvent mark_remove = 27;
   }
 }
+
+message StreamUnitsRequest {
+  // The poll rate in seconds at which the gRPC server communicates with the DCS mission to retrieve
+  // the latest unit positions. The lower the `poll_rate` the higher the amount of requests send to
+  // to the DCS mission.
+  // Default: 5
+  optional uint32 poll_rate = 1;
+
+  // The maximum backoff in seconds which the gRPC postpones polling units that haven't moved
+  // recently. This is an optimization to dynamically reduce the poll rate for stationary units.
+  // Set it to the same value as `poll_rate` to disable the backoff.
+  // Default: 30
+  optional uint32 max_backoff = 2;
+}
+
+message UnitUpdate {
+  message UnitGone {
+    uint32 id = 1;
+    string name = 2;
+  }
+
+  oneof update {
+    // The unit is either new or its position changed.
+    Unit unit = 1;
+
+    // The unit does not exist anymore.
+    UnitGone gone = 2;
+  }
+}

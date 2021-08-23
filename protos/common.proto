@@ -45,6 +45,11 @@ message Unit {
   optional string player_name = 7;
 }
 
+message Group {
+  uint32 id = 1;
+  string name = 2;
+}
+
 message Weapon {
 	uint32 id = 1;
 	string type = 2;

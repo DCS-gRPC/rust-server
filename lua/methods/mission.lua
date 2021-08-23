@@ -122,10 +122,10 @@ GRPC.onDcsEvent = function(event)
     local payload = {
       type = "dead",
     }
-    if event.target:getCategory() == 2 then -- weapon
-      payload.id = event.target:getName()
+    if event.initiator:getCategory() == 2 then -- weapon
+      payload.id = event.initiator:getName()
     else
-      payload.name = event.target:getName()
+      payload.name = event.initiator:getName()
     end
 
     grpc.event({

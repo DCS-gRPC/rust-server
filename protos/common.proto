@@ -3,7 +3,7 @@ syntax = "proto3";
 package dcs;
 
 enum ObjectCategory {
-  DUMMY = 0; // Proto must start at 0 but the category index starts at 1 so add a dummy value
+  UNKNOWN = 0; // Proto must start at 0 but the category index starts at 1 so add a dummy value
   UNIT = 1;
   WEAPON = 2;
   STATIC = 3;
@@ -33,7 +33,9 @@ message Position {
 }
 
 // Returned if a sub-type listed below cannot be found
-message Object {}
+message Unknown {
+  string name = 1;
+}
 
 message Unit {
   uint32 id = 1;
@@ -75,15 +77,27 @@ message Airbase {
 message Cargo {
 }
 
+message Initiator {
+	oneof initiator {
+		Unknown unknown = 1;
+		Unit unit = 2;
+		Weapon weapon = 3;
+		Static static = 4;
+		Scenery scenery = 5;
+		Airbase airbase = 6;
+		Cargo cargo = 7;
+	}
+}
+
 message Target {
   oneof target {
-    Object object = 2;
-    Unit unit = 3;
-    Weapon weapon = 4;
-    Static static = 5;
-    Scenery scenery = 6;
-    Airbase airbase = 7;
-    Cargo cargo = 8;
+    Unknown unknown = 1;
+    Unit unit = 2;
+    Weapon weapon = 3;
+    Static static = 4;
+    Scenery scenery = 5;
+    Airbase airbase = 6;
+    Cargo cargo = 7;
   }
 }
 

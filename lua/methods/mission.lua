@@ -9,34 +9,47 @@ local function exporter(object)
     return GRPC.exporters.unit(object)
   elseif(category == Object.Category.WEAPON) then
     return GRPC.exporters.weapon(object)
+  elseif(category == Object.Category.STATIC) then
+    return GRPC.exporters.static(object)
+  elseif(category == Object.Category.BASE) then
+    return GRPC.exporters.airbase(object)
+  elseif(category == Object.Category.SCENERY) then
+    return GRPC.exporters.scenery(object)
+  elseif(category == Object.Category.Cargo) then
+    return GRPC.exporters.cargo(object)
+  else
+    env.info("[GRPC] Could not determine object category of object with ID: " .. object:getID() .. ", Category: " .. category)
+    return nil
   end
-
-  return object:getName()
 end
 
 local function typed_exporter(object)
-  local category = object:getCategory()
   local grpcTable = {}
+  if object == nil then
+    grpcTable["unknown"] = nil
+    return grpcTable
+  end
+
+  local category = object:getCategory()
 
   if(category == Object.Category.UNIT) then
-    grpcTable["unit"] = GRPC.exporters.unit(object)
+    grpcTable["unit"] = exporter(object)
   elseif(category == Object.Category.WEAPON) then
-    grpcTable["weapon"] = GRPC.exporters.weapon(object)
+    grpcTable["weapon"] = exporter(object)
   elseif(category == Object.Category.STATIC) then
-    grpcTable["static"] = GRPC.exporters.static(object)
+    grpcTable["static"] = exporter(object)
   elseif(category == Object.Category.BASE) then
-    grpcTable["airbase"] = GRPC.exporters.airbase(object)
+    grpcTable["airbase"] = exporter(object)
   elseif(category == Object.Category.SCENERY) then
-    grpcTable["scenery"] = GRPC.exporters.scenery(object)
+    grpcTable["scenery"] = exporter(object)
   elseif(category == Object.Category.Cargo) then
-    grpcTable["cargo"] = GRPC.exporters.cargo(object)
+    grpcTable["cargo"] = exporter(object)
   else
     env.info("[GRPC] Could not determine object category of object with ID: " .. object:getID() .. ", Category: " .. category)
-    grpcTable["object"] = GRPC.exporters.object(object)
+    grpcTable["unknown"] = GRPC.exporters.unknown(object)
   end
 
   return grpcTable
-
 end
 
 GRPC.onDcsEvent = function(event)
@@ -48,7 +61,7 @@ GRPC.onDcsEvent = function(event)
       time = event.time,
       event = {
         type = "shot",
-        initiator = exporter(event.initiator),
+        initiator = {initiator = typed_exporter(event.initiator)},
         weapon = exporter(event.weapon)
       },
     })
@@ -62,7 +75,7 @@ GRPC.onDcsEvent = function(event)
         time = event.time,
         event = {
           type = "hit",
-          initiator = exporter(event.initiator),
+          initiator = {initiator = typed_exporter(event.initiator)},
           weapon = exporter(event.weapon),
           target = result,
         },
@@ -76,7 +89,7 @@ GRPC.onDcsEvent = function(event)
       time = event.time,
       event = {
         type = "takeoff",
-        initiator = exporter(event.initiator),
+        initiator = {initiator = typed_exporter(event.initiator)},
         place = exporter(event.place),
       },
     })
@@ -86,7 +99,7 @@ GRPC.onDcsEvent = function(event)
       time = event.time,
       event = {
         type = "land",
-        initiator = exporter(event.initiator),
+        initiator = {initiator = typed_exporter(event.initiator)},
         place = exporter(event.place),
       },
     })
@@ -96,7 +109,7 @@ GRPC.onDcsEvent = function(event)
       time = event.time,
       event = {
         type = "crash",
-        initiator = exporter(event.initiator),
+        initiator = {initiator = typed_exporter(event.initiator)},
       },
     })
 
@@ -105,7 +118,7 @@ GRPC.onDcsEvent = function(event)
       time = event.time,
       event = {
         type = "ejection",
-        initiator = exporter(event.initiator),
+        initiator = {initiator = typed_exporter(event.initiator)},
       },
     })
 
@@ -114,23 +127,17 @@ GRPC.onDcsEvent = function(event)
       time = event.time,
       event = {
         type = "refueling",
-        initiator = exporter(event.initiator),
+        initiator = {initiator = typed_exporter(event.initiator)},
       },
     })
 
   elseif event.id == world.event.S_EVENT_DEAD then
-    local payload = {
-      type = "dead",
-    }
-    if event.initiator:getCategory() == 2 then -- weapon
-      payload.id = event.initiator:getName()
-    else
-      payload.name = event.initiator:getName()
-    end
-
     grpc.event({
       time = event.time,
-      event = payload,
+      event = {
+        type = "dead",
+        initiator = {initiator = typed_exporter(event.initiator)},
+      },
     })
 
   elseif event.id == world.event.S_EVENT_PILOT_DEAD then
@@ -138,7 +145,7 @@ GRPC.onDcsEvent = function(event)
       time = event.time,
       event = {
         type = "pilotDead",
-        initiator = exporter(event.initiator),
+        initiator = {initiator = typed_exporter(event.initiator)},
       },
     })
 
@@ -147,7 +154,7 @@ GRPC.onDcsEvent = function(event)
       time = event.time,
       event = {
         type = "baseCapture",
-        initiator = exporter(event.initiator),
+        initiator = {initiator = typed_exporter(event.initiator)},
         place = exporter(event.place),
       },
     })
@@ -178,7 +185,7 @@ GRPC.onDcsEvent = function(event)
       time = event.time,
       event = {
         type = "refuelingStop",
-        initiator = exporter(event.initiator),
+        initiator = {initiator = typed_exporter(event.initiator)},
       },
     })
 
@@ -187,7 +194,7 @@ GRPC.onDcsEvent = function(event)
       time = event.time,
       event = {
         type = "birth",
-        initiator = exporter(event.initiator),
+        initiator = {initiator = typed_exporter(event.initiator)},
       },
     })
 
@@ -196,7 +203,7 @@ GRPC.onDcsEvent = function(event)
       time = event.time,
       event = {
         type = "systemFailure",
-        initiator = exporter(event.initiator),
+        initiator = {initiator = typed_exporter(event.initiator)},
       },
     })
 
@@ -205,7 +212,7 @@ GRPC.onDcsEvent = function(event)
       time = event.time,
       event = {
         type = "engineStartup",
-        initiator = exporter(event.initiator),
+        initiator = {initiator = typed_exporter(event.initiator)},
       },
     })
 
@@ -214,7 +221,7 @@ GRPC.onDcsEvent = function(event)
       time = event.time,
       event = {
         type = "engineShutdown",
-        initiator = exporter(event.initiator),
+        initiator = {initiator = typed_exporter(event.initiator)},
       },
     })
 
@@ -223,7 +230,7 @@ GRPC.onDcsEvent = function(event)
       time = event.time,
       event = {
         type = "playerEnterUnit",
-        initiator = exporter(event.initiator),
+        initiator = {initiator = typed_exporter(event.initiator)},
       },
     })
 
@@ -232,7 +239,7 @@ GRPC.onDcsEvent = function(event)
       time = event.time,
       event = {
         type = "playerLeaveUnit",
-        initiator = exporter(event.initiator),
+        initiator = {initiator = typed_exporter(event.initiator)},
       },
     })
 
@@ -243,7 +250,7 @@ GRPC.onDcsEvent = function(event)
       time = event.time,
       event = {
         type = "shootingStart",
-        initiator = exporter(event.initiator),
+        initiator = {initiator = typed_exporter(event.initiator)},
       },
     })
 
@@ -252,7 +259,7 @@ GRPC.onDcsEvent = function(event)
       time = event.time,
       event = {
         type = "shootingEnd",
-        initiator = exporter(event.initiator),
+        initiator = {initiator = typed_exporter(event.initiator)},
       },
     })
 

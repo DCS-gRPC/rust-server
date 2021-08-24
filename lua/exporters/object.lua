@@ -66,8 +66,13 @@ GRPC.exporters.cargo = function(cargo)
   return {}
 end
 
-GRPC.exporters.object = function(object)
-  return {}
+-- every object, even an unknown one, should at least have getName implemented as it is
+-- in the base object of the hierarchy
+-- https://wiki.hoggitworld.com/view/DCS_Class_Object
+GRPC.exporters.unknown = function(object)
+  return {
+    name = object:getName(),
+  }
 end
 
 GRPC.exporters.markPanel = function(markPanel)

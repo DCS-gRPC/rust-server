@@ -10,16 +10,16 @@ message Event {
   // Occurs when a unit fires a weapon (but no machine gun- or autocannon-based
   // weapons - those are handled by [ShootingStartEvent]).
   message ShotEvent {
-    // The unit that fired the weapon.
-    Unit initiator = 1;
+    // The object that fired the weapon.
+    Initiator initiator = 1;
     // The weapon that has been fired.
     Weapon weapon = 2;
   }
 
   // Occurs when an object is hit by a weapon.
   message HitEvent {
-    // The unit that fired the weapon.
-    Unit initiator = 1;
+    // The object that fired the weapon.
+    Initiator initiator = 1;
     // The weapon that the target has been hit with.
     Weapon weapon = 2;
     // The object that has been hit.
@@ -28,16 +28,16 @@ message Event {
 
   // Occurs when an aircraft takes off from an airbase, farp, or ship.
   message TakeoffEvent {
-    // The unit that took off.
-    Unit initiator = 1;
+    // The object that took off.
+    Initiator initiator = 1;
     // The airbase, farp or ship the unit took off from.
     string place = 2;
   }
 
   // Occurs when an aircraft lands at an airbase, farp or ship.
   message LandEvent {
-    // The unit that landed.
-    Unit initiator = 1;
+    // The object that landed.
+    Initiator initiator = 1;
     // The airbase, farp or ship the unit landed at.
     string place = 2;
   }
@@ -45,29 +45,26 @@ message Event {
   // Occurs when an aircraft crashes into the ground and is completely
   // destroyed.
   message CrashEvent {
-    // The unit that crashed.
-    Unit initiator = 1;
+    // The object that crashed.
+    Initiator initiator = 1;
   }
 
   // Occurs when a pilot ejects from its aircraft.
   message EjectionEvent {
     // The unit a pilot ejected from.
-    Unit initiator = 1;
+    Initiator initiator = 1;
   }
 
   // Occurs when an aircraft connects with a tanker and begins taking on fuel.
   message RefuelingEvent {
-    // The unit that is receiving fuel.
-    Unit initiator = 1;
+    // The object that is receiving fuel.
+    Initiator initiator = 1;
   }
 
   // Occurs when an object is completely destroyed.
   message DeadEvent {
-    // The unit that has been destroyed.
-    oneof initiator {
-      uint64 id = 2;
-      string name = 3;
-    }
+    // The object that has been destroyed.
+    Initiator initiator = 1;
   }
 
   // Occurs when a pilot of an aircraft is killed. Can occur either if the
@@ -76,13 +73,13 @@ message Event {
   // destroying the plane.
   message PilotDeadEvent {
     // The unit the pilot has died in.
-    Unit initiator = 1;
+    Initiator initiator = 1;
   }
 
   // Occurs when a ground unit captures either an airbase or a farp.
   message BaseCaptureEvent {
-    // The unit that captured the base.
-    Unit initiator = 1;
+    // The object that captured the base.
+    Initiator initiator = 1;
     // The airbase that was captured, can be a FARP or Airbase
     string place = 2;
   }
@@ -96,64 +93,64 @@ message Event {
   // Occurs when an aircraft is finished taking fuel.
   message RefuelingStopEvent {
     // he unit that was receiving fuel.
-    Unit initiator = 1;
+    Initiator initiator = 1;
   }
 
   // Occurs when any object is spawned into the mission.
   message BirthEvent {
-    // The unit that was spawned.
-    Unit initiator = 1;
+    // The object that was spawned.
+    Initiator initiator = 1;
   }
 
   // Occurs when a system fails on a human controlled aircraft occurs.
   message SystemFailureEvent {
     // The unit the system failure occurred in.
-    Unit initiator = 1;
+    Initiator initiator = 1;
   }
 
   // Occurs when any aircraft starts its engines.
   message EngineStartupEvent {
-    // The unit that starts its engines.
-    Unit initiator = 1;
+    // The object that starts its engines.
+    Initiator initiator = 1;
   }
 
   message EngineShutdownEvent {
     // Occurs when any aircraft shuts down its engines.
-    Unit initiator = 1;
+    Initiator initiator = 1;
   }
 
   // Occurs when a player takes direct control of a unit.
   message PlayerEnterUnitEvent {
     // The unit the player took control of.
-    Unit initiator = 1;
+    Initiator initiator = 1;
   }
 
   // Occurs when a player relieves direct control of a unit.
   message PlayerLeaveUnitEvent {
     // The unit the player relieves control of.
-    Unit initiator = 1;
+    Initiator initiator = 1;
   }
 
   // Occurs when a unit begins firing a machine gun- or autocannon-based weapon
   // (weapons with a high rate of fire). Other weapons are handled by
   // [ShotEvent].
   message ShootingStartEvent {
-    // The unit that started firing.
-    Unit initiator = 1;
+    // The object that started firing.
+    Initiator initiator = 1;
   }
 
   // Occurs when a unit stops firing a machine gun- or autocannon-based weapon.
   // Event will always correspond with a [ShootingStartEvent] event.
   message ShootingEndEvent {
-    // The unit that was shooting and has no stopped firing.
-    Unit initiator = 1;
+    // The object that was shooting and has no stopped firing.
+    Initiator initiator = 1;
   }
 
   // Occurs when marks get added to the mission by players or scripting
   // functions.
   message MarkAddEvent {
-    // The unit that added the mark.
-    Unit initiator = 1;
+    // The object that added the mark.
+    Initiator initiator = 1;
     oneof visibility {
       // The group the mark's visibility is restricted for.
       uint64 group_id = 2;
@@ -170,8 +167,8 @@ message Event {
 
   // Occurs when marks got changed.
   message MarkChangeEvent {
-    // The unit that changed the mark.
-    Unit initiator = 1;
+    // The object that changed the mark.
+    Initiator initiator = 1;
     oneof visibility {
       // The group the mark's visibility is restricted for.
       uint64 group_id = 2;
@@ -188,8 +185,8 @@ message Event {
 
   // Occurs when marks get removed.
   message MarkRemoveEvent {
-    // The unit that removed the mark.
-    Unit initiator = 1;
+    // The object that removed the mark.
+    Initiator initiator = 1;
     oneof visibility {
       // The group the mark's visibility is restricted for.
       uint64 group_id = 2;

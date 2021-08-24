@@ -124,22 +124,28 @@ struct Context {
 
 /// Update the given [State] based on the given [Event].
 async fn handle_event(state: &mut State, event: Event) -> Result<(), Error> {
-    use crate::rpc::dcs::event::dead_event::Initiator;
-    use crate::rpc::dcs::event::DeadEvent;
+    use crate::rpc::dcs::event::{BirthEvent, DeadEvent};
+    use crate::rpc::dcs::{initiator, Initiator};
 
     match event {
-        Event::Birth(birth) => {
-            if let Some(unit) = birth.initiator {
-                state.ctx.tx.send(Ok(Update::Unit(unit.clone()))).await?;
-                state.units.insert(unit.name.clone(), UnitState::new(unit));
-            }
+        Event::Birth(BirthEvent {
+            initiator:
+                Some(Initiator {
+                    initiator: Some(initiator::Initiator::Unit(unit)),
+                }),
+        }) => {
+            state.ctx.tx.send(Ok(Update::Unit(unit.clone()))).await?;
+            state.units.insert(unit.name.clone(), UnitState::new(unit));
         }
 
         // The dead event is known to not fire reliably in certain cases. This is fine here, because
         // those cases are covered by removing those units when they are not found anymore during
         // attempted updates.
         Event::Dead(DeadEvent {
-            initiator: Some(Initiator::Name(name)),
+            initiator:
+                Some(Initiator {
+                    initiator: Some(initiator::Initiator::Unit(Unit { name, .. })),
+                }),
         }) => {
             if let Some(unit_state) = state.units.remove(&name) {
                 state

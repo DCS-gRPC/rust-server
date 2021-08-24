@@ -10,15 +10,7 @@ message UnitName {
 
 message GetRadarResponse {
   bool active = 1;
-  oneof target {
-    Object object = 2;
-    Unit unit = 3;
-    Weapon weapon = 4;
-    Static static = 5;
-    Scenery scenery = 6;
-    Airbase airbase = 7;
-    Cargo cargo = 8;
-  }
+  Target target = 2;
 }
 
 message GetUnitPositionResponse {

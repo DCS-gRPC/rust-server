@@ -68,16 +68,13 @@ GRPC.onDcsEvent = function(event)
 
   elseif event.id == world.event.S_EVENT_HIT then
     if event.target ~= nil then
-      local result = {}
-      result.target = typed_exporter(event.target)
-
       grpc.event({
         time = event.time,
         event = {
           type = "hit",
           initiator = {initiator = typed_exporter(event.initiator)},
           weapon = exporter(event.weapon),
-          target = result,
+          target = {target = typed_exporter(event.target)},
         },
       })
     else

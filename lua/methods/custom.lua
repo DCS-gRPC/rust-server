@@ -11,6 +11,10 @@ GRPC.methods.joinMission = function(params)
 end
 
 GRPC.methods.eval = function(params)
+    if GRPC.options.evalEnabled ~= true then
+        return GRPC.errorPermissionDenied("eval operation is disabled")
+    end
+
     local fn, err = loadstring(params.lua)
     if not fn then
         return GRPC.error("Failed to load Lua code: "..err)

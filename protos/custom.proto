@@ -15,3 +15,11 @@ message MissionJoinRequest {
 }
 
 message MissionJoinResponse {}
+
+message EvalRequest {
+  string lua = 1;
+}
+
+message EvalResponse {
+  string json = 1;
+}

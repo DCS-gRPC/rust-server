@@ -7,6 +7,17 @@ package.loaded["dcs_grpc_server"] = nil
 grpc = require "dcs_grpc_server"
 grpc.start()
 GRPC.stopped = false
+GRPC.options = {
+  evalEnabled = false
+}
+
+--
+-- Methods to set options
+--
+
+GRPC.enableEval = function()
+  GRPC.options.evalEnabled = true
+end
 
 --
 -- Export methods
@@ -68,6 +79,16 @@ GRPC.errorUnimplemented = function(msg)
   return {
     error = {
       type = "UNIMPLEMENTED",
+      message = msg,
+    }
+  }
+end
+
+--- The caller does not have permission to execute the specified operation.
+GRPC.errorPermissionDenied = function(msg)
+  return {
+    error = {
+      type = "PERMISSION_DENIED",
       message = msg,
     }
   }

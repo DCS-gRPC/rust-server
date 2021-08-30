@@ -336,6 +336,15 @@ impl Custom for RPC {
         self.notification("joinMission", request).await?;
         Ok(Response::new(MissionJoinResponse {}))
     }
+
+    async fn eval(&self, request: Request<EvalRequest>) -> Result<Response<EvalResponse>, Status> {
+        let json: serde_json::Value = self.request("eval", request).await?;
+        dbg!(&json);
+        let json = serde_json::to_string(&json).map_err(|err| {
+            Status::internal(format!("failed to deserialize eval result: {}", err))
+        })?;
+        Ok(Response::new(EvalResponse { json }))
+    }
 }
 
 fn to_status(err: dcs_module_ipc::Error) -> Status {

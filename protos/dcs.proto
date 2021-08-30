@@ -37,6 +37,9 @@ service Custom {
 
 	// DCT Function
 	rpc JoinMission(MissionJoinRequest) returns (MissionJoinResponse) {}
+
+	// Evaluate some Lua inside of the mission and return the result as a JSON string.
+	rpc Eval(EvalRequest) returns (EvalResponse) {}
 }
 
 service Mission {

@@ -394,7 +394,8 @@ mod tests {
                                         "alt": 1
                                     },
                                     "playerName": "New callsign",
-                                    "groupName": "Group 1"
+                                    "groupName": "Group 1",
+                                    "numberInGroup": 1
                                 }
                             }
 		                },
@@ -430,6 +431,7 @@ mod tests {
                             }),
                             player_name: Some("New callsign".to_string()),
                             group_name: "Group 1".to_string(),
+                            number_in_group: 1
                         }))
                     }),
                     visibility: Some(event::mark_add_event::Visibility::Coalition(

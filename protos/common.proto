@@ -83,6 +83,7 @@ message Unit {
   Position position = 6; // The position of the unit
   optional string player_name = 7; // The name of the player if one is in control of the unit
   string group_name = 8; // The name of the group that the unit belongs to
+  uint32 number_in_group = 9; // The number of this unit in the group. Does not change as units are destroyed
 }
 
 /**

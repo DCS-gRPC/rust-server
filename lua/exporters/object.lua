@@ -17,7 +17,7 @@ GRPC.exporters.unit = function(unit)
     type = unit:getTypeName(),
     position = GRPC.toLatLonPosition(unit:getPoint()),
     playerName = unit:getPlayerName(),
-    groupName = unit:getGroup():getName()
+    groupName = unit:getGroup():getName(),
     numberInGroup = unit:getNumber()
   }
 end

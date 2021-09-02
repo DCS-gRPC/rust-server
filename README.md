@@ -1,6 +1,66 @@
 # DCS gRPC Server
 
+DCS gRPC is an RPC (Remote Procedure Call) server that allows network clients to interact with a currently running
+mission on a DCS server.
+
+## Installation
+
+### Download
+
+Download the latest version of the server from the [Releases](https://github.com/DCS-gRPC/rust-server/releases) and
+extract the zip file into your DCS Server directory. This is typically found in
+`C:\Users\USERNAME\Saved Games\DCS.openbeta_server`. Once extracted you will have a `Scripts\DCS-gRPC` folder and
+a `Mods\Tech\DCS-gRPC` folder.
+
+### MissionScripting Sanitisation Removal
+
+DCS-gRPC requires the removal of sanitisation features in DCS scripting.
+
+Remove the sanitation of `require` and the `lfs` from your `DCS World\Scripts\MissionScripting.lua`.
+
+After this change, it is recommended to only run missions and scripts that you trust.
+
+```diff
+do
+ 	sanitizeModule('os')
+	sanitizeModule('io')
+-	sanitizeModule('lfs')
+-	require = nil
++	-- sanitizeModule('lfs')
++	-- require = nil
+	loadlib = nil
+end
+```
+
+### Mission Editing
+
+Add the following code to your mission. This will start the DCS-gRPC server. You can add this code to a DOSCRIPT
+trigger in the mission editor or include it in your own scripts if you already have some.
+
+```lua
+package.cpath = package.cpath..lfs.writedir()..[[Mods\tech\DCS-gRPC\?.dll;]]
+GRPC = { basePath = lfs.writedir()..[[Scripts\DCS-gRPC\]] }
+
+local luaPath = GRPC.basePath .. [[grpc.lua]]
+local f = assert( loadfile(luaPath) )
+
+if f == nil then
+  error ("[GRPC]: Could not load " .. luaPath )
+else
+  f()
+end
+```
+
+### Confirmation
+
+To confirm that the server is running check the `\Logs\dcs.log` file and look for entries prefixed with `GRPC`.
+You can also check for the present of a `\Logs\grpc.log` file.
+
+The server will be running on port 50051
+
 ## Development
+
+The following section is only applicable to people who want to developer the DCS-gRPC server itself.
 
 ### Build Dependencies
 
@@ -22,9 +82,13 @@ $env:LUA_INC=(Get-Item -Path ".\").FullName+"/lua/lua5.1/include"
 cargo build
 ```
 
-### Mission Setup
+### MissionScripting Sanitisation Removal
 
-Remove the sanitation of `require` and the `lfs` from your `DCS World\Scripts\MissionScripting.lua`. After this change, it is recommended to only run missions that you trust.
+DCS-gRPC requires the removal of sanitisation features in DCS scripting.
+
+Remove the sanitation of `require` and the `lfs` from your `DCS World\Scripts\MissionScripting.lua`.
+
+After this change, it is recommended to only run missions and scripts that you trust.
 
 ```diff
 do
@@ -38,11 +102,13 @@ do
 end
 ```
 
+### Mission Setup
+
 Add the following script to your mission (adjust the paths to match your repo location):
 
 ```lua
-package.cpath = package.cpath..[[M:\Development\DCS-gRPC\rust-server\target\debug\?.dll;]]
-GRPC = { basePath = [[M:\Development\DCS-gRPC\rust-server\lua\]] }
+package.cpath = package.cpath..[[C:\Development\DCS-gRPC\rust-server\target\debug\?.dll;]]
+GRPC = { basePath = [[C:\Development\DCS-gRPC\rust-server\lua\]] }
 dofile(GRPC.basePath .. [[grpc.lua]])
 ```
 

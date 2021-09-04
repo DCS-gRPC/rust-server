@@ -133,6 +133,7 @@ async fn handle_event(state: &mut State, event: Event) -> Result<(), Error> {
                 Some(Initiator {
                     initiator: Some(initiator::Initiator::Unit(unit)),
                 }),
+            ..
         }) => {
             state.ctx.tx.send(Ok(Update::Unit(unit.clone()))).await?;
             state.units.insert(unit.name.clone(), UnitState::new(unit));

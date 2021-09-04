@@ -5,17 +5,18 @@ local function exporter(object)
 
   local category = object:getCategory()
 
-  if(category == Object.Category.UNIT) then
-    return GRPC.exporters.unit(object)
-  elseif(category == Object.Category.WEAPON) then
-    return GRPC.exporters.weapon(object)
-  elseif(category == Object.Category.STATIC) then
-    return GRPC.exporters.static(object)
-  elseif(category == Object.Category.BASE) then
+  if category == Object.Category.BASE or object.className_ == 'Airbase' then
+    -- carriers are of category unit, but are a Airbase class
     return GRPC.exporters.airbase(object)
-  elseif(category == Object.Category.SCENERY) then
+  elseif category == Object.Category.UNIT then
+    return GRPC.exporters.unit(object)
+  elseif category == Object.Category.WEAPON then
+    return GRPC.exporters.weapon(object)
+  elseif category == Object.Category.STATIC then
+    return GRPC.exporters.static(object)
+  elseif category == Object.Category.SCENERY then
     return GRPC.exporters.scenery(object)
-  elseif(category == Object.Category.Cargo) then
+  elseif category == Object.Category.Cargo then
     return GRPC.exporters.cargo(object)
   else
     env.info("[GRPC] Could not determine object category of object with ID: " .. object:getID() .. ", Category: " .. category)
@@ -24,25 +25,24 @@ local function exporter(object)
 end
 
 local function typed_exporter(object)
-  local grpcTable = {}
   if object == nil then
-    grpcTable["unknown"] = nil
-    return grpcTable
+    return nil
   end
 
+  local grpcTable = {}
   local category = object:getCategory()
 
-  if(category == Object.Category.UNIT) then
-    grpcTable["unit"] = exporter(object)
-  elseif(category == Object.Category.WEAPON) then
-    grpcTable["weapon"] = exporter(object)
-  elseif(category == Object.Category.STATIC) then
-    grpcTable["static"] = exporter(object)
-  elseif(category == Object.Category.BASE) then
+  if category == Object.Category.BASE or object.className_ == 'Airbase' then
     grpcTable["airbase"] = exporter(object)
-  elseif(category == Object.Category.SCENERY) then
+  elseif category == Object.Category.UNIT then
+    grpcTable["unit"] = exporter(object)
+  elseif category == Object.Category.WEAPON then
+    grpcTable["weapon"] = exporter(object)
+  elseif category == Object.Category.STATIC then
+    grpcTable["static"] = exporter(object)
+  elseif category == Object.Category.SCENERY then
     grpcTable["scenery"] = exporter(object)
-  elseif(category == Object.Category.Cargo) then
+  elseif category == Object.Category.Cargo then
     grpcTable["cargo"] = exporter(object)
   else
     env.info("[GRPC] Could not determine object category of object with ID: " .. object:getID() .. ", Category: " .. category)
@@ -53,8 +53,10 @@ local function typed_exporter(object)
 end
 
 GRPC.onDcsEvent = function(event)
-  if (event.id ~= world.event.S_EVENT_MISSION_START and event.id ~= world.event.S_EVENT_MISSION_END and event.id ~= world.event.S_EVENT_TOOK_CONTROL and event.id ~= world.event.S_EVENT_MARK_ADDED and event.id ~= world.event.S_EVENT_MARK_CHANGE and event.id ~= S_EVENT_MARK_REMOVED) and event.initiator == nil then
-    env.info("[GRPC] Ignoring event (id: "..tostring(event.id)..") with missing initiator")
+  env.info("[GRPC] Event: " .. inspect(event))
+
+  if event.id == world.event.S_EVENT_INVALID then
+    -- ignore
 
   elseif event.id == world.event.S_EVENT_SHOT then
     grpc.event({
@@ -67,19 +69,16 @@ GRPC.onDcsEvent = function(event)
     })
 
   elseif event.id == world.event.S_EVENT_HIT then
-    if event.target ~= nil then
-      grpc.event({
-        time = event.time,
-        event = {
-          type = "hit",
-          initiator = {initiator = typed_exporter(event.initiator)},
-          weapon = exporter(event.weapon),
-          target = {target = typed_exporter(event.target)},
-        },
-      })
-    else
-      env.error("[GRPC] Ignoring HIT event without target")
-    end
+    grpc.event({
+      time = event.time,
+      event = {
+        type = "hit",
+        initiator = {initiator = typed_exporter(event.initiator)},
+        weapon = exporter(event.weapon),
+        target = {target = typed_exporter(event.target)},
+        weaponName = event.weapon_name,
+      },
+    })
 
   elseif event.id == world.event.S_EVENT_TAKEOFF then
     grpc.event({
@@ -116,6 +115,7 @@ GRPC.onDcsEvent = function(event)
       event = {
         type = "ejection",
         initiator = {initiator = typed_exporter(event.initiator)},
+        target = {target = typed_exporter(event.target)},
       },
     })
 
@@ -175,7 +175,7 @@ GRPC.onDcsEvent = function(event)
     grpc.stop()
     GRPC.stopped = true
 
-  -- unimplemented: S_EVENT_TOOK_CONTROL
+  -- S_EVENT_TOOK_CONTROL: not implemented as apparently not used anymore
 
   elseif event.id == world.event.S_EVENT_REFUELING_STOP then
     grpc.event({
@@ -192,6 +192,7 @@ GRPC.onDcsEvent = function(event)
       event = {
         type = "birth",
         initiator = {initiator = typed_exporter(event.initiator)},
+        place = exporter(event.place),
       },
     })
 
@@ -199,8 +200,17 @@ GRPC.onDcsEvent = function(event)
     grpc.event({
       time = event.time,
       event = {
-        type = "systemFailure",
+        type = "humanFailure",
         initiator = {initiator = typed_exporter(event.initiator)},
+      },
+    })
+
+  elseif event.id == world.event.S_EVENT_DETAILED_FAILURE then
+    grpc.event({
+      time = event.time,
+      event = {
+        type = "detailedFailure",
+        target = {target = typed_exporter(event.target)},
       },
     })
 
@@ -210,6 +220,7 @@ GRPC.onDcsEvent = function(event)
       event = {
         type = "engineStartup",
         initiator = {initiator = typed_exporter(event.initiator)},
+        place = exporter(event.place),
       },
     })
 
@@ -219,6 +230,7 @@ GRPC.onDcsEvent = function(event)
       event = {
         type = "engineShutdown",
         initiator = {initiator = typed_exporter(event.initiator)},
+        place = exporter(event.place),
       },
     })
 
@@ -240,7 +252,7 @@ GRPC.onDcsEvent = function(event)
       },
     })
 
-    -- unimplemented: S_EVENT_PLAYER_COMMENT
+  -- S_EVENT_PLAYER_COMMENT: not implemented as apparently not used anymore
 
   elseif event.id == world.event.S_EVENT_SHOOTING_START then
     grpc.event({
@@ -248,6 +260,7 @@ GRPC.onDcsEvent = function(event)
       event = {
         type = "shootingStart",
         initiator = {initiator = typed_exporter(event.initiator)},
+        weaponName = event.weapon_name,
       },
     })
 
@@ -257,13 +270,14 @@ GRPC.onDcsEvent = function(event)
       event = {
         type = "shootingEnd",
         initiator = {initiator = typed_exporter(event.initiator)},
+        weaponName = event.weapon_name,
       },
     })
 
   elseif event.id == world.event.S_EVENT_MARK_ADDED then
     local payload = {
       type = "markAdd",
-      initiator = exporter(event.initiator),
+      initiator = {initiator = typed_exporter(event.initiator)},
       id = event.idx,
       pos = GRPC.toLatLonPosition(event.pos),
       text = event.text,
@@ -281,7 +295,7 @@ GRPC.onDcsEvent = function(event)
   elseif event.id == world.event.S_EVENT_MARK_CHANGE then
     local payload = {
       type = "markChange",
-      initiator = exporter(event.initiator),
+      initiator = {initiator = typed_exporter(event.initiator)},
       id = event.idx,
       pos = GRPC.toLatLonPosition(event.pos),
       text = event.text,
@@ -299,7 +313,7 @@ GRPC.onDcsEvent = function(event)
   elseif event.id == world.event.S_EVENT_MARK_REMOVED then
     local payload = {
       type = "markRemove",
-      initiator = exporter(event.initiator),
+      initiator = {initiator = typed_exporter(event.initiator)},
       id = event.idx,
       pos = GRPC.toLatLonPosition(event.pos),
       text = event.text,
@@ -313,6 +327,82 @@ GRPC.onDcsEvent = function(event)
       time = event.time,
       event = payload,
     })
+
+  elseif event.id == world.event.S_EVENT_KILL then
+    grpc.event({
+      time = event.time,
+      event = {
+        type = "kill",
+        initiator = {initiator = typed_exporter(event.initiator)},
+        weapon = exporter(event.weapon),
+        target = {target = typed_exporter(event.target)},
+        weaponName = event.weapon_name
+      },
+    })
+
+  elseif event.id == world.event.S_EVENT_SCORE then
+    grpc.event({
+      time = event.time,
+      event = {
+        type = "score",
+      },
+    })
+
+  elseif event.id == world.event.S_EVENT_UNIT_LOST then
+    grpc.event({
+      time = event.time,
+      event = {
+        type = "unitLost",
+        initiator = {initiator = typed_exporter(event.initiator)},
+      },
+    })
+
+  elseif event.id == world.event.S_EVENT_LANDING_AFTER_EJECTION then
+    grpc.event({
+      time = event.time,
+      event = {
+        type = "landingAfterEjection",
+        initiator = {initiator = typed_exporter(event.initiator)},
+        place = GRPC.toLatLonPosition(event.place),
+      },
+    })
+
+  -- S_EVENT_PARATROOPER_LENDING: apparently not used yet
+
+  elseif event.id == world.event.S_EVENT_DISCARD_CHAIR_AFTER_EJECTION then
+    grpc.event({
+      time = event.time,
+      event = {
+        type = "discardChairAfterEjection",
+        initiator = {initiator = typed_exporter(event.initiator)},
+        target = {target = typed_exporter(event.target)},
+      },
+    })
+
+  elseif event.id == world.event.S_EVENT_WEAPON_ADD then
+    grpc.event({
+      time = event.time,
+      event = {
+        type = "weaponAdd",
+        initiator = {initiator = typed_exporter(event.initiator)},
+        weaponName = event.weapon_name
+      },
+    })
+
+  -- S_EVENT_TRIGGER_ZONE: apparently not used yet
+
+  elseif event.id == world.event.S_EVENT_LANDING_QUALITY_MARK then
+    grpc.event({
+      time = event.time,
+      event = {
+        type = "landingQualityMark",
+        initiator = {initiator = typed_exporter(event.initiator)},
+        comment = event.comment
+      },
+    })
+
+  -- S_EVENT_BDA: apparently not used yet
+  -- S_EVENT_MAX: assumingly an end marker for the events enum and thus not a real event
 
   else
     env.info("[GRPC] Skipping unimplemented event id "..tostring(event.id))

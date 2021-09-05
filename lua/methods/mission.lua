@@ -53,8 +53,6 @@ local function typed_exporter(object)
 end
 
 GRPC.onDcsEvent = function(event)
-  env.info("[GRPC] Event: " .. inspect(event))
-
   if event.id == world.event.S_EVENT_INVALID then
     -- ignore
 

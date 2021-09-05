@@ -79,7 +79,7 @@ end
 
 GRPC.exporters.markPanel = function(markPanel)
   local mp = {
-    id = markPanel.idx, 
+    id = markPanel.idx,
     time = markPanel.time,
     initiator = GRPC.exporters.unit(markPanel.initiator),
     text = markPanel.text,

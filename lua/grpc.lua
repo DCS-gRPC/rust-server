@@ -115,7 +115,7 @@ local function handleRequest(method, params)
   local fn = GRPC.methods[method]
 
   if type(fn) == "function" then
-    local ok, result = pcall(fn, params)
+    local ok, result = xpcall(function() return fn(params) end, debug.traceback)
     if ok then
       return result
     else
@@ -167,7 +167,7 @@ end
 local eventHandler = {}
 function eventHandler:onEvent(event)
   if not GRPC.stopped then
-    local ok, err = pcall(GRPC.onDcsEvent, event)
+    local ok, err = xpcall(function() GRPC.onDcsEvent(event) end, debug.traceback)
     if not ok then
       env.error("[GRPC] Error in event handler: "..tostring(err))
     end

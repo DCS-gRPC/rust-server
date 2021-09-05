@@ -4,7 +4,7 @@ env.info("[GRPC] loading ...")
 -- load and start RPC
 --
 package.loaded["dcs_grpc_server"] = nil
-grpc = require "dcs_grpc_server"
+local grpc = require "dcs_grpc_server"
 grpc.start()
 GRPC.stopped = false
 GRPC.options = {
@@ -167,9 +167,17 @@ end
 local eventHandler = {}
 function eventHandler:onEvent(event)
   if not GRPC.stopped then
-    local ok, err = xpcall(function() GRPC.onDcsEvent(event) end, debug.traceback)
-    if not ok then
-      env.error("[GRPC] Error in event handler: "..tostring(err))
+    local ok, result = xpcall(function() return GRPC.onDcsEvent(event) end, debug.traceback)
+    if ok then
+      if result ~= nil then
+        grpc.event(result)
+        if result.event.type == "missionEnd" then
+          grpc.stop()
+          GRPC.stopped = true
+        end
+      end
+    else
+      env.error("[GRPC] Error in event handler: "..tostring(result))
     end
   end
 end

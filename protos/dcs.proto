@@ -6,6 +6,7 @@ import "common.proto";
 import "controllers.proto";
 import "custom.proto";
 import "group.proto";
+import "hook.proto";
 import "mission.proto";
 import "timer.proto";
 import "trigger.proto";
@@ -116,6 +117,10 @@ service Groups {
 	rpc GetUnits(dcs.group.GetUnitsRequest) returns (dcs.group.GetUnitsResponse) {}
 }
 
+service Hook {
+	rpc GetMissionName(dcs.hook.GetMissionNameRequest) returns (dcs.hook.GetMissionNameResponse) {}
+}
+
 service Units {
 	// https://wiki.hoggitworld.com/view/DCS_func_getRadar
 	rpc GetRadar(GetRadarRequest) returns (GetRadarResponse) {}
@@ -136,3 +141,4 @@ service World {
 	// https://wiki.hoggitworld.com/view/DCS_func_getMarkPanels
 	rpc GetMarkPanels(GetMarkPanelsRequest) returns (GetMarkPanelsResponse) {}
 }
+

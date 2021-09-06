@@ -6,6 +6,7 @@ use dcs::coalitions_server::Coalitions;
 use dcs::controllers_server::Controllers;
 use dcs::custom_server::Custom;
 use dcs::groups_server::Groups;
+use dcs::hook_server::Hook;
 use dcs::mission_server::Mission;
 use dcs::timer_server::Timer;
 use dcs::triggers_server::Triggers;
@@ -24,17 +25,27 @@ pub mod dcs {
     pub mod group {
         tonic::include_proto!("dcs.group");
     }
+
+    pub mod hook {
+        tonic::include_proto!("dcs.hook");
+    }
 }
 
 #[derive(Clone)]
-pub struct RPC {
+pub struct MissionRpc {
     ipc: IPC<Event>,
     shutdown_signal: ShutdownHandle,
 }
 
-impl RPC {
+#[derive(Clone)]
+pub struct HookRpc {
+    ipc: IPC<()>,
+    shutdown_signal: ShutdownHandle,
+}
+
+impl MissionRpc {
     pub fn new(ipc: IPC<Event>, shutdown_signal: ShutdownHandle) -> Self {
-        RPC {
+        MissionRpc {
             ipc,
             shutdown_signal,
         }
@@ -66,8 +77,38 @@ impl RPC {
     }
 }
 
+impl HookRpc {
+    pub fn new(ipc: IPC<()>, shutdown_signal: ShutdownHandle) -> Self {
+        HookRpc {
+            ipc,
+            shutdown_signal,
+        }
+    }
+
+    pub async fn request<I, O>(&self, method: &str, request: Request<I>) -> Result<O, Status>
+    where
+        I: serde::Serialize + Send + Sync + 'static,
+        for<'de> O: serde::Deserialize<'de> + Send + Sync + std::fmt::Debug + 'static,
+    {
+        self.ipc
+            .request(method, Some(request.into_inner()))
+            .await
+            .map_err(to_status)
+    }
+
+    pub async fn notification<I>(&self, method: &str, request: Request<I>) -> Result<(), Status>
+    where
+        I: serde::Serialize + Send + Sync + 'static,
+    {
+        self.ipc
+            .notification(method, Some(request.into_inner()))
+            .await
+            .map_err(to_status)
+    }
+}
+
 #[tonic::async_trait]
-impl Mission for RPC {
+impl Mission for MissionRpc {
     type StreamEventsStream =
         Pin<Box<dyn Stream<Item = Result<Event, tonic::Status>> + Send + Sync + 'static>>;
     type StreamUnitsStream =
@@ -110,7 +151,7 @@ impl Mission for RPC {
 }
 
 #[tonic::async_trait]
-impl Timer for RPC {
+impl Timer for MissionRpc {
     async fn get_time(
         &self,
         request: Request<GetTimeRequest>,
@@ -137,7 +178,7 @@ impl Timer for RPC {
 }
 
 #[tonic::async_trait]
-impl Triggers for RPC {
+impl Triggers for MissionRpc {
     async fn out_text(
         &self,
         request: Request<OutTextRequest>,
@@ -244,7 +285,7 @@ impl Triggers for RPC {
 }
 
 #[tonic::async_trait]
-impl Atmosphere for RPC {
+impl Atmosphere for MissionRpc {
     async fn get_wind(
         &self,
         request: Request<AtmosphereRequest>,
@@ -272,7 +313,7 @@ impl Atmosphere for RPC {
 }
 
 #[tonic::async_trait]
-impl World for RPC {
+impl World for MissionRpc {
     async fn get_airbases(
         &self,
         request: Request<GetAirbasesRequest>,
@@ -291,7 +332,7 @@ impl World for RPC {
 }
 
 #[tonic::async_trait]
-impl Coalitions for RPC {
+impl Coalitions for MissionRpc {
     async fn get_players(
         &self,
         request: Request<GetPlayersRequest>,
@@ -310,7 +351,7 @@ impl Coalitions for RPC {
 }
 
 #[tonic::async_trait]
-impl Controllers for RPC {
+impl Controllers for MissionRpc {
     async fn set_alarm_state(
         &self,
         request: Request<SetAlarmStateRequest>,
@@ -321,7 +362,7 @@ impl Controllers for RPC {
 }
 
 #[tonic::async_trait]
-impl Groups for RPC {
+impl Groups for MissionRpc {
     async fn get_units(
         &self,
         request: Request<group::GetUnitsRequest>,
@@ -332,7 +373,7 @@ impl Groups for RPC {
 }
 
 #[tonic::async_trait]
-impl Units for RPC {
+impl Units for MissionRpc {
     async fn get_radar(
         &self,
         request: Request<GetRadarRequest>,
@@ -367,7 +408,7 @@ impl Units for RPC {
 }
 
 #[tonic::async_trait]
-impl Custom for RPC {
+impl Custom for MissionRpc {
     async fn request_mission_assignment(
         &self,
         request: Request<MissionAssignmentRequest>,
@@ -387,11 +428,21 @@ impl Custom for RPC {
 
     async fn eval(&self, request: Request<EvalRequest>) -> Result<Response<EvalResponse>, Status> {
         let json: serde_json::Value = self.request("eval", request).await?;
-        dbg!(&json);
         let json = serde_json::to_string(&json).map_err(|err| {
             Status::internal(format!("failed to deserialize eval result: {}", err))
         })?;
         Ok(Response::new(EvalResponse { json }))
+    }
+}
+
+#[tonic::async_trait]
+impl Hook for HookRpc {
+    async fn get_mission_name(
+        &self,
+        request: Request<hook::GetMissionNameRequest>,
+    ) -> Result<Response<hook::GetMissionNameResponse>, Status> {
+        let res: hook::GetMissionNameResponse = self.request("getMissionName", request).await?;
+        Ok(Response::new(res))
     }
 }
 

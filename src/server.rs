@@ -1,12 +1,12 @@
 use std::time::Duration;
 
-use crate::rpc::dcs;
-use crate::rpc::RPC;
+use crate::rpc::{dcs, HookRpc, MissionRpc};
 use crate::shutdown::ShutdownHandle;
 use dcs::atmosphere_server::AtmosphereServer;
 use dcs::coalitions_server::CoalitionsServer;
 use dcs::controllers_server::ControllersServer;
 use dcs::custom_server::CustomServer;
+use dcs::hook_server::HookServer;
 use dcs::mission_server::MissionServer;
 use dcs::timer_server::TimerServer;
 use dcs::triggers_server::TriggersServer;
@@ -20,12 +20,20 @@ use tokio::time::sleep;
 use tonic::transport::{self, Server};
 
 pub async fn run(
-    ipc: IPC<Event>,
+    ipc_mission: IPC<Event>,
+    ipc_hook: IPC<()>,
     shutdown_signal: ShutdownHandle,
     mut after_shutdown: Receiver<()>,
 ) {
     loop {
-        match try_run(ipc.clone(), shutdown_signal.clone(), &mut after_shutdown).await {
+        match try_run(
+            ipc_mission.clone(),
+            ipc_hook.clone(),
+            shutdown_signal.clone(),
+            &mut after_shutdown,
+        )
+        .await
+        {
             Ok(_) => break,
             Err(err) => {
                 log::error!("{}", err);
@@ -37,24 +45,27 @@ pub async fn run(
 }
 
 async fn try_run(
-    ipc: IPC<Event>,
+    ipc_mission: IPC<Event>,
+    ipc_hook: IPC<()>,
     shutdown_signal: ShutdownHandle,
     after_shutdown: &mut Receiver<()>,
 ) -> Result<(), transport::Error> {
     log::info!("Staring gRPC Server ...");
 
     let addr = "0.0.0.0:50051".parse().unwrap();
-    let rpc = RPC::new(ipc, shutdown_signal.clone());
+    let mission_rpc = MissionRpc::new(ipc_mission, shutdown_signal.clone());
+    let hook_rpc = HookRpc::new(ipc_hook, shutdown_signal.clone());
     Server::builder()
-        .add_service(AtmosphereServer::new(rpc.clone()))
-        .add_service(CoalitionsServer::new(rpc.clone()))
-        .add_service(ControllersServer::new(rpc.clone()))
-        .add_service(CustomServer::new(rpc.clone()))
-        .add_service(MissionServer::new(rpc.clone()))
-        .add_service(TimerServer::new(rpc.clone()))
-        .add_service(TriggersServer::new(rpc.clone()))
-        .add_service(UnitsServer::new(rpc.clone()))
-        .add_service(WorldServer::new(rpc))
+        .add_service(AtmosphereServer::new(mission_rpc.clone()))
+        .add_service(CoalitionsServer::new(mission_rpc.clone()))
+        .add_service(ControllersServer::new(mission_rpc.clone()))
+        .add_service(CustomServer::new(mission_rpc.clone()))
+        .add_service(HookServer::new(hook_rpc))
+        .add_service(MissionServer::new(mission_rpc.clone()))
+        .add_service(TimerServer::new(mission_rpc.clone()))
+        .add_service(TriggersServer::new(mission_rpc.clone()))
+        .add_service(UnitsServer::new(mission_rpc.clone()))
+        .add_service(WorldServer::new(mission_rpc))
         .serve_with_shutdown(addr, after_shutdown.map(|_| ()))
         .await?;
 

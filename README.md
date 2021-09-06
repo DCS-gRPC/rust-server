@@ -9,8 +9,8 @@ mission on a DCS server.
 
 Download the latest version of the server from the [Releases](https://github.com/DCS-gRPC/rust-server/releases) and
 extract the zip file into your DCS Server directory. This is typically found in
-`C:\Users\USERNAME\Saved Games\DCS.openbeta_server`. Once extracted you will have a `Scripts\DCS-gRPC` folder and
-a `Mods\Tech\DCS-gRPC` folder.
+`C:\Users\USERNAME\Saved Games\DCS.openbeta_server`. Once extracted you will have a `Scripts\DCS-gRPC` folder,
+a `Mods\Tech\DCS-gRPC` folder, and a `Scripts\Hooks\DCS-gRPC.lua` file.
 
 ### MissionScripting Sanitisation Removal
 
@@ -34,22 +34,7 @@ end
 
 ### Mission Editing
 
-Add the following code to your mission. This will start the DCS-gRPC server. You can add this code to a DOSCRIPT
-trigger in the mission editor or include it in your own scripts if you already have some.
-
-```lua
-package.cpath = package.cpath..lfs.writedir()..[[Mods\tech\DCS-gRPC\?.dll;]]
-GRPC = { basePath = lfs.writedir()..[[Scripts\DCS-gRPC\]] }
-
-local luaPath = GRPC.basePath .. [[grpc.lua]]
-local f = assert( loadfile(luaPath) )
-
-if f == nil then
-  error ("[GRPC]: Could not load " .. luaPath )
-else
-  f()
-end
-```
+Create a trigger of type `MISSION START` and add a `DO SCRIPT FILE` action loading `Scripts\DCS-gRPC\grpc-mission.lua`.
 
 ### Confirmation
 
@@ -82,7 +67,9 @@ $env:LUA_INC=(Get-Item -Path ".\").FullName+"/lua/lua5.1/include"
 cargo build
 ```
 
-### MissionScripting Sanitisation Removal
+### Link files
+
+To always have the latest development changes
 
 DCS-gRPC requires the removal of sanitisation features in DCS scripting.
 
@@ -102,15 +89,28 @@ do
 end
 ```
 
+Instead of copying the files to their respective destination as done in the normal [Installation](#installation), it is recommended to create symbolic links for development instead.
+
+This can be done using powershell. Before running the commands, update the paths accordingly.
+
+Build to make sure all files exist:
+
+```bash
+make build
+```
+
+Create directories and links:
+
+```ps1
+New-Item -ItemType SymbolicLink -Path "M:\Saved Games\DCS.openbeta\Scripts\DCS-gRPC" -Value "M:\Development\DCS-gRPC\rust-server\lua"
+New-Item -ItemType SymbolicLink -Path "M:\Saved Games\DCS.openbeta\Scripts\Hooks\DCS-gRPC.lua" -Value "M:\Development\DCS-gRPC\rust-server\lua\grpc-hook.lua"
+New-Item -Path "M:\Saved Games\DCS.openbeta\Mods\Tech\DCS-gRPC" -ItemType "directory"
+New-Item -ItemType SymbolicLink -Path "M:\Saved Games\DCS.openbeta\Mods\Tech\DCS-gRPC\dcs_grpc_server.dll" -Value "M:\Development\DCS-gRPC\rust-server\target\debug\dcs_grpc_server.dll"
+```
+
 ### Mission Setup
 
-Add the following script to your mission (adjust the paths to match your repo location):
-
-```lua
-package.cpath = package.cpath..[[C:\Development\DCS-gRPC\rust-server\target\debug\?.dll;]]
-GRPC = { basePath = [[C:\Development\DCS-gRPC\rust-server\lua\]] }
-dofile(GRPC.basePath .. [[grpc.lua]])
-```
+Add `Scripts\DCS-gRPC\grpc-mission.lua` to your mission.
 
 ### Debugging
 
@@ -129,9 +129,13 @@ or watch the mission event stream via:
 grpcurl.exe -plaintext -import-path ./protos -proto ./protos/dcs.proto -d '{}' 127.0.0.1:50051 dcs.Mission/StreamEvents
 ```
 
+### Reload changes
+
+To reload changes during development it is enough to restart a mission to reload changes related to the mission environment, but it is required to restart DCS to reload changes made to the hook environment.
+
 ### Troublshooting
 
-### Linker Error 1104
+#### Linker Error 1104
 
 If you see `LINK : fatal error LNK1104: cannot open file` when running
 `cargo build` make sure that there is no running DCS mission as that

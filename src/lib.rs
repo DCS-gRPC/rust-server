@@ -24,7 +24,8 @@ static INITIALIZED: Lazy<AtomicBool> = Lazy::new(|| AtomicBool::new(false));
 static SERVER: Lazy<RwLock<Option<Server>>> = Lazy::new(|| RwLock::new(None));
 
 struct Server {
-    ipc: IPC<Event>,
+    ipc_mission: IPC<Event>,
+    ipc_hook: IPC<()>,
     runtime: Runtime,
     shutdown: Shutdown,
     after_shutdown: oneshot::Sender<()>,
@@ -81,17 +82,24 @@ fn start(lua: &Lua, (): ()) -> LuaResult<()> {
 
     log::info!("Starting ...");
 
-    let ipc = IPC::new();
+    let ipc_mission = IPC::new();
+    let ipc_hook = IPC::new();
     let (tx, rx) = oneshot::channel();
     let shutdown = Shutdown::new();
 
     // Spawn an executor thread that waits for the shutdown signal
     let runtime = Runtime::new()?;
-    runtime.spawn(crate::server::run(ipc.clone(), shutdown.handle(), rx));
+    runtime.spawn(crate::server::run(
+        ipc_mission.clone(),
+        ipc_hook.clone(),
+        shutdown.handle(),
+        rx,
+    ));
 
     let mut server = SERVER.write().unwrap();
     *server = Some(Server {
-        ipc,
+        ipc_mission,
+        ipc_hook,
         runtime,
         shutdown,
         after_shutdown: tx,
@@ -126,9 +134,20 @@ fn stop(_: &Lua, _: ()) -> LuaResult<()> {
     Ok(())
 }
 
-fn next(lua: &Lua, callback: Function) -> LuaResult<bool> {
-    if let Some(Server { ref ipc, .. }) = *SERVER.read().unwrap() {
-        if let Some(mut next) = ipc.try_next() {
+fn next(lua: &Lua, (env, callback): (i32, Function)) -> LuaResult<bool> {
+    if let Some(Server {
+        ref ipc_mission,
+        ref ipc_hook,
+        ..
+    }) = *SERVER.read().unwrap()
+    {
+        let next = match env {
+            1 => ipc_mission.try_next(),
+            2 => ipc_hook.try_next(),
+            _ => return Ok(false),
+        };
+
+        if let Some(mut next) = next {
             let method = next.method().to_string();
             let params = next
                 .params(lua)
@@ -187,13 +206,13 @@ fn event(lua: &Lua, event: Value) -> LuaResult<()> {
     };
 
     if let Some(Server {
-        ref ipc,
+        ref ipc_mission,
         ref runtime,
         ..
     }) = *SERVER.read().unwrap()
     {
         log::debug!("Received event: {:#?}", event);
-        runtime.block_on(ipc.event(event));
+        runtime.block_on(ipc_mission.event(event));
     }
 
     Ok(())

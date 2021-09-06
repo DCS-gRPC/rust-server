@@ -106,6 +106,7 @@ New-Item -ItemType SymbolicLink -Path "M:\Saved Games\DCS.openbeta\Scripts\DCS-g
 New-Item -ItemType SymbolicLink -Path "M:\Saved Games\DCS.openbeta\Scripts\Hooks\DCS-gRPC.lua" -Value "M:\Development\DCS-gRPC\rust-server\lua\grpc-hook.lua"
 New-Item -Path "M:\Saved Games\DCS.openbeta\Mods\Tech\DCS-gRPC" -ItemType "directory"
 New-Item -ItemType SymbolicLink -Path "M:\Saved Games\DCS.openbeta\Mods\Tech\DCS-gRPC\dcs_grpc_server.dll" -Value "M:\Development\DCS-gRPC\rust-server\target\debug\dcs_grpc_server.dll"
+New-Item -ItemType SymbolicLink -Path "M:\Saved Games\DCS.openbeta\Mods\Tech\DCS-gRPC\dcs_grpc_server_hot_reload.dll" -Value "M:\Development\DCS-gRPC\rust-server\target\debug\dcs_grpc_server_hot_reload.dll"
 ```
 
 ### Mission Setup
@@ -128,10 +129,6 @@ or watch the mission event stream via:
 ```bash
 grpcurl.exe -plaintext -import-path ./protos -proto ./protos/dcs.proto -d '{}' 127.0.0.1:50051 dcs.Mission/StreamEvents
 ```
-
-### Reload changes
-
-To reload changes during development it is enough to restart a mission to reload changes related to the mission environment, but it is required to restart DCS to reload changes made to the hook environment.
 
 ### Troublshooting
 

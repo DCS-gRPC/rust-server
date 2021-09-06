@@ -8,13 +8,18 @@ end
 -- load and start RPC
 --
 
-package.loaded["dcs_grpc_server"] = nil
-local grpc = require "dcs_grpc_server"
-
--- only run the server inside of a mission (the hook isn't running its own server)
-if isMissionEnv then
-  grpc.start()
+local ok, grpc = pcall(require, "dcs_grpc_server_hot_reload")
+if ok then
+  if isMissionEnv then
+    env.info("[GRPC] loaded hot reload version")
+  else
+    log.write("[GRPC-Hook]", log.INFO, "loaded hot reload version")
+  end
+else
+  grpc = require("dcs_grpc_server")
 end
+
+grpc.start(isMissionEnv)
 
 GRPC.stopped = false
 GRPC.options = {
@@ -152,6 +157,11 @@ dofile(GRPC.basePath .. [[methods\world.lua]])
 -- RPC request handler
 --
 
+GRPC.stop = function()
+  grpc.stop()
+  GRPC.stopped = true
+end
+
 local function handleRequest(method, params)
   local fn = GRPC.methods[method]
 
@@ -206,8 +216,7 @@ if isMissionEnv then
         if result ~= nil then
           grpc.event(result)
           if result.event.type == "missionEnd" then
-            grpc.stop()
-            GRPC.stopped = true
+            GRPC.stop()
           end
         end
       else
@@ -228,10 +237,8 @@ else -- hook env
     end
   end
 
-  local handler = {}
   local frame = 0
-
-  function handler.onSimulationFrame()
+  function GRPC.onSimulationFrame()
     frame = frame + 1
     if frame >= 10 then
       frame = 0
@@ -241,8 +248,6 @@ else -- hook env
       end
     end
   end
-
-  DCS.setUserCallbacks(handler)
 end
 
 if isMissionEnv then

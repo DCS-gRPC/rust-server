@@ -37,7 +37,7 @@ GRPC.methods.getRadar = function(params)
   elseif(category == Object.Category.Cargo) then
     grpcTable["cargo"] = GRPC.exporters.cargo(object)
   else
-    env.info("[GRPC] Could not determine object category of object with ID: " .. object:getID() .. ", Category: " .. category)
+    GRPC.logWarning("Could not determine object category of object with ID: " .. object:getID() .. ", Category: " .. category)
     grpcTable["object"] = GRPC.exporters.object(object)
   end
 

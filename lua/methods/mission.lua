@@ -19,7 +19,7 @@ local function exporter(object)
   elseif category == Object.Category.Cargo then
     return GRPC.exporters.cargo(object)
   else
-    env.info("[GRPC] Could not determine object category of object with ID: " .. object:getID() .. ", Category: " .. category)
+    GRPC.logWarning("Could not determine object category of object with ID: " .. object:getID() .. ", Category: " .. category)
     return nil
   end
 end
@@ -45,7 +45,7 @@ local function typed_exporter(object)
   elseif category == Object.Category.Cargo then
     grpcTable["cargo"] = exporter(object)
   else
-    env.info("[GRPC] Could not determine object category of object with ID: " .. object:getID() .. ", Category: " .. category)
+    GRPC.logWarning("Could not determine object category of object with ID: " .. object:getID() .. ", Category: " .. category)
     grpcTable["unknown"] = GRPC.exporters.unknown(object)
   end
 
@@ -400,7 +400,7 @@ GRPC.onDcsEvent = function(event)
   -- S_EVENT_MAX: assumingly an end marker for the events enum and thus not a real event
 
   else
-    env.info("[GRPC] Skipping unimplemented event id "..tostring(event.id))
+    GRPC.logWarning("Skipping unimplemented event id "..tostring(event.id))
     return nil
   end
 end

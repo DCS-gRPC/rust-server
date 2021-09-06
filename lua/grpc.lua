@@ -44,6 +44,20 @@ GRPC.error = function(msg)
   }
 end
 
+--
+-- Logging methods
+--
+
+GRPC.logError = function(err)
+  grpc.log_error(err)
+  env.error("[GRPC] "..err)
+end
+
+GRPC.logWarning = function(err)
+  grpc.log_warning(err)
+  env.warning("[GRPC] "..err)
+end
+
 --- The client specified an invalid argument
 GRPC.errorInvalidArgument = function(msg)
   return {
@@ -119,7 +133,7 @@ local function handleRequest(method, params)
     if ok then
       return result
     else
-      env.error("[GRPC] error executing "..method..": "..tostring(result))
+      GRPC.logError("error executing "..method..": "..tostring(result))
       return {
         error = tostring(result)
       }
@@ -148,7 +162,7 @@ timer.scheduleFunction(function()
   if not GRPC.stopped then
     local ok, err = pcall(next)
     if not ok then
-      env.error("[GRPC] Error retrieving next command: "..tostring(err))
+      GRPC.logError("Error retrieving next command: "..tostring(err))
     end
 
     return timer.getTime() + .02 -- return time of next call
@@ -177,7 +191,7 @@ function eventHandler:onEvent(event)
         end
       end
     else
-      env.error("[GRPC] Error in event handler: "..tostring(result))
+      GRPC.logError("Error in event handler: "..tostring(err))
     end
   end
 end

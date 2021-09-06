@@ -199,6 +199,16 @@ fn event(lua: &Lua, event: Value) -> LuaResult<()> {
     Ok(())
 }
 
+fn log_error(_: &Lua, err: String) -> LuaResult<()> {
+    log::error!("{}", err);
+    Ok(())
+}
+
+fn log_warning(_: &Lua, err: String) -> LuaResult<()> {
+    log::warn!("{}", err);
+    Ok(())
+}
+
 #[derive(Debug, Error)]
 pub enum Error {
     #[error("Failed to deserialize params: {0}")]
@@ -221,6 +231,8 @@ pub fn dcs_grpc_server(lua: &Lua) -> LuaResult<LuaTable> {
     exports.set("stop", lua.create_function(stop)?)?;
     exports.set("next", lua.create_function(next)?)?;
     exports.set("event", lua.create_function(event)?)?;
+    exports.set("log_error", lua.create_function(log_error)?)?;
+    exports.set("log_warning", lua.create_function(log_warning)?)?;
     Ok(exports)
 }
 

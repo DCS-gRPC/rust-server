@@ -6,6 +6,7 @@ use dcs::coalitions_server::Coalitions;
 use dcs::custom_server::Custom;
 use dcs::groups_server::Groups;
 use dcs::mission_server::Mission;
+use dcs::timer_server::Timer;
 use dcs::triggers_server::Triggers;
 use dcs::units_server::Units;
 use dcs::world_server::World;
@@ -104,6 +105,33 @@ impl Mission for RPC {
             }),
         );
         Ok(Response::new(Box::pin(stream)))
+    }
+}
+
+#[tonic::async_trait]
+impl Timer for RPC {
+    async fn get_time(
+        &self,
+        request: Request<GetTimeRequest>,
+    ) -> Result<Response<GetTimeResponse>, Status> {
+        let res: GetTimeResponse = self.request("getTime", request).await?;
+        Ok(Response::new(res))
+    }
+
+    async fn get_absolute_time(
+        &self,
+        request: Request<GetAbsoluteTimeRequest>,
+    ) -> Result<Response<GetAbsoluteTimeResponse>, Status> {
+        let res: GetAbsoluteTimeResponse = self.request("getAbsoluteTime", request).await?;
+        Ok(Response::new(res))
+    }
+
+    async fn get_time_zero(
+        &self,
+        request: Request<GetTimeZeroRequest>,
+    ) -> Result<Response<GetTimeZeroResponse>, Status> {
+        let res: GetTimeZeroResponse = self.request("getTimeZero", request).await?;
+        Ok(Response::new(res))
     }
 }
 

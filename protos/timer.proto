@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package dcs;
+
+message GetTimeRequest {}
+
+message GetTimeResponse {
+	double time = 1;
+}
+
+message GetAbsoluteTimeRequest {}
+
+message GetAbsoluteTimeResponse {
+	double time = 1;
+}
+
+message GetTimeZeroRequest {}
+
+message GetTimeZeroResponse {
+	double time = 1;
+}

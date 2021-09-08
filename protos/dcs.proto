@@ -6,6 +6,7 @@ import "common.proto";
 import "custom.proto";
 import "group.proto";
 import "mission.proto";
+import "timer.proto";
 import "trigger.proto";
 import "unit.proto";
 import "world.proto";
@@ -49,6 +50,18 @@ service Mission {
 
 	// Streams unit updates
 	rpc StreamUnits(StreamUnitsRequest) returns (stream UnitUpdate) {}
+}
+
+// Return various mission time data
+service Timer {
+	// https://wiki.hoggitworld.com/view/DCS_func_getTime
+	rpc GetTime(GetTimeRequest) returns (GetTimeResponse) {}
+
+	// https://wiki.hoggitworld.com/view/DCS_func_getAbsTime
+	rpc GetAbsoluteTime(GetAbsoluteTimeRequest) returns (GetAbsoluteTimeResponse) {}
+
+	// https://wiki.hoggitworld.com/view/DCS_func_getTime0
+	rpc GetTimeZero(GetTimeZeroRequest) returns (GetTimeZeroResponse) {}
 }
 
 service Triggers {

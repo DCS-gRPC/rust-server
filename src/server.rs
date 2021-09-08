@@ -7,6 +7,7 @@ use dcs::atmosphere_server::AtmosphereServer;
 use dcs::coalitions_server::CoalitionsServer;
 use dcs::custom_server::CustomServer;
 use dcs::mission_server::MissionServer;
+use dcs::timer_server::TimerServer;
 use dcs::triggers_server::TriggersServer;
 use dcs::units_server::UnitsServer;
 use dcs::world_server::WorldServer;
@@ -48,6 +49,7 @@ async fn try_run(
         .add_service(CoalitionsServer::new(rpc.clone()))
         .add_service(CustomServer::new(rpc.clone()))
         .add_service(MissionServer::new(rpc.clone()))
+        .add_service(TimerServer::new(rpc.clone()))
         .add_service(TriggersServer::new(rpc.clone()))
         .add_service(UnitsServer::new(rpc.clone()))
         .add_service(WorldServer::new(rpc))

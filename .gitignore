@@ -6,3 +6,4 @@ Cargo.lock
 scratchpad.txt
 grpcurl.exe
 /doc
+protoc*.exe

@@ -84,6 +84,8 @@ message Unit {
   optional string player_name = 7; // The name of the player if one is in control of the unit
   string group_name = 8; // The name of the group that the unit belongs to
   uint32 number_in_group = 9; // The number of this unit in the group. Does not change as units are destroyed
+  double speed = 10; // The horizontal speed of the unit. If it is doing mach one straight up then the speed will be 0
+  double heading = 11; // The heading of the unit
 }
 
 /**

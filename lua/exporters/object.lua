@@ -9,6 +9,16 @@ local GRPC = GRPC
 local coord = coord
 
 GRPC.exporters.unit = function(unit)
+
+  local vector = unit:getVelocity()
+
+  heading = math.deg(math.atan2(vector.z, vector.x)) 
+  if heading < 0 then
+    heading = heading + 360
+  end
+
+  speed = math.sqrt((vector.x)^2+(vector.z)^2)
+
   return {
     id = tonumber(unit:getID()),
     name = unit:getName(),
@@ -18,8 +28,10 @@ GRPC.exporters.unit = function(unit)
     position = GRPC.toLatLonPosition(unit:getPoint()),
     playerName = unit:getPlayerName(),
     groupName = unit:getGroup():getName(),
-    numberInGroup = unit:getNumber()
-  }
+    numberInGroup = unit:getNumber(),
+    heading = heading,
+    speed = speed
+    }
 end
 
 GRPC.exporters.group = function(group)

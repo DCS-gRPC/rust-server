@@ -180,25 +180,25 @@ impl Triggers for RPC {
     async fn mark_to_all(
         &self,
         request: Request<MarkToAllRequest>,
-    ) -> Result<Response<EmptyResponse>, Status> {
-        self.notification("markToAll", request).await?;
-        Ok(Response::new(EmptyResponse {}))
+    ) -> Result<Response<MarkToAllResponse>, Status> {
+        let res: MarkToAllResponse = self.request("markToAll", request).await?;
+        Ok(Response::new(res))
     }
 
     async fn mark_to_coalition(
         &self,
         request: Request<MarkToCoalitionRequest>,
-    ) -> Result<Response<EmptyResponse>, Status> {
-        self.notification("markToCoalition", request).await?;
-        Ok(Response::new(EmptyResponse {}))
+    ) -> Result<Response<MarkToCoalitionResponse>, Status> {
+        let res: MarkToCoalitionResponse = self.request("markToCoalition", request).await?;
+        Ok(Response::new(res))
     }
 
     async fn mark_to_group(
         &self,
         request: Request<MarkToGroupRequest>,
-    ) -> Result<Response<EmptyResponse>, Status> {
-        self.notification("markToGroup", request).await?;
-        Ok(Response::new(EmptyResponse {}))
+    ) -> Result<Response<MarkToGroupResponse>, Status> {
+        let res: MarkToGroupResponse = self.request("markToGroup", request).await?;
+        Ok(Response::new(res))
     }
 
     async fn remove_mark(

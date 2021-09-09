@@ -81,13 +81,13 @@ service Triggers {
 	rpc SetUserFlag(SetUserFlagRequest) returns (EmptyResponse) {}
 
 	// https://wiki.hoggitworld.com/view/DCS_func_markToAll
-	rpc MarkToAll(MarkToAllRequest) returns (EmptyResponse) {}
+	rpc MarkToAll(MarkToAllRequest) returns (MarkToAllResponse) {}
 
 	// https://wiki.hoggitworld.com/view/DCS_func_markToCoalition
-	rpc MarkToCoalition(MarkToCoalitionRequest) returns (EmptyResponse) {}
+	rpc MarkToCoalition(MarkToCoalitionRequest) returns (MarkToCoalitionResponse) {}
 
 	// https://wiki.hoggitworld.com/view/DCS_func_markToGroup
-	rpc MarkToGroup(MarkToGroupRequest) returns (EmptyResponse) {}
+	rpc MarkToGroup(MarkToGroupRequest) returns (MarkToGroupResponse) {}
 
 	// https://wiki.hoggitworld.com/view/DCS_func_removeMark
 	rpc RemoveMark(RemoveMarkRequest) returns (EmptyResponse) {}

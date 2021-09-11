@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package dcs;
+
+message SetAlarmStateRequest {
+	enum AlarmState {
+		AUTO = 0;
+		GREEN = 1;
+		RED = 2;
+	}
+
+	oneof name {
+	  string group_name = 1;
+	  string unit_name = 2;
+	}
+	AlarmState alarm_state = 3;
+}

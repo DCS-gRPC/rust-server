@@ -115,6 +115,7 @@ end
 GRPC.methods = {}
 dofile(GRPC.basePath .. [[methods\atmosphere.lua]])
 dofile(GRPC.basePath .. [[methods\coalitions.lua]])
+dofile(GRPC.basePath .. [[methods\controllers.lua]])
 dofile(GRPC.basePath .. [[methods\custom.lua]])
 dofile(GRPC.basePath .. [[methods\group.lua]])
 dofile(GRPC.basePath .. [[methods\mission.lua]])

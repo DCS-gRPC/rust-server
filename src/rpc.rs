@@ -3,6 +3,7 @@ use std::pin::Pin;
 use crate::shutdown::{AbortableStream, ShutdownHandle};
 use dcs::atmosphere_server::Atmosphere;
 use dcs::coalitions_server::Coalitions;
+use dcs::controllers_server::Controllers;
 use dcs::custom_server::Custom;
 use dcs::groups_server::Groups;
 use dcs::mission_server::Mission;
@@ -305,6 +306,17 @@ impl Coalitions for RPC {
     ) -> Result<Response<GetGroupsResponse>, Status> {
         let res: GetGroupsResponse = self.request("getGroups", request).await?;
         Ok(Response::new(res))
+    }
+}
+
+#[tonic::async_trait]
+impl Controllers for RPC {
+    async fn set_alarm_state(
+        &self,
+        request: Request<SetAlarmStateRequest>,
+    ) -> Result<Response<EmptyResponse>, Status> {
+        self.notification("setAlarmState", request).await?;
+        Ok(Response::new(EmptyResponse {}))
     }
 }
 

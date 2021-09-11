@@ -5,6 +5,7 @@ use crate::rpc::RPC;
 use crate::shutdown::ShutdownHandle;
 use dcs::atmosphere_server::AtmosphereServer;
 use dcs::coalitions_server::CoalitionsServer;
+use dcs::controllers_server::ControllersServer;
 use dcs::custom_server::CustomServer;
 use dcs::mission_server::MissionServer;
 use dcs::timer_server::TimerServer;
@@ -47,6 +48,7 @@ async fn try_run(
     Server::builder()
         .add_service(AtmosphereServer::new(rpc.clone()))
         .add_service(CoalitionsServer::new(rpc.clone()))
+        .add_service(ControllersServer::new(rpc.clone()))
         .add_service(CustomServer::new(rpc.clone()))
         .add_service(MissionServer::new(rpc.clone()))
         .add_service(TimerServer::new(rpc.clone()))

@@ -34,7 +34,24 @@ end
 
 ### Mission Editing
 
-Create a trigger of type `MISSION START` and add a `DO SCRIPT FILE` action loading `Scripts\DCS-gRPC\grpc-mission.lua`.
+Add the following code to your mission. This will start the DCS-gRPC server. You can add this code
+
+- to a `DO SCRIPT FILE` trigger action loading `Scripts\DCS-gRPC\grpc-mission.lua`, or
+- to a `DO SCRIPT` trigger action (or include it in your own scripts if you already have some) with the following script:
+
+    ```lua
+    package.cpath = package.cpath..lfs.writedir()..[[Mods\tech\DCS-gRPC\?.dll;]]
+    GRPC = { basePath = lfs.writedir()..[[Scripts\DCS-gRPC\]] }
+
+    local luaPath = GRPC.basePath .. [[grpc.lua]]
+    local f = assert( loadfile(luaPath) )
+
+    if f == nil then
+      error ("[GRPC]: Could not load " .. luaPath )
+    else
+      f()
+    end
+    ```
 
 ### Confirmation
 
@@ -67,9 +84,7 @@ $env:LUA_INC=(Get-Item -Path ".\").FullName+"/lua/lua5.1/include"
 cargo build
 ```
 
-### Link files
-
-To always have the latest development changes
+### MissionScripting Sanitisation Removal
 
 DCS-gRPC requires the removal of sanitisation features in DCS scripting.
 
@@ -89,8 +104,19 @@ do
 end
 ```
 
-Instead of copying the files to their respective destination as done in the normal [Installation](#installation), it is recommended to create symbolic links for development instead.
+### Mission Setup
 
+Add the following script to your mission (adjust the paths to match your repo location):
+
+```lua
+package.cpath = package.cpath..[[C:\Development\DCS-gRPC\rust-server\target\debug\?.dll;]]
+GRPC = { basePath = [[C:\Development\DCS-gRPC\rust-server\lua\]] }
+dofile(GRPC.basePath
+```
+
+#### Link files
+
+Instead of pointing your mission to your dev environment, you can also create symbolic links instead.
 This can be done using powershell. Before running the commands, update the paths accordingly.
 
 Build to make sure all files exist:
@@ -102,16 +128,12 @@ make build
 Create directories and links:
 
 ```ps1
-New-Item -ItemType SymbolicLink -Path "M:\Saved Games\DCS.openbeta\Scripts\DCS-gRPC" -Value "M:\Development\DCS-gRPC\rust-server\lua"
-New-Item -ItemType SymbolicLink -Path "M:\Saved Games\DCS.openbeta\Scripts\Hooks\DCS-gRPC.lua" -Value "M:\Development\DCS-gRPC\rust-server\lua\grpc-hook.lua"
-New-Item -Path "M:\Saved Games\DCS.openbeta\Mods\Tech\DCS-gRPC" -ItemType "directory"
-New-Item -ItemType SymbolicLink -Path "M:\Saved Games\DCS.openbeta\Mods\Tech\DCS-gRPC\dcs_grpc_server.dll" -Value "M:\Development\DCS-gRPC\rust-server\target\debug\dcs_grpc_server.dll"
-New-Item -ItemType SymbolicLink -Path "M:\Saved Games\DCS.openbeta\Mods\Tech\DCS-gRPC\dcs_grpc_server_hot_reload.dll" -Value "M:\Development\DCS-gRPC\rust-server\target\debug\dcs_grpc_server_hot_reload.dll"
+New-Item -ItemType SymbolicLink -Path "C:\Users\YOUR_USER\Saved Games\DCS.openbeta\Scripts\DCS-gRPC" -Value "C:\Development\DCS-gRPC\rust-server\rust-server\lua"
+New-Item -ItemType SymbolicLink -Path "C:\Users\YOUR_USER\Saved Games\DCS.openbeta\Scripts\Hooks\DCS-gRPC.lua" -Value "C:\Development\DCS-gRPC\rust-server\rust-server\lua\grpc-hook.lua"
+New-Item -Path "C:\Users\YOUR_USER\Saved Games\DCS.openbeta\Mods\Tech\DCS-gRPC" -ItemType "directory"
+New-Item -ItemType SymbolicLink -Path "C:\Users\YOUR_USER\Saved Games\DCS.openbeta\Mods\Tech\DCS-gRPC\dcs_grpc_server.dll" -Value "C:\Development\DCS-gRPC\rust-server\rust-server\target\debug\dcs_grpc_server.dll"
+New-Item -ItemType SymbolicLink -Path "C:\Users\YOUR_USER\Saved Games\DCS.openbeta\Mods\Tech\DCS-gRPC\dcs_grpc_server_hot_reload.dll" -Value "C:\Development\DCS-gRPC\rust-server\rust-server\target\debug\dcs_grpc_server_hot_reload.dll"
 ```
-
-### Mission Setup
-
-Add `Scripts\DCS-gRPC\grpc-mission.lua` to your mission.
 
 ### Debugging
 

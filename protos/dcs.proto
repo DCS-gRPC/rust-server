@@ -3,6 +3,7 @@ syntax = "proto3";
 import "atmosphere.proto";
 import "coalitions.proto";
 import "common.proto";
+import "controllers.proto";
 import "custom.proto";
 import "group.proto";
 import "mission.proto";
@@ -30,6 +31,11 @@ service Coalitions {
 
 	// https://wiki.hoggitworld.com/view/DCS_func_getGroups
 	rpc GetGroups(GetGroupsRequest) returns (GetGroupsResponse) {}
+}
+
+service Controllers {
+    // https://wiki.hoggitworld.com/view/DCS_option_alarmState
+	rpc SetAlarmState(SetAlarmStateRequest) returns (EmptyResponse) {}
 }
 
 service Custom {

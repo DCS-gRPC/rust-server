@@ -125,6 +125,8 @@ service Units {
 
 	// https://wiki.hoggitworld.com/view/DCS_func_getPlayerName
 	rpc GetPlayerName(UnitName) returns (GetUnitPlayerNameResponse) {}
+
+	rpc GetUnitDescriptor(GetUnitDescriptorRequest) returns (GetUnitDescriptorResponse) {}
 }
 
 service World {

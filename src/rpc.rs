@@ -356,6 +356,14 @@ impl Units for RPC {
         let res: GetUnitPlayerNameResponse = self.request("getUnitPlayerName", request).await?;
         Ok(Response::new(res))
     }
+
+    async fn get_unit_descriptor(
+        &self,
+        request: Request<GetUnitDescriptorRequest>,
+    ) -> Result<Response<GetUnitDescriptorResponse>, Status> {
+        let res: GetUnitDescriptorResponse = self.request("getUnitDescriptor", request).await?;
+        Ok(Response::new(res))
+    }
 }
 
 #[tonic::async_trait]

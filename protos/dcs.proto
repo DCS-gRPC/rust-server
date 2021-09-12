@@ -118,13 +118,13 @@ service Groups {
 
 service Units {
 	// https://wiki.hoggitworld.com/view/DCS_func_getRadar
-	rpc GetRadar(UnitName) returns (GetRadarResponse) {}
+	rpc GetRadar(GetRadarRequest) returns (GetRadarResponse) {}
 
 	// https://wiki.hoggitworld.com/view/DCS_func_getPoint
-	rpc GetPosition(UnitName) returns (GetUnitPositionResponse) {}
+	rpc GetPosition(GetUnitPositionRequest) returns (GetUnitPositionResponse) {}
 
 	// https://wiki.hoggitworld.com/view/DCS_func_getPlayerName
-	rpc GetPlayerName(UnitName) returns (GetUnitPlayerNameResponse) {}
+	rpc GetPlayerName(GetUnitPlayerNameRequest) returns (GetUnitPlayerNameResponse) {}
 
 	rpc GetUnitDescriptor(GetUnitDescriptorRequest) returns (GetUnitDescriptorResponse) {}
 }

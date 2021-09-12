@@ -7,7 +7,10 @@ use crate::rpc::dcs::group::GetUnitsRequest;
 use crate::rpc::dcs::groups_server::Groups;
 use crate::rpc::dcs::unit_update::{UnitGone, Update};
 use crate::rpc::dcs::units_server::Units;
-use crate::rpc::dcs::{Coalition, GetGroupsRequest, Position, StreamUnitsRequest, Unit, UnitName};
+use crate::rpc::dcs::{
+    Coalition, GetGroupsRequest, GetUnitPlayerNameRequest, GetUnitPositionRequest, Position,
+    StreamUnitsRequest, Unit,
+};
 use crate::rpc::RPC;
 use futures_util::stream::StreamExt;
 use tokio::sync::mpsc::error::SendError;
@@ -245,7 +248,7 @@ impl UnitState {
         // update position
         let position = Units::get_position(
             &ctx.rpc,
-            Request::new(UnitName {
+            Request::new(GetUnitPositionRequest {
                 name: self.unit.name.clone(),
             }),
         )
@@ -262,7 +265,7 @@ impl UnitState {
         // update player name
         let player_name = Units::get_player_name(
             &ctx.rpc,
-            Request::new(UnitName {
+            Request::new(GetUnitPlayerNameRequest {
                 name: self.unit.name.clone(),
             }),
         )

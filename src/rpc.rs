@@ -335,7 +335,7 @@ impl Groups for RPC {
 impl Units for RPC {
     async fn get_radar(
         &self,
-        request: Request<UnitName>,
+        request: Request<GetRadarRequest>,
     ) -> Result<Response<GetRadarResponse>, Status> {
         let res: GetRadarResponse = self.request("getRadar", request).await?;
         Ok(Response::new(res))
@@ -343,7 +343,7 @@ impl Units for RPC {
 
     async fn get_position(
         &self,
-        request: Request<UnitName>,
+        request: Request<GetUnitPositionRequest>,
     ) -> Result<Response<GetUnitPositionResponse>, Status> {
         let res: GetUnitPositionResponse = self.request("getUnitPosition", request).await?;
         Ok(Response::new(res))
@@ -351,7 +351,7 @@ impl Units for RPC {
 
     async fn get_player_name(
         &self,
-        request: Request<UnitName>,
+        request: Request<GetUnitPlayerNameRequest>,
     ) -> Result<Response<GetUnitPlayerNameResponse>, Status> {
         let res: GetUnitPlayerNameResponse = self.request("getUnitPlayerName", request).await?;
         Ok(Response::new(res))

@@ -1,6 +1,8 @@
 #![allow(dead_code)]
 #![recursion_limit = "256"]
 
+#[cfg(feature = "hot-reload")]
+mod hot_reload;
 pub mod rpc;
 mod server;
 mod shutdown;
@@ -24,7 +26,8 @@ static INITIALIZED: Lazy<AtomicBool> = Lazy::new(|| AtomicBool::new(false));
 static SERVER: Lazy<RwLock<Option<Server>>> = Lazy::new(|| RwLock::new(None));
 
 struct Server {
-    ipc: IPC<Event>,
+    ipc_mission: IPC<Event>,
+    ipc_hook: IPC<()>,
     runtime: Runtime,
     shutdown: Shutdown,
     after_shutdown: oneshot::Sender<()>,
@@ -40,7 +43,7 @@ pub fn init(lua: &Lua) -> LuaResult<String> {
 
     if INITIALIZED
         .compare_exchange(false, true, Ordering::Acquire, Ordering::Relaxed)
-        .unwrap()
+        .unwrap_or(true)
     {
         return Ok(write_dir);
     }
@@ -70,9 +73,10 @@ pub fn init(lua: &Lua) -> LuaResult<String> {
     Ok(write_dir)
 }
 
-fn start(lua: &Lua, (): ()) -> LuaResult<()> {
+#[no_mangle]
+pub fn start(lua: &Lua, is_mission_env: bool) -> LuaResult<()> {
     {
-        if SERVER.read().unwrap().is_some() {
+        if !is_mission_env || SERVER.read().unwrap().is_some() {
             return Ok(());
         }
     }
@@ -81,17 +85,24 @@ fn start(lua: &Lua, (): ()) -> LuaResult<()> {
 
     log::info!("Starting ...");
 
-    let ipc = IPC::new();
+    let ipc_mission = IPC::new();
+    let ipc_hook = IPC::new();
     let (tx, rx) = oneshot::channel();
     let shutdown = Shutdown::new();
 
     // Spawn an executor thread that waits for the shutdown signal
     let runtime = Runtime::new()?;
-    runtime.spawn(crate::server::run(ipc.clone(), shutdown.handle(), rx));
+    runtime.spawn(crate::server::run(
+        ipc_mission.clone(),
+        ipc_hook.clone(),
+        shutdown.handle(),
+        rx,
+    ));
 
     let mut server = SERVER.write().unwrap();
     *server = Some(Server {
-        ipc,
+        ipc_mission,
+        ipc_hook,
         runtime,
         shutdown,
         after_shutdown: tx,
@@ -102,7 +113,8 @@ fn start(lua: &Lua, (): ()) -> LuaResult<()> {
     Ok(())
 }
 
-fn stop(_: &Lua, _: ()) -> LuaResult<()> {
+#[no_mangle]
+pub fn stop(_: &Lua, _: ()) -> LuaResult<()> {
     log::info!("Stopping ...");
 
     if let Some(Server {
@@ -126,9 +138,21 @@ fn stop(_: &Lua, _: ()) -> LuaResult<()> {
     Ok(())
 }
 
-fn next(lua: &Lua, callback: Function) -> LuaResult<bool> {
-    if let Some(Server { ref ipc, .. }) = *SERVER.read().unwrap() {
-        if let Some(mut next) = ipc.try_next() {
+#[no_mangle]
+pub fn next(lua: &Lua, (env, callback): (i32, Function)) -> LuaResult<bool> {
+    if let Some(Server {
+        ref ipc_mission,
+        ref ipc_hook,
+        ..
+    }) = *SERVER.read().unwrap()
+    {
+        let next = match env {
+            1 => ipc_mission.try_next(),
+            2 => ipc_hook.try_next(),
+            _ => return Ok(false),
+        };
+
+        if let Some(mut next) = next {
             let method = next.method().to_string();
             let params = next
                 .params(lua)
@@ -174,7 +198,8 @@ fn next(lua: &Lua, callback: Function) -> LuaResult<bool> {
     Ok(false)
 }
 
-fn event(lua: &Lua, event: Value) -> LuaResult<()> {
+#[no_mangle]
+pub fn event(lua: &Lua, event: Value) -> LuaResult<()> {
     let event: Event = match lua.from_value(event) {
         Ok(event) => event,
         Err(err) => {
@@ -187,24 +212,26 @@ fn event(lua: &Lua, event: Value) -> LuaResult<()> {
     };
 
     if let Some(Server {
-        ref ipc,
+        ref ipc_mission,
         ref runtime,
         ..
     }) = *SERVER.read().unwrap()
     {
         log::debug!("Received event: {:#?}", event);
-        runtime.block_on(ipc.event(event));
+        runtime.block_on(ipc_mission.event(event));
     }
 
     Ok(())
 }
 
-fn log_error(_: &Lua, err: String) -> LuaResult<()> {
+#[no_mangle]
+pub fn log_error(_: &Lua, err: String) -> LuaResult<()> {
     log::error!("{}", err);
     Ok(())
 }
 
-fn log_warning(_: &Lua, err: String) -> LuaResult<()> {
+#[no_mangle]
+pub fn log_warning(_: &Lua, err: String) -> LuaResult<()> {
     log::warn!("{}", err);
     Ok(())
 }
@@ -224,6 +251,20 @@ pub enum Error {
     SerializeParams(#[source] mlua::Error),
 }
 
+#[cfg(feature = "hot-reload")]
+#[mlua::lua_module]
+pub fn dcs_grpc_server_hot_reload(lua: &Lua) -> LuaResult<LuaTable> {
+    let exports = lua.create_table()?;
+    exports.set("start", lua.create_function(hot_reload::start)?)?;
+    exports.set("stop", lua.create_function(hot_reload::stop)?)?;
+    exports.set("next", lua.create_function(hot_reload::next)?)?;
+    exports.set("event", lua.create_function(hot_reload::event)?)?;
+    exports.set("log_error", lua.create_function(hot_reload::log_error)?)?;
+    exports.set("log_warning", lua.create_function(hot_reload::log_warning)?)?;
+    Ok(exports)
+}
+
+#[cfg(not(feature = "hot-reload"))]
 #[mlua::lua_module]
 pub fn dcs_grpc_server(lua: &Lua) -> LuaResult<LuaTable> {
     let exports = lua.create_table()?;

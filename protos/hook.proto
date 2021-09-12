@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+import "common.proto";
+
+package dcs.hook;
+
+message GetMissionNameRequest {}
+
+message GetMissionNameResponse {
+  string name = 1;
+}

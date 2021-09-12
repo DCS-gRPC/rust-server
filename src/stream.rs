@@ -11,7 +11,7 @@ use crate::rpc::dcs::{
     Coalition, GetGroupsRequest, GetUnitPlayerNameRequest, GetUnitPositionRequest, Position,
     StreamUnitsRequest, Unit,
 };
-use crate::rpc::RPC;
+use crate::rpc::MissionRpc;
 use futures_util::stream::StreamExt;
 use tokio::sync::mpsc::error::SendError;
 use tokio::sync::mpsc::Sender;
@@ -21,7 +21,7 @@ use tonic::{Code, Request, Status};
 /// Stream unit updates.
 pub async fn stream_units(
     opts: StreamUnitsRequest,
-    rpc: RPC,
+    rpc: MissionRpc,
     tx: Sender<Result<Update, Status>>,
 ) -> Result<(), Error> {
     // initialize the state for the current units stream instance
@@ -119,7 +119,7 @@ struct State {
 
 /// Various structs and options used to handle unit updates.
 struct Context {
-    rpc: RPC,
+    rpc: MissionRpc,
     tx: Sender<Result<Update, Status>>,
     poll_rate: Duration,
     max_backoff: Duration,

@@ -1,11 +1,26 @@
-env.info("[GRPC] loading ...")
+local isMissionEnv = _G.DCS == nil
+
+if isMissionEnv then
+  env.info("[GRPC] mission loading ...")
+end
 
 --
 -- load and start RPC
 --
-package.loaded["dcs_grpc_server"] = nil
-local grpc = require "dcs_grpc_server"
-grpc.start()
+
+local ok, grpc = pcall(require, "dcs_grpc_server_hot_reload")
+if ok then
+  if isMissionEnv then
+    env.info("[GRPC] loaded hot reload version")
+  else
+    log.write("[GRPC-Hook]", log.INFO, "loaded hot reload version")
+  end
+else
+  grpc = require("dcs_grpc_server")
+end
+
+grpc.start(isMissionEnv)
+
 GRPC.stopped = false
 GRPC.options = {
   evalEnabled = false
@@ -109,6 +124,19 @@ GRPC.errorPermissionDenied = function(msg)
 end
 
 --
+-- Helper methods
+--
+
+GRPC.toLatLonPosition = function(pos)
+  local lat, lon, alt = coord.LOtoLL(pos)
+  return {
+    lat = lat,
+    lon = lon,
+    alt = alt,
+  }
+end
+
+--
 -- RPC methods
 --
 
@@ -118,6 +146,7 @@ dofile(GRPC.basePath .. [[methods\coalitions.lua]])
 dofile(GRPC.basePath .. [[methods\controllers.lua]])
 dofile(GRPC.basePath .. [[methods\custom.lua]])
 dofile(GRPC.basePath .. [[methods\group.lua]])
+dofile(GRPC.basePath .. [[methods\hook.lua]])
 dofile(GRPC.basePath .. [[methods\mission.lua]])
 dofile(GRPC.basePath .. [[methods\timer.lua]])
 dofile(GRPC.basePath .. [[methods\trigger.lua]])
@@ -127,6 +156,12 @@ dofile(GRPC.basePath .. [[methods\world.lua]])
 --
 -- RPC request handler
 --
+
+GRPC.stop = function()
+  grpc.stop()
+  GRPC.stopped = true
+end
+
 local function handleRequest(method, params)
   local fn = GRPC.methods[method]
 
@@ -147,56 +182,74 @@ local function handleRequest(method, params)
   end
 end
 
---
--- execute gRPC requests every ~0.02 seconds
---
-local function next()
-  local i = 0
-  while grpc.next(handleRequest) do
-    i = i + 1
-    if i > 10 then
-      break
-    end
-  end
-end
+local MISSION_ENV = 1
+local HOOK_ENV = 2
 
-timer.scheduleFunction(function()
-  if not GRPC.stopped then
-    local ok, err = pcall(next)
-    if not ok then
-      GRPC.logError("Error retrieving next command: "..tostring(err))
-    end
-
-    return timer.getTime() + .02 -- return time of next call
-  end
-end, nil, timer.getTime() + .02)
-
-GRPC.toLatLonPosition = function(pos)
-  local lat, lon, alt = coord.LOtoLL(pos)
-  return {
-    lat = lat,
-    lon = lon,
-    alt = alt,
-  }
-end
-
-local eventHandler = {}
-function eventHandler:onEvent(event)
-  if not GRPC.stopped then
-    local ok, result = xpcall(function() return GRPC.onDcsEvent(event) end, debug.traceback)
-    if ok then
-      if result ~= nil then
-        grpc.event(result)
-        if result.event.type == "missionEnd" then
-          grpc.stop()
-          GRPC.stopped = true
-        end
+if isMissionEnv then
+  -- execute gRPC requests every ~0.02 seconds
+  local function next()
+    local i = 0
+    while grpc.next(MISSION_ENV, handleRequest) do
+      i = i + 1
+      if i > 10 then
+        break
       end
-    else
-      GRPC.logError("Error in event handler: "..tostring(err))
+    end
+  end
+
+  timer.scheduleFunction(function()
+    if not GRPC.stopped then
+      local ok, err = pcall(next)
+      if not ok then
+        GRPC.logError("Error retrieving next command: "..tostring(err))
+      end
+
+      return timer.getTime() + .02 -- return time of next call
+    end
+  end, nil, timer.getTime() + .02)
+
+  local eventHandler = {}
+  function eventHandler:onEvent(event)
+    if not GRPC.stopped then
+      local ok, result = xpcall(function() return GRPC.onDcsEvent(event) end, debug.traceback)
+      if ok then
+        if result ~= nil then
+          grpc.event(result)
+          if result.event.type == "missionEnd" then
+            GRPC.stop()
+          end
+        end
+      else
+        GRPC.logError("Error in event handler: "..tostring(err))
+      end
+    end
+  end
+  world.addEventHandler(eventHandler)
+else -- hook env
+  -- execute gRPC requests every 10th simulation frame
+  local function next()
+    local i = 0
+    while grpc.next(HOOK_ENV, handleRequest) do
+      i = i + 1
+      if i > 10 then
+        break
+      end
+    end
+  end
+
+  local frame = 0
+  function GRPC.onSimulationFrame()
+    frame = frame + 1
+    if frame >= 10 then
+      frame = 0
+      local ok, err = pcall(next)
+      if not ok then
+        log.write("[GRPC]", log.ERROR, "Error retrieving next command: "..tostring(err))
+      end
     end
   end
 end
-world.addEventHandler(eventHandler)
 
-env.info("[GRPC] loaded ...")
+if isMissionEnv then
+  env.info("[GRPC] loaded ...")
+end

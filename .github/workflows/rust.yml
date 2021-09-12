@@ -14,11 +14,22 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    env:
+      LUA_LIB_NAME: lua
+      LUA_LIB: ${{ github.workspace }}/lua/lua5.1/
+      LUA_INC: ${{ github.workspace }}/lua/lua5.1/include
+
     steps:
     - uses: actions/checkout@v2
+
     - name: Build
-      run: make build
+      run: cargo build
+
+    - name: Build with hot-reload feature
+      run: cargo build --features hot-reload
+
     - name: Run tests
-      run: make test
+      run: cargo test
+
     - name: Check formatting
       run: cargo fmt -- --check

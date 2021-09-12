@@ -12,6 +12,7 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 dcs-module-ipc = "0.5"
 futures-util = "0.3"
+libloading = { version = "0.7", optional = true }
 log4rs = "1.0"
 log = "0.4"
 mlua = { version = "0.6", default-features = false, features = ["lua51", "module", "serialize"] }
@@ -30,3 +31,7 @@ serde_json = "1.0"
 
 [build-dependencies]
 tonic-build = "0.4"
+
+[features]
+default = []
+hot-reload = ["libloading"]

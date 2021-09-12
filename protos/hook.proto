@@ -9,3 +9,30 @@ message GetMissionNameRequest {}
 message GetMissionNameResponse {
   string name = 1;
 }
+
+message StreamChatRequest {}
+
+message ChatMessage {
+  // The UUID of the message used to let the gRPC know whether the message should be filtered or
+  // not.
+  string uuid = 1;
+
+  // The ID of the player sending the chat messaage.
+  uint32 player_id = 2;
+
+  // The chat message.
+  string message = 3;
+
+  // Whether the message was send to all or only to allies.
+  bool all = 4;
+}
+
+message FilterChatMessageRequest {
+  // The UUID of the message.
+  string uuid = 1;
+
+  // The filtered content of the message. The message will be dropped if the string is empty.
+  string message = 2;
+}
+
+message FilterChatMessageResponse {}

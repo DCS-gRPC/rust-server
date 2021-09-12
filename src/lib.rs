@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 #![recursion_limit = "256"]
 
+mod chat;
 #[cfg(feature = "hot-reload")]
 mod hot_reload;
 pub mod rpc;
@@ -13,6 +14,7 @@ use std::sync::{Arc, RwLock};
 use std::time::Duration;
 
 use crate::shutdown::Shutdown;
+use chat::Chat;
 use dcs_module_ipc::IPC;
 use mlua::{prelude::*, LuaSerdeExt};
 use mlua::{Function, Value};
@@ -28,6 +30,7 @@ static SERVER: Lazy<RwLock<Option<Server>>> = Lazy::new(|| RwLock::new(None));
 struct Server {
     ipc_mission: IPC<Event>,
     ipc_hook: IPC<()>,
+    chat: Chat,
     runtime: Runtime,
     shutdown: Shutdown,
     after_shutdown: oneshot::Sender<()>,
@@ -87,6 +90,7 @@ pub fn start(lua: &Lua, is_mission_env: bool) -> LuaResult<()> {
 
     let ipc_mission = IPC::new();
     let ipc_hook = IPC::new();
+    let chat = Chat::new();
     let (tx, rx) = oneshot::channel();
     let shutdown = Shutdown::new();
 
@@ -95,6 +99,7 @@ pub fn start(lua: &Lua, is_mission_env: bool) -> LuaResult<()> {
     runtime.spawn(crate::server::run(
         ipc_mission.clone(),
         ipc_hook.clone(),
+        chat.clone(),
         shutdown.handle(),
         rx,
     ));
@@ -103,6 +108,7 @@ pub fn start(lua: &Lua, is_mission_env: bool) -> LuaResult<()> {
     *server = Some(Server {
         ipc_mission,
         ipc_hook,
+        chat,
         runtime,
         shutdown,
         after_shutdown: tx,
@@ -225,6 +231,25 @@ pub fn event(lua: &Lua, event: Value) -> LuaResult<()> {
 }
 
 #[no_mangle]
+pub fn on_chat_message(
+    _: &Lua,
+    (player_id, message, all): (u32, String, bool),
+) -> LuaResult<String> {
+    log::debug!("on_chat_message {} {} {}", player_id, message, all);
+
+    if let Some(Server {
+        ref chat,
+        ref runtime,
+        ..
+    }) = *SERVER.read().unwrap()
+    {
+        Ok(runtime.block_on(chat.handle_message(player_id, message, all)))
+    } else {
+        Ok(message)
+    }
+}
+
+#[no_mangle]
 pub fn log_error(_: &Lua, err: String) -> LuaResult<()> {
     log::error!("{}", err);
     Ok(())
@@ -259,6 +284,10 @@ pub fn dcs_grpc_server_hot_reload(lua: &Lua) -> LuaResult<LuaTable> {
     exports.set("stop", lua.create_function(hot_reload::stop)?)?;
     exports.set("next", lua.create_function(hot_reload::next)?)?;
     exports.set("event", lua.create_function(hot_reload::event)?)?;
+    exports.set(
+        "on_chat_message",
+        lua.create_function(hot_reload::on_chat_message)?,
+    )?;
     exports.set("log_error", lua.create_function(hot_reload::log_error)?)?;
     exports.set("log_warning", lua.create_function(hot_reload::log_warning)?)?;
     Ok(exports)
@@ -272,6 +301,7 @@ pub fn dcs_grpc_server(lua: &Lua) -> LuaResult<LuaTable> {
     exports.set("stop", lua.create_function(stop)?)?;
     exports.set("next", lua.create_function(next)?)?;
     exports.set("event", lua.create_function(event)?)?;
+    exports.set("on_chat_message", lua.create_function(on_chat_message)?)?;
     exports.set("log_error", lua.create_function(log_error)?)?;
     exports.set("log_warning", lua.create_function(log_warning)?)?;
     Ok(exports)

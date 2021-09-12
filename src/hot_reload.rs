@@ -32,7 +32,6 @@ pub fn start(lua: &Lua, is_mission_env: bool) -> LuaResult<()> {
 
 pub fn stop(lua: &Lua, arg: ()) -> LuaResult<()> {
     if let Some(lib) = LIBRARY.write().unwrap().take() {
-        log::debug!("CLOSING LIBRARY");
         let f: Symbol<fn(lua: &Lua, arg: ()) -> LuaResult<()>> = unsafe {
             lib.get(b"stop")
                 .map_err(|err| mlua::Error::ExternalError(Arc::new(err)))?
@@ -64,6 +63,21 @@ pub fn event(lua: &Lua, event: Value) -> LuaResult<()> {
         f(lua, event)
     } else {
         Ok(())
+    }
+}
+
+pub fn on_chat_message(
+    lua: &Lua,
+    (player_id, message, all): (u32, String, bool),
+) -> LuaResult<String> {
+    if let Some(ref lib) = *LIBRARY.read().unwrap() {
+        let f: Symbol<fn(lua: &Lua, arg: (u32, String, bool)) -> LuaResult<String>> = unsafe {
+            lib.get(b"on_chat_message")
+                .map_err(|err| mlua::Error::ExternalError(Arc::new(err)))?
+        };
+        f(lua, (player_id, message, all))
+    } else {
+        Ok(message)
     }
 }
 

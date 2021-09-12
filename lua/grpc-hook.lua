@@ -33,6 +33,10 @@ local function init()
     _G.GRPC = nil
   end
 
+  function handler.onPlayerTrySendChat(playerID, msg, all)
+    return _G.GRPC.onChatMessage(playerID, msg, all)
+  end
+
   DCS.setUserCallbacks(handler)
 
   log.write("[GRPC-Hook]", log.INFO, "Initialized ...")

@@ -1,5 +1,6 @@
 use std::time::Duration;
 
+use crate::chat::Chat;
 use crate::rpc::{dcs, HookRpc, MissionRpc};
 use crate::shutdown::ShutdownHandle;
 use dcs::atmosphere_server::AtmosphereServer;
@@ -22,6 +23,7 @@ use tonic::transport::{self, Server};
 pub async fn run(
     ipc_mission: IPC<Event>,
     ipc_hook: IPC<()>,
+    chat: Chat,
     shutdown_signal: ShutdownHandle,
     mut after_shutdown: Receiver<()>,
 ) {
@@ -29,6 +31,7 @@ pub async fn run(
         match try_run(
             ipc_mission.clone(),
             ipc_hook.clone(),
+            chat.clone(),
             shutdown_signal.clone(),
             &mut after_shutdown,
         )
@@ -47,6 +50,7 @@ pub async fn run(
 async fn try_run(
     ipc_mission: IPC<Event>,
     ipc_hook: IPC<()>,
+    chat: Chat,
     shutdown_signal: ShutdownHandle,
     after_shutdown: &mut Receiver<()>,
 ) -> Result<(), transport::Error> {
@@ -54,7 +58,7 @@ async fn try_run(
 
     let addr = "0.0.0.0:50051".parse().unwrap();
     let mission_rpc = MissionRpc::new(ipc_mission, shutdown_signal.clone());
-    let hook_rpc = HookRpc::new(ipc_hook, shutdown_signal.clone());
+    let hook_rpc = HookRpc::new(ipc_hook, chat, shutdown_signal.clone());
     Server::builder()
         .add_service(AtmosphereServer::new(mission_rpc.clone()))
         .add_service(CoalitionsServer::new(mission_rpc.clone()))

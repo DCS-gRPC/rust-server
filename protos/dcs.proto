@@ -119,6 +119,16 @@ service Groups {
 
 service Hook {
 	rpc GetMissionName(dcs.hook.GetMissionNameRequest) returns (dcs.hook.GetMissionNameResponse) {}
+
+	// Stream all chat messages. Once a chat message stream is active, the gRPC server expects a
+	// `FilterChatMessageRequest` for each message letting the server know whether the chat message
+	// should be filtered or not. This request must be send ASAP, as the server is blocked until the
+	// request is received. If the server does not receive a `FilterChatMessageRequest` within
+	// 16 milliseconds, the chat message will thus be dropped to prevent the server from getting
+	// blocked too long.
+	rpc StreamChat(dcs.hook.StreamChatRequest) returns (stream dcs.hook.ChatMessage) {}
+
+	rpc FilterChatMessage(dcs.hook.FilterChatMessageRequest) returns (dcs.hook.FilterChatMessageResponse) {}
 }
 
 service Units {

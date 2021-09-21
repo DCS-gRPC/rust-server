@@ -6,6 +6,7 @@ package dcs;
 
 message StreamEventsRequest {}
 
+// The DCS Event information. Contains event information and a timestamp.
 message Event {
   // Occurs when a unit fires a weapon (but no machine gun- or autocannon-based
   // weapons - those are handled by [ShootingStartEvent]).

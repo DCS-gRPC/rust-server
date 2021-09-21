@@ -15,6 +15,7 @@ import "world.proto";
 
 package dcs;
 
+// https://wiki.hoggitworld.com/view/DCS_singleton_atmosphere
 service Atmosphere {
 	// https://wiki.hoggitworld.com/view/DCS_func_getWind
 	rpc GetWind(AtmosphereRequest) returns (GetWindResponse) {}
@@ -26,6 +27,7 @@ service Atmosphere {
 	rpc GetTemperatureAndPressure(AtmosphereRequest) returns (GetTemperatureAndPressureResponse) {}
 }
 
+// https://wiki.hoggitworld.com/view/DCS_singleton_coalition
 service Coalitions {
 	// https://wiki.hoggitworld.com/view/DCS_func_getPlayers
 	rpc GetPlayers(GetPlayersRequest) returns (GetPlayersResponse) {}
@@ -39,6 +41,10 @@ service Controllers {
 	rpc SetAlarmState(SetAlarmStateRequest) returns (EmptyResponse) {}
 }
 
+// The Custom service is for APIs that do not map to the "standard library" of DCS APIs provided
+// by Eagle Dynamics.
+//
+// Expect to find APIs that may be useful for mission frameworks etc.
 service Custom {
 	// DCT Function
 	rpc RequestMissionAssignment(MissionAssignmentRequest) returns (MissionAssignmentResponse) {}
@@ -50,6 +56,7 @@ service Custom {
 	rpc Eval(EvalRequest) returns (EvalResponse) {}
 }
 
+// Contains the streaming APIs that streaming information out of the DCS server.
 service Mission {
 	// Streams DCS game generated Events.
 	// See https://wiki.hoggitworld.com/view/Category:Events
@@ -59,7 +66,7 @@ service Mission {
 	rpc StreamUnits(StreamUnitsRequest) returns (stream UnitUpdate) {}
 }
 
-// Return various mission time data
+// https://wiki.hoggitworld.com/view/DCS_singleton_timer
 service Timer {
 	// https://wiki.hoggitworld.com/view/DCS_func_getTime
 	rpc GetTime(GetTimeRequest) returns (GetTimeResponse) {}
@@ -71,6 +78,7 @@ service Timer {
 	rpc GetTimeZero(GetTimeZeroRequest) returns (GetTimeZeroResponse) {}
 }
 
+// https://wiki.hoggitworld.com/view/DCS_singleton_trigger
 service Triggers {
 	// https://wiki.hoggitworld.com/view/DCS_func_outText
 	rpc OutText(OutTextRequest) returns (EmptyResponse) {}
@@ -112,15 +120,19 @@ service Triggers {
 	rpc SignalFlare(SignalFlareRequest) returns (EmptyResponse) {}
 }
 
+// https://wiki.hoggitworld.com/view/DCS_Class_Group
 service Groups {
 	// https://wiki.hoggitworld.com/view/DCS_func_getUnits
 	rpc GetUnits(dcs.group.GetUnitsRequest) returns (dcs.group.GetUnitsResponse) {}
 }
 
+// APis that are part of the hook environment
 service Hook {
+    // https://wiki.hoggitworld.com/view/DCS_func_getMissionName
 	rpc GetMissionName(dcs.hook.GetMissionNameRequest) returns (dcs.hook.GetMissionNameResponse) {}
 }
 
+// https://wiki.hoggitworld.com/view/DCS_Class_Unit
 service Units {
 	// https://wiki.hoggitworld.com/view/DCS_func_getRadar
 	rpc GetRadar(GetRadarRequest) returns (GetRadarResponse) {}
@@ -134,6 +146,7 @@ service Units {
 	rpc GetUnitDescriptor(GetUnitDescriptorRequest) returns (GetUnitDescriptorResponse) {}
 }
 
+// https://wiki.hoggitworld.com/view/DCS_singleton_world
 service World {
 	// https://wiki.hoggitworld.com/view/DCS_func_getAirbases
 	rpc GetAirbases(GetAirbasesRequest) returns (GetAirbasesResponse) {}
@@ -141,4 +154,3 @@ service World {
 	// https://wiki.hoggitworld.com/view/DCS_func_getMarkPanels
 	rpc GetMarkPanels(GetMarkPanelsRequest) returns (GetMarkPanelsResponse) {}
 }
-

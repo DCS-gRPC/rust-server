@@ -10,7 +10,7 @@ use once_cell::sync::Lazy;
 
 static LIBRARY: Lazy<RwLock<Option<Library>>> = Lazy::new(|| RwLock::new(None));
 
-pub fn start(lua: &Lua, is_mission_env: bool) -> LuaResult<()> {
+pub fn start(lua: &Lua, args: (bool, String, u16)) -> LuaResult<()> {
     let write_dir = super::init(lua)?;
     let lib_path = write_dir.clone() + "Mods/Tech/DCS-gRPC/dcs_grpc_server.dll";
 
@@ -21,11 +21,11 @@ pub fn start(lua: &Lua, is_mission_env: bool) -> LuaResult<()> {
     let mut lib = LIBRARY.write().unwrap();
     let lib = lib.get_or_insert(new_lib);
 
-    let f: Symbol<fn(lua: &Lua, is_mission_env: bool) -> LuaResult<()>> = unsafe {
+    let f: Symbol<fn(lua: &Lua, args: (bool, String, u16)) -> LuaResult<()>> = unsafe {
         lib.get(b"start")
             .map_err(|err| mlua::Error::ExternalError(Arc::new(err)))?
     };
-    let result = f(lua, is_mission_env);
+    let result = f(lua, args);
 
     result
 }

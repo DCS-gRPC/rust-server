@@ -10,28 +10,16 @@ mod stream;
 
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, RwLock};
-use std::time::Duration;
 
-use crate::shutdown::Shutdown;
-use dcs_module_ipc::IPC;
 use mlua::{prelude::*, LuaSerdeExt};
 use mlua::{Function, Value};
 use once_cell::sync::Lazy;
 use rpc::dcs::Event;
+use server::Server;
 use thiserror::Error;
-use tokio::runtime::Runtime;
-use tokio::sync::oneshot;
 
 static INITIALIZED: Lazy<AtomicBool> = Lazy::new(|| AtomicBool::new(false));
 static SERVER: Lazy<RwLock<Option<Server>>> = Lazy::new(|| RwLock::new(None));
-
-struct Server {
-    ipc_mission: IPC<Event>,
-    ipc_hook: IPC<()>,
-    runtime: Runtime,
-    shutdown: Shutdown,
-    after_shutdown: oneshot::Sender<()>,
-}
 
 pub fn init(lua: &Lua) -> LuaResult<String> {
     // get lfs.writedir()
@@ -74,7 +62,7 @@ pub fn init(lua: &Lua) -> LuaResult<String> {
 }
 
 #[no_mangle]
-pub fn start(lua: &Lua, is_mission_env: bool) -> LuaResult<()> {
+pub fn start(lua: &Lua, (is_mission_env, host, port): (bool, String, u16)) -> LuaResult<()> {
     {
         if !is_mission_env || SERVER.read().unwrap().is_some() {
             return Ok(());
@@ -85,28 +73,10 @@ pub fn start(lua: &Lua, is_mission_env: bool) -> LuaResult<()> {
 
     log::info!("Starting ...");
 
-    let ipc_mission = IPC::new();
-    let ipc_hook = IPC::new();
-    let (tx, rx) = oneshot::channel();
-    let shutdown = Shutdown::new();
-
-    // Spawn an executor thread that waits for the shutdown signal
-    let runtime = Runtime::new()?;
-    runtime.spawn(crate::server::run(
-        ipc_mission.clone(),
-        ipc_hook.clone(),
-        shutdown.handle(),
-        rx,
-    ));
-
-    let mut server = SERVER.write().unwrap();
-    *server = Some(Server {
-        ipc_mission,
-        ipc_hook,
-        runtime,
-        shutdown,
-        after_shutdown: tx,
-    });
+    let mut server =
+        Server::new(&host, port).map_err(|err| mlua::Error::ExternalError(Arc::new(err)))?;
+    server.run_in_background();
+    *(SERVER.write().unwrap()) = Some(server);
 
     log::info!("Started");
 
@@ -117,20 +87,8 @@ pub fn start(lua: &Lua, is_mission_env: bool) -> LuaResult<()> {
 pub fn stop(_: &Lua, _: ()) -> LuaResult<()> {
     log::info!("Stopping ...");
 
-    if let Some(Server {
-        runtime,
-        shutdown,
-        after_shutdown,
-        ..
-    }) = SERVER.write().unwrap().take()
-    {
-        // graceful shutdown
-        runtime.block_on(shutdown.shutdown());
-        let _ = after_shutdown.send(());
-
-        // shutdown the async runtime, again give everything another 5 secs before forecefully
-        // killing everything
-        runtime.shutdown_timeout(Duration::from_secs(5));
+    if let Some(server) = SERVER.write().unwrap().take() {
+        server.stop_blocking();
     }
 
     log::info!("Stopped");

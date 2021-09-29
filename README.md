@@ -53,6 +53,26 @@ Add the following code to your mission. This will start the DCS-gRPC server. You
     end
     ```
 
+### Settings
+
+The behaviour of the gRPC server can be fine-tuned using various settings that can be set on the `GRPC` global (before the `grpc.lua` is executed). The available settings and their defaults are:
+
+```lua
+GRPC = {
+  -- the base path where the lua files of the gRPC server are located
+  basePath = lfs.writedir()..[[Scripts\DCS-gRPC\]],
+
+  -- whether the `Eval` method is enabled or not
+  evalEnabled = false,
+
+  -- the host the gRPC listens on (use "0.0.0.0" to listen on all IP addresses of the host)
+  host = '127.0.0.1',
+
+  -- the port to listen on
+  port = 50051,
+}
+```
+
 ### Confirmation
 
 To confirm that the server is running check the `\Logs\dcs.log` file and look for entries prefixed with `GRPC`.

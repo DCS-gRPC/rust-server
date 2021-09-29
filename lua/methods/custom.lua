@@ -11,7 +11,7 @@ GRPC.methods.joinMission = function(params)
 end
 
 GRPC.methods.eval = function(params)
-    if GRPC.options.evalEnabled ~= true then
+    if GRPC.evalEnabled ~= true then
         return GRPC.errorPermissionDenied("eval operation is disabled")
     end
 

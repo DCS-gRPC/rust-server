@@ -5,6 +5,27 @@ if isMissionEnv then
 end
 
 --
+-- set default settings
+--
+
+if _G.GRPC == nil then
+  GRPC = {}
+end
+
+if GRPC.basePath == nil then
+  GRPC.basePath = lfs.writedir()..[[Scripts\DCS-gRPC\]]
+end
+if GRPC.evalEnabled == nil then
+  GRPC.evalEnabled = false
+end
+if GRPC.host == nil then
+  GRPC.host = "127.0.0.1"
+end
+if GRPC.port == nil then
+  GRPC.port = 50051
+end
+
+--
 -- load and start RPC
 --
 
@@ -19,20 +40,7 @@ else
   grpc = require("dcs_grpc_server")
 end
 
-grpc.start(isMissionEnv)
-
-GRPC.stopped = false
-GRPC.options = {
-  evalEnabled = false
-}
-
---
--- Methods to set options
---
-
-GRPC.enableEval = function()
-  GRPC.options.evalEnabled = true
-end
+grpc.start(isMissionEnv, GRPC.host, GRPC.port)
 
 --
 -- Export methods
@@ -157,9 +165,10 @@ dofile(GRPC.basePath .. [[methods\world.lua]])
 -- RPC request handler
 --
 
+local stopped = false
 GRPC.stop = function()
   grpc.stop()
-  GRPC.stopped = true
+  stopped = true
 end
 
 local function handleRequest(method, params)
@@ -198,7 +207,7 @@ if isMissionEnv then
   end
 
   timer.scheduleFunction(function()
-    if not GRPC.stopped then
+    if not stopped then
       local ok, err = pcall(next)
       if not ok then
         GRPC.logError("Error retrieving next command: "..tostring(err))
@@ -210,7 +219,7 @@ if isMissionEnv then
 
   local eventHandler = {}
   function eventHandler:onEvent(event)
-    if not GRPC.stopped then
+    if not stopped then
       local ok, result = xpcall(function() return GRPC.onDcsEvent(event) end, debug.traceback)
       if ok then
         if result ~= nil then

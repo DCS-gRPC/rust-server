@@ -8,9 +8,12 @@ mission on a DCS server.
 ### Download
 
 Download the latest version of the server from the [Releases](https://github.com/DCS-gRPC/rust-server/releases) and
-extract the zip file into your DCS Server directory. This is typically found in
-`C:\Users\USERNAME\Saved Games\DCS.openbeta_server`. Once extracted you will have a `Scripts\DCS-gRPC` folder,
-a `Mods\Tech\DCS-gRPC` folder, and a `Scripts\Hooks\DCS-gRPC.lua` file.
+extract the zip file into your DCS Server directory.
+
+This is typically found in `C:\Users\USERNAME\Saved Games\DCS.openbeta_server`.
+Once extracted you will have a `Scripts\DCS-gRPC` folder, a `Mods\Tech\DCS-gRPC` folder, and a
+`Scripts\Hooks\DCS-gRPC.lua` file in your server folder. As well as these scripts there will be a `Docs/DCS-gRPC`
+folder containing documentation and a `Tools/DCS-gRPC` folder containing client tools.
 
 ### MissionScripting Sanitisation Removal
 
@@ -34,24 +37,38 @@ end
 
 ### Mission Editing
 
-Add the following code to your mission. This will start the DCS-gRPC server. You can add this code
+You can enable DCS-gRPC in two ways.
 
-- to a `DO SCRIPT FILE` trigger action loading `Scripts\DCS-gRPC\grpc-mission.lua`, or
-- to a `DO SCRIPT` trigger action (or include it in your own scripts if you already have some) with the following script:
+#### DO SCRIPT FILE
 
-    ```lua
-    package.cpath = package.cpath..lfs.writedir()..[[Mods\tech\DCS-gRPC\?.dll;]]
-    GRPC = { basePath = lfs.writedir()..[[Scripts\DCS-gRPC\]] }
+Add a `DO SCRIPT FILE` trigger action loading the `Scripts\DCS-gRPC\grpc-mission.lua` file. This will load
+DCS-gRPC with default values set
 
-    local luaPath = GRPC.basePath .. [[grpc.lua]]
-    local f = assert( loadfile(luaPath) )
 
-    if f == nil then
-      error ("[GRPC]: Could not load " .. luaPath )
-    else
-      f()
-    end
-    ```
+#### DO SCRIPT
+
+Add the following code to your mission. This will start the DCS-gRPC server. You can add this code to a `DO SCRIPT`
+trigger in your .miz file or you can add this code to an existing lua file that your mission may be running.
+
+```lua
+package.cpath = package.cpath..lfs.writedir()..[[Mods\tech\DCS-gRPC\?.dll;]]
+
+GRPC = {
+  basePath = lfs.writedir()..[[Scripts\DCS-gRPC\]]
+  -- Add optional settings here if desired. Remember to add a comma to the line above if you do.
+}
+
+local luaPath = GRPC.basePath .. [[grpc.lua]]
+local f = assert( loadfile(luaPath) )
+
+if f == nil then
+  error ("[GRPC]: Could not load " .. luaPath )
+else
+  f()
+end
+```
+
+Using this method easily allows you to add optional settings listed below to the `GRPC` object. 
 
 ### Settings
 
@@ -80,7 +97,18 @@ You can also check for the present of a `\Logs\grpc.log` file.
 
 The server will be running on port 50051
 
-## Development
+## Client Development
+
+`DCS-gRPC`, as the name implies, uses the [gRPC](https://grpc.io/) framework to handle communication between clients
+and the server. gRPC supports a wide variety of languages which allows you to develop clients in the languages of
+your choice.
+
+In order to develop clients for `DCS-gRPC` you must be familiar with gRPC concepts so we recommend reading the
+[gRPC documentation](https://grpc.io/docs/) for your language.
+
+The gRPC .proto files are available in the `Docs/DCS-gRPC` folder and also available in the Github repo
+
+## Server Development
 
 The following section is only applicable to people who want to developer the DCS-gRPC server itself.
 
@@ -171,6 +199,37 @@ or watch the mission event stream via:
 ```bash
 grpcurl.exe -plaintext -import-path ./protos -proto ./protos/dcs.proto -d '{}' 127.0.0.1:50051 dcs.Mission/StreamEvents
 ```
+
+#### REPL
+
+`DCS-gRPC` provides the facility to directly run lua code inside the mission scripting environment. This feature is
+mainly intended for development and is disabled by default. You can enable it via the `GRPC` settings
+(See `Settings` section above)
+
+To build and run the repl run the following commands
+
+```bash
+cargo build --bin repl
+# Make sure your DCS mission is running
+cargo run --bin repl
+```
+
+Note that the REPL is hardcoded to connect to localhost on the default port
+
+Once connected you can enter lua code to execute. Prefix the lua with `return` to have the lua code return a value to
+the client. For example:
+
+```lua
+return Group.getByName('Aerial-1')
+= {
+    "id_": 1
+}
+
+return Group.getByName('Aerial-1'):getName()
+= Aerial-1
+```
+
+The REPL is also available in the release and can be run by running `Tools/DCS-gRPC/repl.exe`
 
 ### Troublshooting
 

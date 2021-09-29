@@ -298,7 +298,8 @@ impl Atmosphere for MissionRpc {
         &self,
         request: Request<GetWindWithTurbulenceRequest>,
     ) -> Result<Response<GetWindWithTurbulenceResponse>, Status> {
-        let res: GetWindWithTurbulenceResponse = self.request("getWindWithTurbulence", request).await?;
+        let res: GetWindWithTurbulenceResponse =
+            self.request("getWindWithTurbulence", request).await?;
         Ok(Response::new(res))
     }
 

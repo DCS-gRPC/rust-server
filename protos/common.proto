@@ -43,20 +43,28 @@ enum Coalition {
   BLUE = 2;
 }
 
+/**
+ * A generic empty response
+ *
+ * A generic empty response used in APIs that do not return any values to the client
+ */
 message EmptyResponse {}
 
 /**
  * Position of an object in DCS
  *
- * Lattitude and Longitude are in Decimal format (e.g. 41.33 / 37.21). Negative values are used for West of the
+ * Latitude and Longitude are in Decimal Degrees format (e.g. 41.33 / 37.21). Negative values are used for West of the
  * meridian and south of the equator
  *
  * Altitude is given in meters above Mean Sea Level (MSL) and can be a decimal value.
  */
 message Position {
+  // Latitude in Decimal Degrees format
   double lat = 1;
+  // Longitude in Decimal Degrees format
   double lon = 2;
-  double alt = 3; // in meters
+  // Altitude in Meters above Mean Sea Level (MSL)
+  double alt = 3; 
 }
 
 /**

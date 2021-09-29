@@ -288,7 +288,7 @@ impl Triggers for MissionRpc {
 impl Atmosphere for MissionRpc {
     async fn get_wind(
         &self,
-        request: Request<AtmosphereRequest>,
+        request: Request<GetWindRequest>,
     ) -> Result<Response<GetWindResponse>, Status> {
         let res: GetWindResponse = self.request("getWind", request).await?;
         Ok(Response::new(res))
@@ -296,15 +296,15 @@ impl Atmosphere for MissionRpc {
 
     async fn get_wind_with_turbulence(
         &self,
-        request: Request<AtmosphereRequest>,
-    ) -> Result<Response<GetWindResponse>, Status> {
-        let res: GetWindResponse = self.request("getWindWithTurbulence", request).await?;
+        request: Request<GetWindWithTurbulenceRequest>,
+    ) -> Result<Response<GetWindWithTurbulenceResponse>, Status> {
+        let res: GetWindWithTurbulenceResponse = self.request("getWindWithTurbulence", request).await?;
         Ok(Response::new(res))
     }
 
     async fn get_temperature_and_pressure(
         &self,
-        request: Request<AtmosphereRequest>,
+        request: Request<GetTemperatureAndPressureRequest>,
     ) -> Result<Response<GetTemperatureAndPressureResponse>, Status> {
         let res: GetTemperatureAndPressureResponse =
             self.request("getTemperatureAndPressure", request).await?;

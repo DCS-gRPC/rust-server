@@ -294,7 +294,7 @@ message Event {
     BaseCaptureEvent base_capture = 13;
     MissionStartEvent mission_start = 14;
     MissionEndEvent mission_end = 15;
-    // 16 reserved for S_EVENT_TOOK_CONTROL
+    // @exclude 16 reserved for S_EVENT_TOOK_CONTROL
     RefuelingStopEvent refueling_stop = 17;
     BirthEvent birth = 18;
     HumanFailureEvent human_failure = 19;
@@ -303,7 +303,7 @@ message Event {
     EngineShutdownEvent engine_shutdown = 22;
     PlayerEnterUnitEvent player_enter_unit = 23;
     PlayerLeaveUnitEvent player_leave_unit = 24;
-    // 25 reserved for S_EVENT_PLAYER_COMMENT
+    // @exclude 25 reserved for S_EVENT_PLAYER_COMMENT
     ShootingStartEvent shooting_start = 26;
     ShootingEndEvent shooting_end = 27;
     MarkAddEvent mark_add = 28;
@@ -313,12 +313,12 @@ message Event {
     ScoreEvent score = 32;
     UnitLostEvent unit_lost = 33;
     LandingAfterEjectionEvent landingAfterEjection = 34;
-    // 35 reserved for S_EVENT_PARATROOPER_LENDING
+    // @exclude 35 reserved for S_EVENT_PARATROOPER_LENDING
     DiscardChairAfterEjectionEvent discardChairAfterEjection = 36;
     WeaponAddEvent weapon_add = 37;
-    // 38 reserved for S_EVENT_TRIGGER_ZONE
+    // @exclude 38 reserved for S_EVENT_TRIGGER_ZONE
     LandingQualityMarkEvent landing_quality_mark = 39;
-    // 40 reserved for S_EVENT_BDA
+    // @exclude 40 reserved for S_EVENT_BDA
   }
 }
 

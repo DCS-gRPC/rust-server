@@ -62,9 +62,9 @@ pub fn init(lua: &Lua) -> LuaResult<String> {
 }
 
 #[no_mangle]
-pub fn start(lua: &Lua, (is_mission_env, host, port): (bool, String, u16)) -> LuaResult<()> {
+pub fn start(lua: &Lua, (host, port): (String, u16)) -> LuaResult<()> {
     {
-        if !is_mission_env || SERVER.read().unwrap().is_some() {
+        if SERVER.read().unwrap().is_some() {
             return Ok(());
         }
     }

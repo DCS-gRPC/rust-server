@@ -40,7 +40,9 @@ else
   grpc = require("dcs_grpc_server")
 end
 
-grpc.start(isMissionEnv, GRPC.host, GRPC.port)
+if isMissionEnv then
+  grpc.start(GRPC.host, GRPC.port)
+end
 
 --
 -- Export methods

@@ -1,5 +1,6 @@
 use std::pin::Pin;
 
+use crate::chat::Chat;
 use crate::shutdown::{AbortableStream, ShutdownHandle};
 use dcs::atmosphere_server::Atmosphere;
 use dcs::coalitions_server::Coalitions;
@@ -14,9 +15,9 @@ use dcs::units_server::Units;
 use dcs::world_server::World;
 use dcs::*;
 use dcs_module_ipc::IPC;
-use futures_util::{Stream, StreamExt};
+use futures_util::{Stream, StreamExt, TryStreamExt};
 use tokio::sync::mpsc;
-use tokio_stream::wrappers::ReceiverStream;
+use tokio_stream::wrappers::{BroadcastStream, ReceiverStream};
 use tonic::{Request, Response, Status};
 
 pub mod dcs {
@@ -41,6 +42,7 @@ pub struct MissionRpc {
 pub struct HookRpc {
     ipc: IPC<()>,
     shutdown_signal: ShutdownHandle,
+    chat: Chat,
 }
 
 impl MissionRpc {
@@ -78,10 +80,11 @@ impl MissionRpc {
 }
 
 impl HookRpc {
-    pub fn new(ipc: IPC<()>, shutdown_signal: ShutdownHandle) -> Self {
+    pub fn new(ipc: IPC<()>, chat: Chat, shutdown_signal: ShutdownHandle) -> Self {
         HookRpc {
             ipc,
             shutdown_signal,
+            chat,
         }
     }
 
@@ -438,12 +441,28 @@ impl Custom for MissionRpc {
 
 #[tonic::async_trait]
 impl Hook for HookRpc {
+    type StreamChatStream = Pin<
+        Box<dyn Stream<Item = Result<hook::ChatMessage, tonic::Status>> + Send + Sync + 'static>,
+    >;
+
     async fn get_mission_name(
         &self,
         request: Request<hook::GetMissionNameRequest>,
     ) -> Result<Response<hook::GetMissionNameResponse>, Status> {
         let res: hook::GetMissionNameResponse = self.request("getMissionName", request).await?;
         Ok(Response::new(res))
+    }
+
+    async fn stream_chat(
+        &self,
+        _request: Request<hook::StreamChatRequest>,
+    ) -> Result<Response<Self::StreamChatStream>, Status> {
+        let rx = BroadcastStream::new(self.chat.subscribe());
+        let stream = AbortableStream::new(
+            self.shutdown_signal.signal(),
+            rx.map_err(|err| Status::unknown(err.to_string())),
+        );
+        Ok(Response::new(Box::pin(stream)))
     }
 }
 

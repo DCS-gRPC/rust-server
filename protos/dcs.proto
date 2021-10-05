@@ -134,6 +134,9 @@ service Groups {
 service Hook {
     // https://wiki.hoggitworld.com/view/DCS_func_getMissionName
 	rpc GetMissionName(dcs.hook.GetMissionNameRequest) returns (dcs.hook.GetMissionNameResponse) {}
+
+	// Stream all chat messages.
+	rpc StreamChat(dcs.hook.StreamChatRequest) returns (stream dcs.hook.ChatMessage) {}
 }
 
 // https://wiki.hoggitworld.com/view/DCS_Class_Unit

@@ -7,6 +7,7 @@
 
 local GRPC = GRPC
 local coord = coord
+local Unit = Unit
 
 GRPC.exporters.unit = function(unit)
 
@@ -26,8 +27,8 @@ GRPC.exporters.unit = function(unit)
     coalition = unit:getCoalition(),
     type = unit:getTypeName(),
     position = GRPC.toLatLonPosition(unit:getPoint()),
-    playerName = unit:getPlayerName(),
-    groupName = unit:getGroup():getName(),
+    playerName = Unit.getPlayerName(unit),
+    groupName = Unit.getGroup(unit):getName(),
     numberInGroup = unit:getNumber(),
     heading = heading,
     speed = speed

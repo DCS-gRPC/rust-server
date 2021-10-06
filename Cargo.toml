@@ -27,10 +27,7 @@ tokio-stream = { version = "0.1", features = ["sync"] }
 tonic = "0.4"
 
 [dev-dependencies]
-backoff = { version = "0.3", features = ["tokio"] }
-pretty_env_logger = "0.4"
 serde_json = "1.0"
-tokio =  { version = "1.2", features = ["macros", "signal"] }
 
 [build-dependencies]
 tonic-build = "0.4"

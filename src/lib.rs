@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 #![recursion_limit = "256"]
 
+mod chat;
 #[cfg(feature = "hot-reload")]
 mod hot_reload;
 pub mod rpc;
@@ -183,6 +184,15 @@ pub fn event(lua: &Lua, event: Value) -> LuaResult<()> {
 }
 
 #[no_mangle]
+pub fn on_chat_message(_: &Lua, (player_id, message, all): (u32, String, bool)) -> LuaResult<()> {
+    if let Some(ref server) = *SERVER.read().unwrap() {
+        server.handle_chat_message(player_id, message, all);
+    }
+
+    Ok(())
+}
+
+#[no_mangle]
 pub fn log_error(_: &Lua, err: String) -> LuaResult<()> {
     log::error!("{}", err);
     Ok(())
@@ -217,6 +227,10 @@ pub fn dcs_grpc_server_hot_reload(lua: &Lua) -> LuaResult<LuaTable> {
     exports.set("stop", lua.create_function(hot_reload::stop)?)?;
     exports.set("next", lua.create_function(hot_reload::next)?)?;
     exports.set("event", lua.create_function(hot_reload::event)?)?;
+    exports.set(
+        "on_chat_message",
+        lua.create_function(hot_reload::on_chat_message)?,
+    )?;
     exports.set("log_error", lua.create_function(hot_reload::log_error)?)?;
     exports.set("log_warning", lua.create_function(hot_reload::log_warning)?)?;
     Ok(exports)
@@ -230,6 +244,7 @@ pub fn dcs_grpc_server(lua: &Lua) -> LuaResult<LuaTable> {
     exports.set("stop", lua.create_function(stop)?)?;
     exports.set("next", lua.create_function(next)?)?;
     exports.set("event", lua.create_function(event)?)?;
+    exports.set("on_chat_message", lua.create_function(on_chat_message)?)?;
     exports.set("log_error", lua.create_function(log_error)?)?;
     exports.set("log_warning", lua.create_function(log_warning)?)?;
     Ok(exports)

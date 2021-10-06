@@ -9,3 +9,16 @@ message GetMissionNameRequest {}
 message GetMissionNameResponse {
   string name = 1;
 }
+
+message StreamChatRequest {}
+
+message ChatMessage {
+  // The ID of the player sending the chat messaage.
+  uint32 player_id = 2;
+
+  // The chat message.
+  string message = 3;
+
+  // Whether the message was send to all or only to allies.
+  bool all = 4;
+}

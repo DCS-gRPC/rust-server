@@ -94,11 +94,15 @@ message SmokeRequest {
     BLUE = 4;
   }
 
+  // Altitude paramter will be ignored. Smoke always eminated from ground
+  // level which will be calculated server-side
   Position position = 1;
   SmokeColor color = 2;
 }
 
 message IlluminationBombRequest {
+  // The altitude of Illumination Bombs is meters above ground. Ground level
+  // will be calculated server-side
   Position position = 1;
   uint32 power = 2;
 }
@@ -113,6 +117,8 @@ message SignalFlareRequest {
 		YELLOW = 3;
 	}
 
+	// Altitude paramter will be ignored. Signal flares always fire from
+	// ground level which will be calculated server-side
 	Position position = 1;
 	FlareColor color = 2;
 	uint32 azimuth = 3;

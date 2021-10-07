@@ -4,6 +4,7 @@
 --
 
 local world = world
+local land = land
 
 -- All MarkPanels must have a unique ID but there is no way of
 -- delegating the creationg of this ID to the game, so we have
@@ -24,7 +25,6 @@ local function getMarkId()
     MarkId = idx
     return idx
 end
-
 
 GRPC.methods.outText = function(params)
   trigger.action.outText(params.text, params.displayTime, params.clearView)
@@ -103,25 +103,39 @@ GRPC.methods.explosion = function(params)
 end
 
 GRPC.methods.smoke = function(params)
-  local point = coord.LLtoLO(params.position.lat, params.position.lon, params.position.alt)
+  local point = coord.LLtoLO(params.position.lat, params.position.lon, 0)
+  local groundPoint = {
+    x = point.x,
+    y = land.getHeight({x = point.x, y = point.z}),
+    z = point.z
+  }
 
-  trigger.action.smoke(point, params.color)
+  trigger.action.smoke(groundPoint, params.color)
 
   return GRPC.success(nil)
 end
 
 GRPC.methods.illuminationBomb = function(params)
-  local point = coord.LLtoLO(params.position.lat, params.position.lon, params.position.alt)
+  local point = coord.LLtoLO(params.position.lat, params.position.lon, 0)
+  local groundOffsetPoint = {
+    x = point.x,
+    y = land.getHeight({x = point.x, y = point.z}) + params.position.alt,
+    z = point.z
+  }
 
-  trigger.action.illuminationBomb(point, params.power)
+  trigger.action.illuminationBomb(groundOffsetPoint, params.power)
 
   return GRPC.success(nil)
 end
 
 GRPC.methods.signalFlare = function(params)
-  local point = coord.LLtoLO(params.position.lat, params.position.lon, params.position.alt)
+  local point = coord.LLtoLO(params.position.lat, params.position.lon, 0)
+  local groundPoint = {
+    x = point.x,
+    y = land.getHeight({x = point.x, y = point.z}),
+    z= point.z}
 
-  trigger.action.signalFlare(point, params.color, params.azimuth)
+  trigger.action.signalFlare(groundPoint, params.color, params.azimuth)
 
   return GRPC.success(nil)
 end

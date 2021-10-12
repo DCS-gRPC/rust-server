@@ -88,7 +88,7 @@ GRPC = {
   -- the port to listen on
   port = 50051,
 
-  -- whether debug logging is enabeld or not
+  -- whether debug logging is enabled or not
   debug = false,
 }
 ```

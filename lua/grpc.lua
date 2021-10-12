@@ -24,9 +24,7 @@ end
 if GRPC.port == nil then
   GRPC.port = 50051
 end
-if GRPC.debug == true then
-  GRPC.debug = true
-end
+GRPC.debug = GRPC.debug == true
 
 --
 -- load and start RPC

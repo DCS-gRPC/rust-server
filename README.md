@@ -90,6 +90,9 @@ GRPC = {
 
   -- whether debug logging is enabled or not
   debug = false,
+
+  -- limit of calls per second that are executed inside of the mission scripting environment
+  throughputLimit = 600,
 }
 ```
 

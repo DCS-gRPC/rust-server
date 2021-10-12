@@ -25,6 +25,9 @@ if GRPC.port == nil then
   GRPC.port = 50051
 end
 GRPC.debug = GRPC.debug == true
+if GRPC.throughputLimit == nil then
+  GRPC.throughputLimit = 600
+end
 
 --
 -- load and start RPC
@@ -201,13 +204,29 @@ end
 local MISSION_ENV = 1
 local HOOK_ENV = 2
 
+-- determine interval based on throughput limit
+local interval = 0.02
+if GRPC.throughputLimit <= 2 then
+  interval = 1.0
+elseif GRPC.throughputLimit <= 60 then
+  interval = 0.25
+elseif GRPC.throughputLimit <= 120 then
+  interval = 0.125
+elseif GRPC.throughputLimit <= 240 then
+  interval = 0.06
+elseif GRPC.throughputLimit <= 480 then
+  interval = 0.03
+end
+
+local callsPerTick = math.ceil(GRPC.throughputLimit * interval)
+
 if isMissionEnv then
   -- execute gRPC requests every ~0.02 seconds
   local function next()
     local i = 0
     while grpc.next(MISSION_ENV, handleRequest) do
       i = i + 1
-      if i > 10 then
+      if i >= callsPerTick then
         break
       end
     end
@@ -220,9 +239,9 @@ if isMissionEnv then
         GRPC.logError("Error retrieving next command: "..tostring(err))
       end
 
-      return timer.getTime() + .02 -- return time of next call
+      return timer.getTime() + interval -- return time of next call
     end
-  end, nil, timer.getTime() + .02)
+  end, nil, timer.getTime() + interval)
 
   local eventHandler = {}
   function eventHandler:onEvent(event)
@@ -253,10 +272,11 @@ else -- hook env
     end
   end
 
+  local skipFrames = math.ceil(interval / 0.016) -- 0.016 = 16ms = 1 frame at 60fps
   local frame = 0
   function GRPC.onSimulationFrame()
     frame = frame + 1
-    if frame >= 10 then
+    if frame >= skipFrames then
       frame = 0
       local ok, err = pcall(next)
       if not ok then

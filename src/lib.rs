@@ -7,6 +7,7 @@ mod hot_reload;
 pub mod rpc;
 mod server;
 mod shutdown;
+mod stats;
 mod stream;
 
 use std::sync::atomic::{AtomicBool, Ordering};

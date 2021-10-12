@@ -1,7 +1,9 @@
 use std::pin::Pin;
+use std::time::{Duration, Instant};
 
 use crate::chat::Chat;
 use crate::shutdown::{AbortableStream, ShutdownHandle};
+use crate::stats::Stats;
 use dcs::atmosphere_server::Atmosphere;
 use dcs::coalitions_server::Coalitions;
 use dcs::controllers_server::Controllers;
@@ -35,20 +37,23 @@ pub mod dcs {
 #[derive(Clone)]
 pub struct MissionRpc {
     ipc: IPC<Event>,
+    stats: Stats,
     shutdown_signal: ShutdownHandle,
 }
 
 #[derive(Clone)]
 pub struct HookRpc {
     ipc: IPC<()>,
-    shutdown_signal: ShutdownHandle,
     chat: Chat,
+    stats: Stats,
+    shutdown_signal: ShutdownHandle,
 }
 
 impl MissionRpc {
-    pub fn new(ipc: IPC<Event>, shutdown_signal: ShutdownHandle) -> Self {
+    pub fn new(ipc: IPC<Event>, stats: Stats, shutdown_signal: ShutdownHandle) -> Self {
         MissionRpc {
             ipc,
+            stats,
             shutdown_signal,
         }
     }
@@ -58,33 +63,48 @@ impl MissionRpc {
         I: serde::Serialize + Send + Sync + 'static,
         for<'de> O: serde::Deserialize<'de> + Send + Sync + std::fmt::Debug + 'static,
     {
-        self.ipc
+        self.stats.track_pending_call();
+        let start = Instant::now();
+        let result = self
+            .ipc
             .request(method, Some(request.into_inner()))
             .await
-            .map_err(to_status)
+            .map_err(to_status);
+        self.stats.track_completed_call(start.elapsed());
+        result
     }
 
     pub async fn notification<I>(&self, method: &str, request: Request<I>) -> Result<(), Status>
     where
         I: serde::Serialize + Send + Sync + 'static,
     {
-        self.ipc
+        self.stats.track_pending_call();
+        let start = Instant::now();
+        let result = self
+            .ipc
             .notification(method, Some(request.into_inner()))
             .await
-            .map_err(to_status)
+            .map_err(to_status);
+        self.stats.track_completed_call(start.elapsed());
+        result
     }
 
     pub async fn events(&self) -> impl Stream<Item = Event> {
-        self.ipc.events().await
+        self.stats.track_pending_call();
+        let start = Instant::now();
+        let stream = self.ipc.events().await;
+        self.stats.track_completed_call(start.elapsed());
+        stream
     }
 }
 
 impl HookRpc {
-    pub fn new(ipc: IPC<()>, chat: Chat, shutdown_signal: ShutdownHandle) -> Self {
+    pub fn new(ipc: IPC<()>, chat: Chat, stats: Stats, shutdown_signal: ShutdownHandle) -> Self {
         HookRpc {
             ipc,
-            shutdown_signal,
             chat,
+            stats,
+            shutdown_signal,
         }
     }
 
@@ -93,20 +113,30 @@ impl HookRpc {
         I: serde::Serialize + Send + Sync + 'static,
         for<'de> O: serde::Deserialize<'de> + Send + Sync + std::fmt::Debug + 'static,
     {
-        self.ipc
+        self.stats.track_pending_call();
+        let start = Instant::now();
+        let result = self
+            .ipc
             .request(method, Some(request.into_inner()))
             .await
-            .map_err(to_status)
+            .map_err(to_status);
+        self.stats.track_completed_call(start.elapsed());
+        result
     }
 
     pub async fn notification<I>(&self, method: &str, request: Request<I>) -> Result<(), Status>
     where
         I: serde::Serialize + Send + Sync + 'static,
     {
-        self.ipc
+        self.stats.track_pending_call();
+        let start = Instant::now();
+        let result = self
+            .ipc
             .notification(method, Some(request.into_inner()))
             .await
-            .map_err(to_status)
+            .map_err(to_status);
+        self.stats.track_completed_call(start.elapsed());
+        result
     }
 }
 
@@ -130,6 +160,9 @@ impl Mission for MissionRpc {
         &self,
         request: Request<StreamUnitsRequest>,
     ) -> Result<Response<Self::StreamUnitsStream>, Status> {
+        self.stats.track_pending_call();
+        self.stats.track_completed_call(Duration::ZERO);
+
         let rpc = self.clone();
         let (tx, rx) = mpsc::channel(128);
         tokio::spawn(async move {
@@ -457,6 +490,9 @@ impl Hook for HookRpc {
         &self,
         _request: Request<hook::StreamChatRequest>,
     ) -> Result<Response<Self::StreamChatStream>, Status> {
+        self.stats.track_pending_call();
+        self.stats.track_completed_call(Duration::ZERO);
+
         let rx = BroadcastStream::new(self.chat.subscribe());
         let stream = AbortableStream::new(
             self.shutdown_signal.signal(),

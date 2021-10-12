@@ -24,6 +24,9 @@ end
 if GRPC.port == nil then
   GRPC.port = 50051
 end
+if GRPC.debug == true then
+  GRPC.debug = true
+end
 
 --
 -- load and start RPC
@@ -41,7 +44,7 @@ else
 end
 
 if isMissionEnv then
-  grpc.start(GRPC.host, GRPC.port)
+  grpc.start(GRPC.host, GRPC.port, GRPC.debug)
 end
 
 --

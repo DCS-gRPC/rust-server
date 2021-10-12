@@ -22,7 +22,7 @@ use thiserror::Error;
 static INITIALIZED: Lazy<AtomicBool> = Lazy::new(|| AtomicBool::new(false));
 static SERVER: Lazy<RwLock<Option<Server>>> = Lazy::new(|| RwLock::new(None));
 
-pub fn init(lua: &Lua) -> LuaResult<String> {
+pub fn init(lua: &Lua, debug: bool) -> LuaResult<String> {
     // get lfs.writedir()
     let write_dir: String = {
         let globals = lua.globals();
@@ -49,11 +49,16 @@ pub fn init(lua: &Lua) -> LuaResult<String> {
         .build(log_file)
         .unwrap();
 
+    let level = if debug {
+        LevelFilter::Debug
+    } else {
+        LevelFilter::Info
+    };
     let config = Config::builder()
         .appender(Appender::builder().build("file", Box::new(requests)))
-        .logger(Logger::builder().build("dcs_grpc_server", LevelFilter::Debug))
-        .logger(Logger::builder().build("tokio", LevelFilter::Debug))
-        .logger(Logger::builder().build("tonic", LevelFilter::Debug))
+        .logger(Logger::builder().build("dcs_grpc_server", level))
+        .logger(Logger::builder().build("tokio", level))
+        .logger(Logger::builder().build("tonic", level))
         .build(Root::builder().appender("file").build(LevelFilter::Off))
         .unwrap();
 
@@ -63,14 +68,14 @@ pub fn init(lua: &Lua) -> LuaResult<String> {
 }
 
 #[no_mangle]
-pub fn start(lua: &Lua, (host, port): (String, u16)) -> LuaResult<()> {
+pub fn start(lua: &Lua, (host, port, debug): (String, u16, bool)) -> LuaResult<()> {
     {
         if SERVER.read().unwrap().is_some() {
             return Ok(());
         }
     }
 
-    let _write_dir = init(lua)?;
+    let _write_dir = init(lua, debug)?;
 
     log::info!("Starting ...");
 

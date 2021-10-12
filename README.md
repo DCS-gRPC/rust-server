@@ -68,7 +68,7 @@ else
 end
 ```
 
-Using this method easily allows you to add optional settings listed below to the `GRPC` object. 
+Using this method easily allows you to add optional settings listed below to the `GRPC` object.
 
 ### Settings
 
@@ -87,6 +87,9 @@ GRPC = {
 
   -- the port to listen on
   port = 50051,
+
+  -- whether debug logging is enabeld or not
+  debug = false,
 }
 ```
 

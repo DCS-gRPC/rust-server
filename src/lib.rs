@@ -209,6 +209,18 @@ pub fn log_warning(_: &Lua, err: String) -> LuaResult<()> {
     Ok(())
 }
 
+#[no_mangle]
+pub fn log_info(_: &Lua, err: String) -> LuaResult<()> {
+    log::info!("{}", err);
+    Ok(())
+}
+
+#[no_mangle]
+pub fn log_debug(_: &Lua, err: String) -> LuaResult<()> {
+    log::debug!("{}", err);
+    Ok(())
+}
+
 #[derive(Debug, Error)]
 pub enum Error {
     #[error("Failed to deserialize params: {0}")]
@@ -238,6 +250,8 @@ pub fn dcs_grpc_server_hot_reload(lua: &Lua) -> LuaResult<LuaTable> {
     )?;
     exports.set("log_error", lua.create_function(hot_reload::log_error)?)?;
     exports.set("log_warning", lua.create_function(hot_reload::log_warning)?)?;
+    exports.set("log_info", lua.create_function(hot_reload::log_info)?)?;
+    exports.set("log_debug", lua.create_function(hot_reload::log_debug)?)?;
     Ok(exports)
 }
 
@@ -252,6 +266,8 @@ pub fn dcs_grpc_server(lua: &Lua) -> LuaResult<LuaTable> {
     exports.set("on_chat_message", lua.create_function(on_chat_message)?)?;
     exports.set("log_error", lua.create_function(log_error)?)?;
     exports.set("log_warning", lua.create_function(log_warning)?)?;
+    exports.set("log_info", lua.create_function(log_info)?)?;
+    exports.set("log_debug", lua.create_function(log_debug)?)?;
     Ok(exports)
 }
 

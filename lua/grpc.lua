@@ -91,6 +91,14 @@ GRPC.logWarning = function(err)
   env.warning("[GRPC] "..err)
 end
 
+GRPC.logInfo = function(msg)
+  grpc.log_info(msg)
+end
+
+GRPC.logDebug = function(msg)
+  grpc.log_debug(msg)
+end
+
 --- The client specified an invalid argument
 GRPC.errorInvalidArgument = function(msg)
   return {
@@ -205,14 +213,14 @@ local MISSION_ENV = 1
 local HOOK_ENV = 2
 
 -- Adjust the interval at which the gRPC server is polled for requests based on the throughput
--- limit. The higher the throughput, the more often the gRPC is polled per second.
+-- limit. The higher the throughput limit, the more often the gRPC is polled per second.
 local interval = math.max(0.03, math.min(1.0, 16 / GRPC.throughputLimit))
 local callsPerTick = math.ceil(GRPC.throughputLimit * interval)
 
 if isMissionEnv then
-  env.info(
+  GRPC.logInfo(
     "Limit request execution at max. " .. tostring(callsPerTick) .. " calls every " ..
-    tostring(interval) .. "s (≙ throughput of " .. tostring(GRPC.throughput) .. ")"
+    tostring(interval) .. "s (≙ throughput of " .. tostring(GRPC.throughputLimit) .. ")"
   )
 
   -- execute gRPC requests

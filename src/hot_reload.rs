@@ -93,10 +93,34 @@ pub fn log_error(lua: &Lua, err: String) -> LuaResult<()> {
 pub fn log_warning(lua: &Lua, err: String) -> LuaResult<()> {
     if let Some(ref lib) = *LIBRARY.read().unwrap() {
         let f: Symbol<fn(lua: &Lua, err: String) -> LuaResult<()>> = unsafe {
-            lib.get(b"log_error")
+            lib.get(b"log_warning")
                 .map_err(|err| mlua::Error::ExternalError(Arc::new(err)))?
         };
         f(lua, err)
+    } else {
+        Ok(())
+    }
+}
+
+pub fn log_info(lua: &Lua, msg: String) -> LuaResult<()> {
+    if let Some(ref lib) = *LIBRARY.read().unwrap() {
+        let f: Symbol<fn(lua: &Lua, msg: String) -> LuaResult<()>> = unsafe {
+            lib.get(b"log_info")
+                .map_err(|err| mlua::Error::ExternalError(Arc::new(err)))?
+        };
+        f(lua, msg)
+    } else {
+        Ok(())
+    }
+}
+
+pub fn log_debug(lua: &Lua, msg: String) -> LuaResult<()> {
+    if let Some(ref lib) = *LIBRARY.read().unwrap() {
+        let f: Symbol<fn(lua: &Lua, msg: String) -> LuaResult<()>> = unsafe {
+            lib.get(b"log_debug")
+                .map_err(|err| mlua::Error::ExternalError(Arc::new(err)))?
+        };
+        f(lua, msg)
     } else {
         Ok(())
     }

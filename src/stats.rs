@@ -17,7 +17,7 @@ struct Inner {
     calls_count: AtomicUsize,
     /// Total numer of compelted calls into the MSE.
     calls_completed_count: AtomicUsize,
-    milliseconds_waited: AtomicUsize,
+    nanoseconds_waited: AtomicUsize,
     summary: Arc<Mutex<Summary>>,
 }
 
@@ -37,13 +37,20 @@ struct Summary {
     pending_current: usize,
 }
 
+/// This guard is used to track call completion and time spend until completed (completed is
+/// equivalent to this guard being dropped).
+pub struct TrackCallGuard {
+    start: Instant,
+    stats: Arc<Inner>,
+}
+
 impl Stats {
     pub fn new(shutdown_signal: ShutdownHandle) -> Self {
         Stats(Arc::new(Inner {
             shutdown_signal,
             calls_count: AtomicUsize::new(0),
             calls_completed_count: AtomicUsize::new(0),
-            milliseconds_waited: AtomicUsize::new(0),
+            nanoseconds_waited: AtomicUsize::new(0),
             summary: Arc::new(Mutex::new(Summary {
                 start: Instant::now(),
                 tps_highest: 0.0,
@@ -56,16 +63,12 @@ impl Stats {
         }))
     }
 
-    pub fn track_pending_call(&self) {
+    pub fn track_call(&self) -> TrackCallGuard {
         self.0.calls_count.fetch_add(1, Ordering::Relaxed);
-    }
-
-    pub fn track_completed_call(&self, duration: Duration) {
-        self.0.calls_completed_count.fetch_add(1, Ordering::Relaxed);
-        self.0.milliseconds_waited.fetch_add(
-            usize::try_from(duration.as_millis()).unwrap_or(usize::MAX),
-            Ordering::Relaxed,
-        );
+        TrackCallGuard {
+            start: Instant::now(),
+            stats: self.0.clone(),
+        }
     }
 
     pub async fn run_in_background(self) {
@@ -113,8 +116,8 @@ impl Stats {
             };
 
             // update time spent waiting for MSE calls to complete
-            summary.wait_time_total = Duration::from_millis(
-                u64::try_from(self.0.milliseconds_waited.load(Ordering::Relaxed))
+            summary.wait_time_total = Duration::from_nanos(
+                u64::try_from(self.0.nanoseconds_waited.load(Ordering::Relaxed))
                     .unwrap_or(u64::MAX),
             );
             summary.wait_time_average = summary
@@ -134,13 +137,13 @@ impl Stats {
                 last_logged = Instant::now();
 
                 log::info!(
-                    "avg. TPS = {:.2} | max. TPS = {:.2} | avg. wait time = {} | \
-                    total wait time = {} | pending requests = {} | \
+                    "avg. TPS = {:.2} | max. TPS = {:.2} | avg. blocking time = {:?} | \
+                    total blocking time = {:?} | pending requests = {} | \
                     max. pending requests = {}",
                     summary.tps_average,
                     summary.tps_highest,
-                    format_duration(summary.wait_time_average),
-                    format_duration(summary.wait_time_total),
+                    summary.wait_time_average,
+                    summary.wait_time_total,
                     summary.pending_current,
                     summary.pending_highest,
                 )
@@ -149,12 +152,14 @@ impl Stats {
     }
 }
 
-fn format_duration(duration: Duration) -> String {
-    if duration > Duration::from_secs(60) {
-        format!("{:.2}min", duration.as_secs_f64() / 60.0)
-    } else if duration > Duration::from_secs(1) {
-        format!("{:.2}s", duration.as_secs_f64())
-    } else {
-        format!("{:.2}ms", duration.as_millis())
+impl Drop for TrackCallGuard {
+    fn drop(&mut self) {
+        self.stats
+            .calls_completed_count
+            .fetch_add(1, Ordering::Relaxed);
+        self.stats.nanoseconds_waited.fetch_add(
+            usize::try_from(self.start.elapsed().as_nanos()).unwrap_or(usize::MAX),
+            Ordering::Relaxed,
+        );
     }
 }

@@ -108,6 +108,7 @@ pub fn next(lua: &Lua, (env, callback): (i32, Function)) -> LuaResult<bool> {
     if let Some(Server {
         ref ipc_mission,
         ref ipc_hook,
+        ref stats,
         ..
     }) = *SERVER.read().unwrap()
     {
@@ -118,6 +119,8 @@ pub fn next(lua: &Lua, (env, callback): (i32, Function)) -> LuaResult<bool> {
         };
 
         if let Some(mut next) = next {
+            let _call = stats.track_call();
+
             let method = next.method().to_string();
             let params = next
                 .params(lua)

@@ -29,7 +29,7 @@ pub struct Server {
     pub ipc_hook: IPC<()>,
     pub runtime: Runtime,
     chat: Chat,
-    stats: Stats,
+    pub stats: Stats,
     shutdown: Shutdown,
     after_shutdown: Option<oneshot::Sender<()>>,
 }

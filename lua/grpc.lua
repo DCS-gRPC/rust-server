@@ -25,6 +25,9 @@ if GRPC.port == nil then
   GRPC.port = 50051
 end
 GRPC.debug = GRPC.debug == true
+if GRPC.throughputLimit == nil or GRPC.throughputLimit == 0 or not type(GRPC.throughputLimit) == "number" then
+  GRPC.throughputLimit = 600
+end
 
 --
 -- load and start RPC
@@ -86,6 +89,14 @@ end
 GRPC.logWarning = function(err)
   grpc.log_warning(err)
   env.warning("[GRPC] "..err)
+end
+
+GRPC.logInfo = function(msg)
+  grpc.log_info(msg)
+end
+
+GRPC.logDebug = function(msg)
+  grpc.log_debug(msg)
 end
 
 --- The client specified an invalid argument
@@ -201,18 +212,29 @@ end
 local MISSION_ENV = 1
 local HOOK_ENV = 2
 
+-- Adjust the interval at which the gRPC server is polled for requests based on the throughput
+-- limit. The higher the throughput limit, the more often the gRPC is polled per second.
+local interval = math.max(0.03, math.min(1.0, 16 / GRPC.throughputLimit))
+local callsPerTick = math.ceil(GRPC.throughputLimit * interval)
+
 if isMissionEnv then
-  -- execute gRPC requests every ~0.02 seconds
+  GRPC.logInfo(
+    "Limit request execution at max. " .. tostring(callsPerTick) .. " calls every " ..
+    tostring(interval) .. "s (≙ throughput of " .. tostring(GRPC.throughputLimit) .. ")"
+  )
+
+  -- execute gRPC requests
   local function next()
     local i = 0
     while grpc.next(MISSION_ENV, handleRequest) do
       i = i + 1
-      if i > 10 then
+      if i >= callsPerTick then
         break
       end
     end
   end
 
+  -- scheduel gRPC request execution
   timer.scheduleFunction(function()
     if not stopped then
       local ok, err = pcall(next)
@@ -220,10 +242,11 @@ if isMissionEnv then
         GRPC.logError("Error retrieving next command: "..tostring(err))
       end
 
-      return timer.getTime() + .02 -- return time of next call
+      return timer.getTime() + interval -- return time of next call
     end
-  end, nil, timer.getTime() + .02)
+  end, nil, timer.getTime() + interval)
 
+  -- listen for events
   local eventHandler = {}
   function eventHandler:onEvent(event)
     if not stopped then
@@ -242,21 +265,23 @@ if isMissionEnv then
   end
   world.addEventHandler(eventHandler)
 else -- hook env
-  -- execute gRPC requests every 10th simulation frame
+  -- execute gRPC requests
   local function next()
     local i = 0
     while grpc.next(HOOK_ENV, handleRequest) do
       i = i + 1
-      if i > 10 then
+      if i > callsPerTick then
         break
       end
     end
   end
 
+  -- scheduel gRPC request execution
+  local skipFrames = math.ceil(interval / 0.016) -- 0.016 = 16ms = 1 frame at 60fps
   local frame = 0
   function GRPC.onSimulationFrame()
     frame = frame + 1
-    if frame >= 10 then
+    if frame >= skipFrames then
       frame = 0
       local ok, err = pcall(next)
       if not ok then

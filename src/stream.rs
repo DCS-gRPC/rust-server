@@ -171,47 +171,57 @@ async fn handle_event(state: &mut State, event: Event) -> Result<(), Error> {
 
 /// Updates all units inside of the provided [State].
 async fn update_units(state: &mut State) -> Result<(), Error> {
-    for unit_state in state.units.values_mut() {
-        if !unit_state.should_update() {
-            continue;
-        }
-
-        match unit_state.update(&state.ctx).await {
-            Ok(changed) => {
-                if changed {
-                    state
-                        .ctx
-                        .tx
-                        .send(Ok(Update::Unit(unit_state.unit.clone())))
-                        .await?;
-                    unit_state.backoff = Duration::ZERO;
-                    unit_state.last_changed = Instant::now();
-                }
-
-                unit_state.last_checked = Instant::now();
-            }
-            // if the unit was not found, flag it as gone, and continue with the next unit for now
-            Err(err) if err.code() == Code::NotFound => {
-                state
-                    .ctx
-                    .tx
-                    .send(Ok(Update::Gone(UnitGone {
-                        id: unit_state.unit.id,
-                        name: unit_state.unit.name.clone(),
-                    })))
-                    .await?;
-
-                unit_state.is_gone = true;
-                continue;
-            }
-            Err(err) => return Err(err.into()),
-        }
-    }
+    let mut units = std::mem::take(&mut state.units);
+    // Update all units in parallel (will queue a request for each unit, but the execution will
+    // still be thottled by the throughputLimit setting).
+    futures_util::future::try_join_all(
+        units
+            .values_mut()
+            .map(|unit_state| update_unit(&state.ctx, unit_state)),
+    )
+    .await?;
 
     // remove state for all units that are gone
-    state.units.retain(|_, v| !v.is_gone);
+    units.retain(|_, v| !v.is_gone);
+    state.units = units;
 
     Ok(())
+}
+
+async fn update_unit(ctx: &Context, unit_state: &mut UnitState) -> Result<(), Error> {
+    if !unit_state.should_update() {
+        return Ok(());
+    }
+
+    match unit_state.update(ctx).await {
+        Ok(changed) => {
+            if changed {
+                ctx.tx
+                    .send(Ok(Update::Unit(unit_state.unit.clone())))
+                    .await?;
+                unit_state.backoff = Duration::ZERO;
+                unit_state.last_changed = Instant::now();
+            }
+
+            unit_state.last_checked = Instant::now();
+
+            Ok(())
+        }
+        // if the unit was not found, flag it as gone, and continue with the next unit for now
+        Err(err) if err.code() == Code::NotFound => {
+            ctx.tx
+                .send(Ok(Update::Gone(UnitGone {
+                    id: unit_state.unit.id,
+                    name: unit_state.unit.name.clone(),
+                })))
+                .await?;
+
+            unit_state.is_gone = true;
+
+            Ok(())
+        }
+        Err(err) => Err(err.into()),
+    }
 }
 
 /// The last know information about a unit and various other information to track whether it is

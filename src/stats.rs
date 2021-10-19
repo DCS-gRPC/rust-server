@@ -123,6 +123,8 @@ impl Stats {
                     u64::try_from(self.0.nanoseconds_waited.swap(0, Ordering::Relaxed))
                         .unwrap_or(u64::MAX),
                 );
+                let block_time_total_percentage =
+                    block_time_total.as_secs_f64() / elapsed.as_secs_f64();
 
                 // average block time
                 let block_time_average =
@@ -140,9 +142,10 @@ impl Stats {
                     interval_stats.tps_highest
                 );
                 log::info!(
-                    "Blocking time: average={:?}/s, total={:?}",
+                    "Blocking time: average={:?}/s, total={:?} (≙ {:.3}%)",
                     block_time_average,
-                    block_time_total
+                    block_time_total,
+                    block_time_total_percentage
                 );
                 log::info!(
                     "Queue size: average={:.2}, biggest={:.2}",

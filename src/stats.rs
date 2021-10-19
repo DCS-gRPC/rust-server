@@ -1,5 +1,5 @@
 use std::convert::TryFrom;
-use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::atomic::{AtomicU32, AtomicUsize, Ordering};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
@@ -14,27 +14,23 @@ pub struct Stats(Arc<Inner>);
 struct Inner {
     shutdown_signal: ShutdownHandle,
     /// Total numer of calls into the MSE.
-    calls_count: AtomicUsize,
-    /// Total numer of compelted calls into the MSE.
-    calls_completed_count: AtomicUsize,
+    calls_count: AtomicU32,
+    /// Total numer of calls in the queue.
+    queue_size: AtomicU32,
+    /// Time spent waiting for MSE calls to complete (since last report).
     nanoseconds_waited: AtomicUsize,
-    summary: Arc<Mutex<Summary>>,
+    /// Stats collected during an interval necessary to create a report at the end of the interval.
+    interval_stats: Arc<Mutex<IntervalStats>>,
 }
 
-struct Summary {
-    start: Instant,
+#[derive(Default)]
+struct IntervalStats {
     /// Highest TPS count of calls into the MSE.
     tps_highest: f64,
-    /// Average TPS count of calls into the MSE.
-    tps_average: f64,
-    /// Average time spent waiting for MSE calls to complete.
-    wait_time_average: Duration,
-    /// Total time spent waiting for MSE calls to complete.
-    wait_time_total: Duration,
-    /// Highest pending gRPC requests.
-    pending_highest: usize,
-    /// Currently pending gRPC requests.
-    pending_current: usize,
+    /// Sum of the queue sizes at each tick (neccessary to calculate the average).
+    queue_size_total: u32,
+    /// Highest queue size at a tick of the interval.
+    queue_size_highest: u32,
 }
 
 /// This guard is used to track call completion and time spend until completed (completed is
@@ -44,22 +40,19 @@ pub struct TrackCallGuard {
     stats: Arc<Inner>,
 }
 
+/// This guard is used to keep track of calls in the queue.
+pub struct TrackQueueGuard {
+    stats: Arc<Inner>,
+}
+
 impl Stats {
     pub fn new(shutdown_signal: ShutdownHandle) -> Self {
         Stats(Arc::new(Inner {
             shutdown_signal,
-            calls_count: AtomicUsize::new(0),
-            calls_completed_count: AtomicUsize::new(0),
+            calls_count: AtomicU32::new(0),
+            queue_size: AtomicU32::new(0),
             nanoseconds_waited: AtomicUsize::new(0),
-            summary: Arc::new(Mutex::new(Summary {
-                start: Instant::now(),
-                tps_highest: 0.0,
-                tps_average: 0.0,
-                wait_time_average: Duration::ZERO,
-                wait_time_total: Duration::ZERO,
-                pending_highest: 0,
-                pending_current: 0,
-            })),
+            interval_stats: Arc::new(Mutex::new(IntervalStats::default())),
         }))
     }
 
@@ -67,6 +60,13 @@ impl Stats {
         self.0.calls_count.fetch_add(1, Ordering::Relaxed);
         TrackCallGuard {
             start: Instant::now(),
+            stats: self.0.clone(),
+        }
+    }
+
+    pub fn track_queue(&self) -> TrackQueueGuard {
+        self.0.queue_size.fetch_add(1, Ordering::Relaxed);
+        TrackQueueGuard {
             stats: self.0.clone(),
         }
     }
@@ -83,6 +83,7 @@ impl Stats {
             let calls_count_before = self.0.calls_count.load(Ordering::Relaxed);
             let start = Instant::now();
 
+            // wait for either the shutdown signal or the next interval tick, whatever happens first
             tokio::select! {
                 _ = &mut shutdown_signal => {
                     break
@@ -90,63 +91,70 @@ impl Stats {
                 _ = interval.tick() => {}
             };
 
-            let mut summary = self.0.summary.lock().await;
+            let mut interval_stats = self.0.interval_stats.lock().await;
+            let calls_count = self.0.calls_count.load(Ordering::Relaxed);
+
+            // update report for elapsed second
             let elapsed = start.elapsed().as_secs_f64();
+            if elapsed > 0.0 {
+                // update highest TPS
+                let tps = f64::from(calls_count - calls_count_before) / elapsed;
+                if tps > interval_stats.tps_highest {
+                    interval_stats.tps_highest = tps;
+                }
 
-            // update highest TPS
-            let calls_count_after = self.0.calls_count.load(Ordering::Relaxed);
-            let calls_count =
-                u32::try_from(calls_count_after - calls_count_before).unwrap_or(u32::MAX);
-            let tps = if elapsed > 0.0 {
-                f64::from(calls_count) / elapsed
-            } else {
-                0.0
-            };
-            if tps > summary.tps_highest {
-                summary.tps_highest = tps;
-            }
-
-            // update average TPS
-            let elapsed_total = summary.start.elapsed().as_secs_f64();
-            let calls_count_total = u32::try_from(calls_count_after).unwrap_or(u32::MAX);
-            summary.tps_average = if elapsed_total > 0.0 {
-                f64::from(calls_count_total) / elapsed_total
-            } else {
-                0.0
-            };
-
-            // update time spent waiting for MSE calls to complete
-            summary.wait_time_total = Duration::from_nanos(
-                u64::try_from(self.0.nanoseconds_waited.load(Ordering::Relaxed))
-                    .unwrap_or(u64::MAX),
-            );
-            summary.wait_time_average = summary
-                .wait_time_total
-                .checked_div(calls_count_total)
-                .unwrap_or_default();
-
-            // update pending requests
-            summary.pending_current =
-                calls_count_after - self.0.calls_completed_count.load(Ordering::Relaxed);
-            if summary.pending_current > summary.pending_highest {
-                summary.pending_highest = summary.pending_current;
+                // update queue size
+                let queue_size = self.0.queue_size.load(Ordering::Relaxed);
+                interval_stats.queue_size_total += queue_size;
+                if queue_size > interval_stats.queue_size_highest {
+                    interval_stats.queue_size_highest = queue_size;
+                }
             }
 
             // log summary every minute
-            if last_logged.elapsed() > log_interval {
-                last_logged = Instant::now();
+            let elapsed = last_logged.elapsed();
+            if elapsed > log_interval {
+                // average TPS
+                let tps_average =
+                    f64::try_from(calls_count).unwrap_or(f64::MAX) / elapsed.as_secs_f64();
 
+                // total block time
+                let block_time_total = Duration::from_nanos(
+                    u64::try_from(self.0.nanoseconds_waited.swap(0, Ordering::Relaxed))
+                        .unwrap_or(u64::MAX),
+                );
+
+                // average block time
+                let block_time_average =
+                    Duration::from_secs_f64(block_time_total.as_secs_f64() / elapsed.as_secs_f64());
+
+                // average queue size
+                let queue_size_average = f64::try_from(interval_stats.queue_size_total)
+                    .unwrap_or(f64::MAX)
+                    / elapsed.as_secs_f64();
+
+                // format and log stats
                 log::info!(
-                    "avg. TPS = {:.2} | max. TPS = {:.2} | avg. blocking time = {:?} | \
-                    total blocking time = {:?} | pending requests = {} | \
-                    max. pending requests = {}",
-                    summary.tps_average,
-                    summary.tps_highest,
-                    summary.wait_time_average,
-                    summary.wait_time_total,
-                    summary.pending_current,
-                    summary.pending_highest,
-                )
+                    "Calls per second: average={:.2}, highest={:.2}",
+                    tps_average,
+                    interval_stats.tps_highest
+                );
+                log::info!(
+                    "Blocking time: average={:?}/s, total={:?}",
+                    block_time_average,
+                    block_time_total
+                );
+                log::info!(
+                    "Queue size: average={:.2}, biggest={:.2}",
+                    queue_size_average,
+                    interval_stats.queue_size_highest
+                );
+
+                // reset data for next interval
+                last_logged = Instant::now();
+                *interval_stats = IntervalStats::default();
+                self.0.calls_count.store(0, Ordering::Relaxed);
+                self.0.nanoseconds_waited.store(0, Ordering::Relaxed);
             }
         }
     }
@@ -154,12 +162,15 @@ impl Stats {
 
 impl Drop for TrackCallGuard {
     fn drop(&mut self) {
-        self.stats
-            .calls_completed_count
-            .fetch_add(1, Ordering::Relaxed);
         self.stats.nanoseconds_waited.fetch_add(
             usize::try_from(self.start.elapsed().as_nanos()).unwrap_or(usize::MAX),
             Ordering::Relaxed,
         );
+    }
+}
+
+impl Drop for TrackQueueGuard {
+    fn drop(&mut self) {
+        self.stats.queue_size.fetch_sub(1, Ordering::Relaxed);
     }
 }

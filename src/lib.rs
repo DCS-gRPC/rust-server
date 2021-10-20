@@ -48,7 +48,7 @@ pub fn init(lua: &Lua, debug: bool) -> LuaResult<String> {
 
     let requests = FileAppender::builder()
         .encoder(Box::new(PatternEncoder::new(
-            "{d(%Y-%m-%d %H:%M:%S%.3f)} {l} {t}: {m}{n}",
+            "{d(%Y-%m-%d %H:%M:%S%.3f)} {l:<7} {t}: {m}{n}",
         )))
         .append(false)
         .build(log_file)

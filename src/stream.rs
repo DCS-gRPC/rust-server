@@ -13,6 +13,7 @@ use crate::rpc::dcs::{
 };
 use crate::rpc::MissionRpc;
 use futures_util::stream::StreamExt;
+use futures_util::TryFutureExt;
 use tokio::sync::mpsc::error::SendError;
 use tokio::sync::mpsc::Sender;
 use tokio::time::MissedTickBehavior;
@@ -39,40 +40,38 @@ pub async fn stream_units(
     };
 
     // initial full-sync of all current units inside of the mission
-    let groups = {
-        let mut groups = Vec::new();
+    let groups = futures_util::future::try_join_all(
+        [Coalition::Blue, Coalition::Red, Coalition::Neutral].map(|coalition| {
+            state
+                .ctx
+                .rpc
+                .get_groups(Request::new(GetGroupsRequest {
+                    coalition: coalition.into(),
+                    category: None,
+                }))
+                .map_ok(|res| res.into_inner().groups)
+        }),
+    )
+    .await?
+    .into_iter()
+    .flatten()
+    .collect::<Vec<_>>();
 
-        for coalition in &[Coalition::Blue, Coalition::Red, Coalition::Neutral] {
-            groups.extend(
-                state
-                    .ctx
-                    .rpc
-                    .get_groups(Request::new(GetGroupsRequest {
-                        coalition: (*coalition).into(),
-                        category: None,
-                    }))
-                    .await?
-                    .into_inner()
-                    .groups,
-            );
-        }
-
-        groups
-    };
-
-    for group in groups {
-        let res = state
+    let group_units = futures_util::future::try_join_all(groups.into_iter().map(|group| {
+        state
             .ctx
             .rpc
             .get_units(Request::new(GetUnitsRequest {
                 group_name: group.name.clone(),
                 active: Some(true),
             }))
-            .await?
-            .into_inner();
+            .map_ok(|res| res.into_inner().units)
+    }))
+    .await?;
 
+    for units in group_units {
         state.units.extend(
-            res.units
+            units
                 .into_iter()
                 .map(|unit| (unit.name.clone(), UnitState::new(unit))),
         )

@@ -4,6 +4,7 @@ use std::time::Duration;
 use crate::chat::Chat;
 use crate::rpc::{dcs, HookRpc, MissionRpc};
 use crate::shutdown::{Shutdown, ShutdownHandle};
+use crate::stats::Stats;
 use dcs::atmosphere_server::AtmosphereServer;
 use dcs::coalitions_server::CoalitionsServer;
 use dcs::controllers_server::ControllersServer;
@@ -28,6 +29,7 @@ pub struct Server {
     pub ipc_hook: IPC<()>,
     pub runtime: Runtime,
     chat: Chat,
+    pub stats: Stats,
     shutdown: Shutdown,
     after_shutdown: Option<oneshot::Sender<()>>,
 }
@@ -44,6 +46,7 @@ impl Server {
             ipc_hook,
             runtime,
             chat: Chat::new(),
+            stats: Stats::new(shutdown.handle()),
             shutdown,
             after_shutdown: None,
         })
@@ -63,9 +66,12 @@ impl Server {
             self.ipc_mission.clone(),
             self.ipc_hook.clone(),
             self.chat.clone(),
+            self.stats.clone(),
             self.shutdown.handle(),
             rx,
         ));
+
+        self.runtime.spawn(self.stats.clone().run_in_background());
     }
 
     pub fn stop_blocking(mut self) {
@@ -90,6 +96,7 @@ async fn run(
     ipc_mission: IPC<Event>,
     ipc_hook: IPC<()>,
     chat: Chat,
+    stats: Stats,
     shutdown_signal: ShutdownHandle,
     mut after_shutdown: Receiver<()>,
 ) {
@@ -99,6 +106,7 @@ async fn run(
             ipc_mission.clone(),
             ipc_hook.clone(),
             chat.clone(),
+            stats.clone(),
             shutdown_signal.clone(),
             &mut after_shutdown,
         )
@@ -119,13 +127,14 @@ async fn try_run(
     ipc_mission: IPC<Event>,
     ipc_hook: IPC<()>,
     chat: Chat,
+    stats: Stats,
     shutdown_signal: ShutdownHandle,
     after_shutdown: &mut Receiver<()>,
 ) -> Result<(), transport::Error> {
     log::info!("Staring gRPC Server ...");
 
-    let mission_rpc = MissionRpc::new(ipc_mission, shutdown_signal.clone());
-    let hook_rpc = HookRpc::new(ipc_hook, chat, shutdown_signal.clone());
+    let mission_rpc = MissionRpc::new(ipc_mission, stats.clone(), shutdown_signal.clone());
+    let hook_rpc = HookRpc::new(ipc_hook, chat, stats, shutdown_signal.clone());
     transport::Server::builder()
         .add_service(AtmosphereServer::new(mission_rpc.clone()))
         .add_service(CoalitionsServer::new(mission_rpc.clone()))

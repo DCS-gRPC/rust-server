@@ -7,6 +7,7 @@ mod hot_reload;
 pub mod rpc;
 mod server;
 mod shutdown;
+mod stats;
 mod stream;
 
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -41,10 +42,14 @@ pub fn init(lua: &Lua, debug: bool) -> LuaResult<String> {
     use log::LevelFilter;
     use log4rs::append::file::FileAppender;
     use log4rs::config::{Appender, Config, Logger, Root};
+    use log4rs::encode::pattern::PatternEncoder;
 
     let log_file = write_dir.clone() + "Logs/gRPC.log";
 
     let requests = FileAppender::builder()
+        .encoder(Box::new(PatternEncoder::new(
+            "{d(%Y-%m-%d %H:%M:%S%.3f)} {l:<7} {t}: {m}{n}",
+        )))
         .append(false)
         .build(log_file)
         .unwrap();
@@ -107,6 +112,7 @@ pub fn next(lua: &Lua, (env, callback): (i32, Function)) -> LuaResult<bool> {
     if let Some(Server {
         ref ipc_mission,
         ref ipc_hook,
+        ref stats,
         ..
     }) = *SERVER.read().unwrap()
     {
@@ -117,6 +123,8 @@ pub fn next(lua: &Lua, (env, callback): (i32, Function)) -> LuaResult<bool> {
         };
 
         if let Some(mut next) = next {
+            let _call = stats.track_call();
+
             let method = next.method().to_string();
             let params = next
                 .params(lua)

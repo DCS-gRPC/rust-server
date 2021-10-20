@@ -2,6 +2,7 @@ use std::pin::Pin;
 
 use crate::chat::Chat;
 use crate::shutdown::{AbortableStream, ShutdownHandle};
+use crate::stats::Stats;
 use dcs::atmosphere_server::Atmosphere;
 use dcs::coalitions_server::Coalitions;
 use dcs::controllers_server::Controllers;
@@ -35,20 +36,23 @@ pub mod dcs {
 #[derive(Clone)]
 pub struct MissionRpc {
     ipc: IPC<Event>,
+    stats: Stats,
     shutdown_signal: ShutdownHandle,
 }
 
 #[derive(Clone)]
 pub struct HookRpc {
     ipc: IPC<()>,
-    shutdown_signal: ShutdownHandle,
     chat: Chat,
+    stats: Stats,
+    shutdown_signal: ShutdownHandle,
 }
 
 impl MissionRpc {
-    pub fn new(ipc: IPC<Event>, shutdown_signal: ShutdownHandle) -> Self {
+    pub fn new(ipc: IPC<Event>, stats: Stats, shutdown_signal: ShutdownHandle) -> Self {
         MissionRpc {
             ipc,
+            stats,
             shutdown_signal,
         }
     }
@@ -58,6 +62,7 @@ impl MissionRpc {
         I: serde::Serialize + Send + Sync + 'static,
         for<'de> O: serde::Deserialize<'de> + Send + Sync + std::fmt::Debug + 'static,
     {
+        let _guard = self.stats.track_queue();
         self.ipc
             .request(method, Some(request.into_inner()))
             .await
@@ -68,6 +73,7 @@ impl MissionRpc {
     where
         I: serde::Serialize + Send + Sync + 'static,
     {
+        let _guard = self.stats.track_queue();
         self.ipc
             .notification(method, Some(request.into_inner()))
             .await
@@ -80,11 +86,12 @@ impl MissionRpc {
 }
 
 impl HookRpc {
-    pub fn new(ipc: IPC<()>, chat: Chat, shutdown_signal: ShutdownHandle) -> Self {
+    pub fn new(ipc: IPC<()>, chat: Chat, stats: Stats, shutdown_signal: ShutdownHandle) -> Self {
         HookRpc {
             ipc,
-            shutdown_signal,
             chat,
+            stats,
+            shutdown_signal,
         }
     }
 
@@ -93,6 +100,7 @@ impl HookRpc {
         I: serde::Serialize + Send + Sync + 'static,
         for<'de> O: serde::Deserialize<'de> + Send + Sync + std::fmt::Debug + 'static,
     {
+        let _guard = self.stats.track_queue();
         self.ipc
             .request(method, Some(request.into_inner()))
             .await
@@ -103,6 +111,7 @@ impl HookRpc {
     where
         I: serde::Serialize + Send + Sync + 'static,
     {
+        let _guard = self.stats.track_queue();
         self.ipc
             .notification(method, Some(request.into_inner()))
             .await

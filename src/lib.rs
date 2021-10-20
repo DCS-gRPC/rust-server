@@ -42,10 +42,14 @@ pub fn init(lua: &Lua, debug: bool) -> LuaResult<String> {
     use log::LevelFilter;
     use log4rs::append::file::FileAppender;
     use log4rs::config::{Appender, Config, Logger, Root};
+    use log4rs::encode::pattern::PatternEncoder;
 
     let log_file = write_dir.clone() + "Logs/gRPC.log";
 
     let requests = FileAppender::builder()
+        .encoder(Box::new(PatternEncoder::new(
+            "{d(%Y-%m-%d %H:%M:%S%.3f)} {l} {t}: {m}{n}",
+        )))
         .append(false)
         .build(log_file)
         .unwrap();

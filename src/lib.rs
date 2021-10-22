@@ -12,6 +12,7 @@ mod stream;
 
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, RwLock};
+use std::time::Instant;
 
 use mlua::{prelude::*, LuaSerdeExt};
 use mlua::{Function, Value};
@@ -109,6 +110,8 @@ pub fn stop(_: &Lua, _: ()) -> LuaResult<()> {
 
 #[no_mangle]
 pub fn next(lua: &Lua, (env, callback): (i32, Function)) -> LuaResult<bool> {
+    let start = Instant::now();
+
     if let Some(Server {
         ref ipc_mission,
         ref ipc_hook,
@@ -116,6 +119,8 @@ pub fn next(lua: &Lua, (env, callback): (i32, Function)) -> LuaResult<bool> {
         ..
     }) = *SERVER.read().unwrap()
     {
+        let _guard = stats.track_block_time(start);
+
         let next = match env {
             1 => ipc_mission.try_next(),
             2 => ipc_hook.try_next(),
@@ -172,6 +177,8 @@ pub fn next(lua: &Lua, (env, callback): (i32, Function)) -> LuaResult<bool> {
 
 #[no_mangle]
 pub fn event(lua: &Lua, event: Value) -> LuaResult<()> {
+    let start = Instant::now();
+
     let event: Event = match lua.from_value(event) {
         Ok(event) => event,
         Err(err) => {
@@ -186,9 +193,13 @@ pub fn event(lua: &Lua, event: Value) -> LuaResult<()> {
     if let Some(Server {
         ref ipc_mission,
         ref runtime,
+        ref stats,
         ..
     }) = *SERVER.read().unwrap()
     {
+        let _guard = stats.track_block_time(start);
+        stats.track_event();
+
         log::debug!("Received event: {:#?}", event);
         runtime.block_on(ipc_mission.event(event));
     }

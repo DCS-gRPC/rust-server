@@ -1,6 +1,7 @@
 .*
 !.gitignore
 !.github
+!.cargo
 /target
 Cargo.lock
 scratchpad.txt

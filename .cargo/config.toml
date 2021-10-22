@@ -1,0 +1,4 @@
+[env]
+LUA_LIB_NAME = "lua"
+LUA_LIB = { value = "lua/lua5.1/", relative = true }
+LUA_INC = { value = "lua/lua5.1/include", relative = true }

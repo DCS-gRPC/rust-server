@@ -120,7 +120,7 @@ The following section is only applicable to people who want to developer the DCS
 
 ### Build Dependencies
 
-- Rust `>=1.39`
+- Rust `>=1.56`
 - `rustfmt` (`rustup component add rustfmt`)
 
 ### Build
@@ -132,9 +132,6 @@ make build
 You may need to use the following in powershell
 
 ```
-$env:LUA_LIB_NAME="lua"
-$env:LUA_LIB=(Get-Item -Path ".\").FullName+"/lua/lua5.1/"
-$env:LUA_INC=(Get-Item -Path ".\").FullName+"/lua/lua5.1/include"
 cargo build
 ```
 

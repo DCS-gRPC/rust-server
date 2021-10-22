@@ -62,7 +62,7 @@ impl MissionRpc {
         I: serde::Serialize + Send + Sync + 'static,
         for<'de> O: serde::Deserialize<'de> + Send + Sync + std::fmt::Debug + 'static,
     {
-        let _guard = self.stats.track_queue();
+        let _guard = self.stats.track_queue_size();
         self.ipc
             .request(method, Some(request.into_inner()))
             .await
@@ -73,7 +73,7 @@ impl MissionRpc {
     where
         I: serde::Serialize + Send + Sync + 'static,
     {
-        let _guard = self.stats.track_queue();
+        let _guard = self.stats.track_queue_size();
         self.ipc
             .notification(method, Some(request.into_inner()))
             .await
@@ -100,7 +100,7 @@ impl HookRpc {
         I: serde::Serialize + Send + Sync + 'static,
         for<'de> O: serde::Deserialize<'de> + Send + Sync + std::fmt::Debug + 'static,
     {
-        let _guard = self.stats.track_queue();
+        let _guard = self.stats.track_queue_size();
         self.ipc
             .request(method, Some(request.into_inner()))
             .await
@@ -111,7 +111,7 @@ impl HookRpc {
     where
         I: serde::Serialize + Send + Sync + 'static,
     {
-        let _guard = self.stats.track_queue();
+        let _guard = self.stats.track_queue_size();
         self.ipc
             .notification(method, Some(request.into_inner()))
             .await

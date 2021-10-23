@@ -7,11 +7,6 @@ pub struct Chat {
 }
 
 impl Chat {
-    pub fn new() -> Self {
-        let (tx, _) = broadcast::channel(128);
-        Self { stream: tx }
-    }
-
     pub fn subscribe(&self) -> broadcast::Receiver<ChatMessage> {
         self.stream.subscribe()
     }
@@ -25,9 +20,16 @@ impl Chat {
         self.stream
             .send(ChatMessage {
                 player_id,
-                message: message.clone(),
+                message,
                 all,
             })
             .ok();
+    }
+}
+
+impl Default for Chat {
+    fn default() -> Self {
+        let (tx, _) = broadcast::channel(128);
+        Self { stream: tx }
     }
 }

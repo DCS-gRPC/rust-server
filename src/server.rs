@@ -45,7 +45,7 @@ impl Server {
             ipc_mission,
             ipc_hook,
             runtime,
-            chat: Chat::new(),
+            chat: Chat::default(),
             stats: Stats::new(shutdown.handle()),
             shutdown,
             after_shutdown: None,

@@ -54,15 +54,14 @@ pub async fn stream_units(
     )
     .await?
     .into_iter()
-    .flatten()
-    .collect::<Vec<_>>();
+    .flatten();
 
     let group_units = futures_util::future::try_join_all(groups.into_iter().map(|group| {
         state
             .ctx
             .rpc
             .get_units(Request::new(GetUnitsRequest {
-                group_name: group.name.clone(),
+                group_name: group.name,
                 active: Some(true),
             }))
             .map_ok(|res| res.into_inner().units)

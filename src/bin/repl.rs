@@ -1,22 +1,44 @@
 use std::io::{self, BufRead};
 
+use clap::Parser;
 use dcs_grpc_server::rpc::dcs::custom_client::CustomClient;
+use dcs_grpc_server::rpc::dcs::hook_client::HookClient;
 use dcs_grpc_server::rpc::dcs::{EvalRequest, EvalResponse};
 use serde_json::Value;
 use tonic::{transport, Code, Request, Response, Status};
 
+#[derive(Parser)]
+#[clap(name = "repl")]
+struct Opts {
+    #[clap(short, long, possible_values = ["mission", "hook"], default_value = "mission")]
+    env: String,
+}
+
+enum Client<T> {
+    Mission(CustomClient<T>),
+    Hook(HookClient<T>),
+}
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let opts: Opts = Opts::parse();
     let endpoint =
         transport::Endpoint::from_static("http://127.0.0.1:50051").keep_alive_while_idle(true);
-    let mut client = CustomClient::connect(endpoint).await?;
+    let mut client = match opts.env.as_str() {
+        "mission" => Client::Mission(CustomClient::connect(endpoint).await?),
+        "hook" => Client::Hook(HookClient::connect(endpoint).await?),
+        _ => unreachable!("invalid --env value"),
+    };
 
     let stdin = io::stdin();
     let mut lines = stdin.lock().lines();
     loop {
         if let Some(line) = lines.next() {
             let req = Request::new(EvalRequest { lua: line? });
-            let result = client.eval(req).await;
+            let result = match &mut client {
+                Client::Mission(client) => client.eval(req).await,
+                Client::Hook(client) => client.eval(req).await,
+            };
 
             let json: Value = match handle_respone(result) {
                 Ok(json) => json,

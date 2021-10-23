@@ -1,3 +1,4 @@
+use std::future::Future;
 use std::net::SocketAddr;
 use std::time::Duration;
 
@@ -18,37 +19,56 @@ use dcs::world_server::WorldServer;
 use dcs::*;
 use dcs_module_ipc::IPC;
 use futures_util::FutureExt;
+use serde::{Deserialize, Serialize};
 use tokio::runtime::Runtime;
 use tokio::sync::oneshot::{self, Receiver};
 use tokio::time::sleep;
 use tonic::transport;
 
 pub struct Server {
-    addr: SocketAddr,
-    pub ipc_mission: IPC<Event>,
-    pub ipc_hook: IPC<()>,
-    pub runtime: Runtime,
-    chat: Chat,
-    pub stats: Stats,
+    runtime: Runtime,
     shutdown: Shutdown,
     after_shutdown: Option<oneshot::Sender<()>>,
+    state: ServerState,
+}
+
+#[derive(Clone)]
+struct ServerState {
+    addr: SocketAddr,
+    config: Config,
+    ipc_mission: IPC<Event>,
+    ipc_hook: IPC<()>,
+    chat: Chat,
+    stats: Stats,
+}
+
+#[derive(Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Config {
+    pub host: String,
+    pub port: u16,
+    pub debug: bool,
+    pub eval_enabled: bool,
 }
 
 impl Server {
-    pub fn new(host: &str, port: u16) -> Result<Self, StartError> {
+    pub fn new(config: Config) -> Result<Self, StartError> {
         let ipc_mission = IPC::new();
         let ipc_hook = IPC::new();
         let runtime = Runtime::new()?;
         let shutdown = Shutdown::new();
         Ok(Self {
-            addr: format!("{}:{}", host, port).parse()?,
-            ipc_mission,
-            ipc_hook,
             runtime,
-            chat: Chat::default(),
-            stats: Stats::new(shutdown.handle()),
-            shutdown,
             after_shutdown: None,
+            state: ServerState {
+                addr: format!("{}:{}", config.host, config.port).parse()?,
+                config,
+                ipc_mission,
+                ipc_hook,
+                chat: Chat::default(),
+                stats: Stats::new(shutdown.handle()),
+            },
+            shutdown,
         })
     }
 
@@ -62,16 +82,13 @@ impl Server {
         self.after_shutdown = Some(tx);
 
         self.runtime.spawn(crate::server::run(
-            self.addr,
-            self.ipc_mission.clone(),
-            self.ipc_hook.clone(),
-            self.chat.clone(),
-            self.stats.clone(),
+            self.state.clone(),
             self.shutdown.handle(),
             rx,
         ));
 
-        self.runtime.spawn(self.stats.clone().run_in_background());
+        self.runtime
+            .spawn(self.state.stats.clone().run_in_background());
     }
 
     pub fn stop_blocking(mut self) {
@@ -87,31 +104,33 @@ impl Server {
     }
 
     pub fn handle_chat_message(&self, player_id: u32, message: String, all: bool) {
-        self.chat.handle_message(player_id, message, all);
+        self.state.chat.handle_message(player_id, message, all);
+    }
+
+    pub fn ipc_mission(&self) -> &IPC<Event> {
+        &self.state.ipc_mission
+    }
+
+    pub fn ipc_hook(&self) -> &IPC<()> {
+        &self.state.ipc_hook
+    }
+
+    pub fn stats(&self) -> &Stats {
+        &self.state.stats
+    }
+
+    pub fn block_on<F: Future>(&self, future: F) -> F::Output {
+        self.runtime.block_on(future)
     }
 }
 
 async fn run(
-    addr: SocketAddr,
-    ipc_mission: IPC<Event>,
-    ipc_hook: IPC<()>,
-    chat: Chat,
-    stats: Stats,
+    state: ServerState,
     shutdown_signal: ShutdownHandle,
     mut after_shutdown: Receiver<()>,
 ) {
     loop {
-        match try_run(
-            addr,
-            ipc_mission.clone(),
-            ipc_hook.clone(),
-            chat.clone(),
-            stats.clone(),
-            shutdown_signal.clone(),
-            &mut after_shutdown,
-        )
-        .await
-        {
+        match try_run(state.clone(), shutdown_signal.clone(), &mut after_shutdown).await {
             Ok(_) => break,
             Err(err) => {
                 log::error!("{}", err);
@@ -123,18 +142,29 @@ async fn run(
 }
 
 async fn try_run(
-    addr: SocketAddr,
-    ipc_mission: IPC<Event>,
-    ipc_hook: IPC<()>,
-    chat: Chat,
-    stats: Stats,
+    state: ServerState,
     shutdown_signal: ShutdownHandle,
     after_shutdown: &mut Receiver<()>,
 ) -> Result<(), transport::Error> {
     log::info!("Staring gRPC Server ...");
 
-    let mission_rpc = MissionRpc::new(ipc_mission, stats.clone(), shutdown_signal.clone());
-    let hook_rpc = HookRpc::new(ipc_hook, chat, stats, shutdown_signal.clone());
+    let ServerState {
+        addr,
+        config,
+        ipc_mission,
+        ipc_hook,
+        chat,
+        stats,
+    } = state;
+
+    let mut mission_rpc = MissionRpc::new(ipc_mission, stats.clone(), shutdown_signal.clone());
+    let mut hook_rpc = HookRpc::new(ipc_hook, chat, stats, shutdown_signal.clone());
+
+    if config.eval_enabled {
+        mission_rpc.enable_eval();
+        hook_rpc.enable_eval();
+    }
+
     transport::Server::builder()
         .add_service(AtmosphereServer::new(mission_rpc.clone()))
         .add_service(CoalitionsServer::new(mission_rpc.clone()))

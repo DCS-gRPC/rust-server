@@ -37,6 +37,7 @@ pub mod dcs {
 pub struct MissionRpc {
     ipc: IPC<Event>,
     stats: Stats,
+    eval_enabled: bool,
     shutdown_signal: ShutdownHandle,
 }
 
@@ -45,6 +46,7 @@ pub struct HookRpc {
     ipc: IPC<()>,
     chat: Chat,
     stats: Stats,
+    eval_enabled: bool,
     shutdown_signal: ShutdownHandle,
 }
 
@@ -53,8 +55,13 @@ impl MissionRpc {
         MissionRpc {
             ipc,
             stats,
+            eval_enabled: false,
             shutdown_signal,
         }
+    }
+
+    pub fn enable_eval(&mut self) {
+        self.eval_enabled = true;
     }
 
     pub async fn request<I, O>(&self, method: &str, request: Request<I>) -> Result<O, Status>
@@ -91,8 +98,13 @@ impl HookRpc {
             ipc,
             chat,
             stats,
+            eval_enabled: false,
             shutdown_signal,
         }
+    }
+
+    pub fn enable_eval(&mut self) {
+        self.eval_enabled = true;
     }
 
     pub async fn request<I, O>(&self, method: &str, request: Request<I>) -> Result<O, Status>
@@ -440,7 +452,11 @@ impl Custom for MissionRpc {
     }
 
     async fn eval(&self, request: Request<EvalRequest>) -> Result<Response<EvalResponse>, Status> {
-        let json: serde_json::Value = self.request("eval", request).await?;
+        if !self.eval_enabled {
+            return Err(Status::permission_denied("eval operation is disabled"));
+        }
+
+        let json: serde_json::Value = self.request("missionEval", request).await?;
         let json = serde_json::to_string(&json).map_err(|err| {
             Status::internal(format!("failed to deserialize eval result: {}", err))
         })?;
@@ -472,6 +488,18 @@ impl Hook for HookRpc {
             rx.map_err(|err| Status::unknown(err.to_string())),
         );
         Ok(Response::new(Box::pin(stream)))
+    }
+
+    async fn eval(&self, request: Request<EvalRequest>) -> Result<Response<EvalResponse>, Status> {
+        if !self.eval_enabled {
+            return Err(Status::permission_denied("eval operation is disabled"));
+        }
+
+        let json: serde_json::Value = self.request("hookEval", request).await?;
+        let json = serde_json::to_string(&json).map_err(|err| {
+            Status::internal(format!("failed to deserialize eval result: {}", err))
+        })?;
+        Ok(Response::new(EvalResponse { json }))
     }
 }
 

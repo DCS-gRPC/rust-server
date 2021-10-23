@@ -74,7 +74,7 @@ GRPC.error = function(msg)
 end
 
 GRPC.onChatMessage = function(playerID, msg, all)
-  return grpc.on_chat_message(playerID, msg, all)
+  return grpc.onChatMessage(playerID, msg, all)
 end
 
 --
@@ -82,21 +82,21 @@ end
 --
 
 GRPC.logError = function(err)
-  grpc.log_error(err)
+  grpc.logError(err)
   env.error("[GRPC] "..err)
 end
 
 GRPC.logWarning = function(err)
-  grpc.log_warning(err)
+  grpc.logWarning(err)
   env.warning("[GRPC] "..err)
 end
 
 GRPC.logInfo = function(msg)
-  grpc.log_info(msg)
+  grpc.logInfo(msg)
 end
 
 GRPC.logDebug = function(msg)
-  grpc.log_debug(msg)
+  grpc.logDebug(msg)
 end
 
 --- The client specified an invalid argument

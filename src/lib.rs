@@ -264,13 +264,13 @@ pub fn dcs_grpc_server_hot_reload(lua: &Lua) -> LuaResult<LuaTable> {
     exports.set("next", lua.create_function(hot_reload::next)?)?;
     exports.set("event", lua.create_function(hot_reload::event)?)?;
     exports.set(
-        "on_chat_message",
+        "onChatMessage",
         lua.create_function(hot_reload::on_chat_message)?,
     )?;
-    exports.set("log_error", lua.create_function(hot_reload::log_error)?)?;
-    exports.set("log_warning", lua.create_function(hot_reload::log_warning)?)?;
-    exports.set("log_info", lua.create_function(hot_reload::log_info)?)?;
-    exports.set("log_debug", lua.create_function(hot_reload::log_debug)?)?;
+    exports.set("logError", lua.create_function(hot_reload::log_error)?)?;
+    exports.set("logWarning", lua.create_function(hot_reload::log_warning)?)?;
+    exports.set("logInfo", lua.create_function(hot_reload::log_info)?)?;
+    exports.set("logDebug", lua.create_function(hot_reload::log_debug)?)?;
     Ok(exports)
 }
 
@@ -282,11 +282,11 @@ pub fn dcs_grpc_server(lua: &Lua) -> LuaResult<LuaTable> {
     exports.set("stop", lua.create_function(stop)?)?;
     exports.set("next", lua.create_function(next)?)?;
     exports.set("event", lua.create_function(event)?)?;
-    exports.set("on_chat_message", lua.create_function(on_chat_message)?)?;
-    exports.set("log_error", lua.create_function(log_error)?)?;
-    exports.set("log_warning", lua.create_function(log_warning)?)?;
-    exports.set("log_info", lua.create_function(log_info)?)?;
-    exports.set("log_debug", lua.create_function(log_debug)?)?;
+    exports.set("onChatMessage", lua.create_function(on_chat_message)?)?;
+    exports.set("logError", lua.create_function(log_error)?)?;
+    exports.set("logWarning", lua.create_function(log_warning)?)?;
+    exports.set("logInfo", lua.create_function(log_info)?)?;
+    exports.set("logDebug", lua.create_function(log_debug)?)?;
     Ok(exports)
 }
 

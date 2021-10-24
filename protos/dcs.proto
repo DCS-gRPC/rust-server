@@ -137,6 +137,10 @@ service Hook {
 
 	// Stream all chat messages.
 	rpc StreamChat(dcs.hook.StreamChatRequest) returns (stream dcs.hook.ChatMessage) {}
+
+	// Evaluate some Lua inside of the hook environment and return the result as a JSON string.
+	// Disabled by default.
+	rpc Eval(EvalRequest) returns (EvalResponse) {}
 }
 
 // https://wiki.hoggitworld.com/view/DCS_Class_Unit

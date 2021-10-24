@@ -18,25 +18,28 @@ use mlua::{prelude::*, LuaSerdeExt};
 use mlua::{Function, Value};
 use once_cell::sync::Lazy;
 use rpc::dcs::Event;
-use server::Server;
+use server::{Config, Server};
 use thiserror::Error;
 
 static INITIALIZED: Lazy<AtomicBool> = Lazy::new(|| AtomicBool::new(false));
 static SERVER: Lazy<RwLock<Option<Server>>> = Lazy::new(|| RwLock::new(None));
 
-pub fn init(lua: &Lua, debug: bool) -> LuaResult<String> {
+pub(crate) fn write_dir(lua: &Lua) -> LuaResult<String> {
     // get lfs.writedir()
     let write_dir: String = {
         let globals = lua.globals();
         let lfs: LuaTable = globals.get("lfs")?;
         lfs.call_method("writedir", ())?
     };
+    Ok(write_dir)
+}
 
+pub fn init(lua: &Lua, debug: bool) -> LuaResult<()> {
     if INITIALIZED
         .compare_exchange(false, true, Ordering::Acquire, Ordering::Relaxed)
         .unwrap_or(true)
     {
-        return Ok(write_dir);
+        return Ok(());
     }
 
     // init logging
@@ -45,7 +48,8 @@ pub fn init(lua: &Lua, debug: bool) -> LuaResult<String> {
     use log4rs::config::{Appender, Config, Logger, Root};
     use log4rs::encode::pattern::PatternEncoder;
 
-    let log_file = write_dir.clone() + "Logs/gRPC.log";
+    let write_dir = write_dir(lua)?;
+    let log_file = write_dir + "Logs/gRPC.log";
 
     let requests = FileAppender::builder()
         .encoder(Box::new(PatternEncoder::new(
@@ -70,23 +74,31 @@ pub fn init(lua: &Lua, debug: bool) -> LuaResult<String> {
 
     log4rs::init_config(config).unwrap();
 
-    Ok(write_dir)
+    Ok(())
 }
 
 #[no_mangle]
-pub fn start(lua: &Lua, (host, port, debug): (String, u16, bool)) -> LuaResult<()> {
+pub fn start(lua: &Lua, config: Value) -> LuaResult<()> {
     {
         if SERVER.read().unwrap().is_some() {
             return Ok(());
         }
     }
 
-    let _write_dir = init(lua, debug)?;
+    let config: Config = match lua.from_value(config) {
+        Ok(event) => event,
+        Err(err) => {
+            log::error!("failed to deserialize config: {}", err);
+            return Ok(());
+        }
+    };
+
+    init(lua, config.debug)?;
 
     log::info!("Starting ...");
 
     let mut server =
-        Server::new(&host, port).map_err(|err| mlua::Error::ExternalError(Arc::new(err)))?;
+        Server::new(config).map_err(|err| mlua::Error::ExternalError(Arc::new(err)))?;
     server.run_in_background();
     *(SERVER.write().unwrap()) = Some(server);
 
@@ -112,23 +124,17 @@ pub fn stop(_: &Lua, _: ()) -> LuaResult<()> {
 pub fn next(lua: &Lua, (env, callback): (i32, Function)) -> LuaResult<bool> {
     let start = Instant::now();
 
-    if let Some(Server {
-        ref ipc_mission,
-        ref ipc_hook,
-        ref stats,
-        ..
-    }) = *SERVER.read().unwrap()
-    {
-        let _guard = stats.track_block_time(start);
+    if let Some(server) = &*SERVER.read().unwrap() {
+        let _guard = server.stats().track_block_time(start);
 
         let next = match env {
-            1 => ipc_mission.try_next(),
-            2 => ipc_hook.try_next(),
+            1 => server.ipc_mission().try_next(),
+            2 => server.ipc_hook().try_next(),
             _ => return Ok(false),
         };
 
         if let Some(mut next) = next {
-            let _call = stats.track_call();
+            let _call = server.stats().track_call();
 
             let method = next.method().to_string();
             let params = next
@@ -190,18 +196,12 @@ pub fn event(lua: &Lua, event: Value) -> LuaResult<()> {
         }
     };
 
-    if let Some(Server {
-        ref ipc_mission,
-        ref runtime,
-        ref stats,
-        ..
-    }) = *SERVER.read().unwrap()
-    {
-        let _guard = stats.track_block_time(start);
-        stats.track_event();
+    if let Some(server) = &*SERVER.read().unwrap() {
+        let _guard = server.stats().track_block_time(start);
+        server.stats().track_event();
 
         log::debug!("Received event: {:#?}", event);
-        runtime.block_on(ipc_mission.event(event));
+        server.block_on(server.ipc_mission().event(event));
     }
 
     Ok(())

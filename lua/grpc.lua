@@ -45,7 +45,12 @@ else
 end
 
 if isMissionEnv then
-  grpc.start(GRPC.host, GRPC.port, GRPC.debug)
+  grpc.start({
+    host = GRPC.host,
+    port = GRPC.port,
+    debug = GRPC.debug,
+    evalEnabled = GRPC.evalEnabled
+  })
 end
 
 --
@@ -81,18 +86,33 @@ end
 -- Logging methods
 --
 
-GRPC.logError = function(err)
-  grpc.logError(err)
-  env.error("[GRPC] "..err)
+GRPC.logError = function(msg)
+  grpc.logError(msg)
+
+  if isMissionEnv then
+    env.error("[GRPC] "..msg)
+  else
+    log.write("[GRPC-Hook]", log.ERROR, msg)
+  end
 end
 
-GRPC.logWarning = function(err)
-  grpc.logWarning(err)
-  env.warning("[GRPC] "..err)
+GRPC.logWarning = function(msg)
+  grpc.logWarning(msg)
+
+  if isMissionEnv then
+    env.info("[GRPC] "..msg)
+  else
+    log.write("[GRPC-Hook]", log.WARNING, msg)
+  end
 end
 
 GRPC.logInfo = function(msg)
   grpc.logInfo(msg)
+  if isMissionEnv then
+    env.info("[GRPC] "..msg)
+  else
+    log.write("[GRPC-Hook]", log.INFO, msg)
+  end
 end
 
 GRPC.logDebug = function(msg)

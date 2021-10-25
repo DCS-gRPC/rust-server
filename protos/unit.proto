@@ -37,3 +37,10 @@ message GetUnitDescriptorRequest {
 message GetUnitDescriptorResponse {
   repeated string attributes = 1;
 }
+
+message SetEmissionRequest {
+	string name = 1;
+	bool emitting = 2;
+}
+
+message SetEmissionResponse {}

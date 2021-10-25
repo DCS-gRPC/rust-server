@@ -418,6 +418,14 @@ impl Units for MissionRpc {
         let res: GetUnitDescriptorResponse = self.request("getUnitDescriptor", request).await?;
         Ok(Response::new(res))
     }
+
+    async fn set_emission(
+        &self,
+        request: Request<SetEmissionRequest>,
+    ) -> Result<Response<SetEmissionResponse>, Status> {
+        self.notification("setEmission", request).await?;
+        Ok(Response::new(SetEmissionResponse {}))
+    }
 }
 
 #[tonic::async_trait]

@@ -3,7 +3,7 @@ use std::pin::Pin;
 use crate::chat::Chat;
 use crate::shutdown::{AbortableStream, ShutdownHandle};
 use crate::stats::Stats;
-use dcs::atmosphere_server::Atmosphere;
+use dcs::atmosphere::atmosphere_service_server::AtmosphereService;
 use dcs::coalitions_server::Coalitions;
 use dcs::controllers_server::Controllers;
 use dcs::custom_server::Custom;
@@ -23,6 +23,10 @@ use tonic::{Request, Response, Status};
 
 pub mod dcs {
     tonic::include_proto!("dcs");
+
+    pub mod atmosphere {
+        tonic::include_proto!("dcs.atmosphere");
+    }
 
     pub mod group {
         tonic::include_proto!("dcs.group");
@@ -309,29 +313,29 @@ impl Triggers for MissionRpc {
 }
 
 #[tonic::async_trait]
-impl Atmosphere for MissionRpc {
+impl AtmosphereService for MissionRpc {
     async fn get_wind(
         &self,
-        request: Request<GetWindRequest>,
-    ) -> Result<Response<GetWindResponse>, Status> {
-        let res: GetWindResponse = self.request("getWind", request).await?;
+        request: Request<atmosphere::GetWindRequest>,
+    ) -> Result<Response<atmosphere::GetWindResponse>, Status> {
+        let res: atmosphere::GetWindResponse = self.request("getWind", request).await?;
         Ok(Response::new(res))
     }
 
     async fn get_wind_with_turbulence(
         &self,
-        request: Request<GetWindWithTurbulenceRequest>,
-    ) -> Result<Response<GetWindWithTurbulenceResponse>, Status> {
-        let res: GetWindWithTurbulenceResponse =
+        request: Request<atmosphere::GetWindWithTurbulenceRequest>,
+    ) -> Result<Response<atmosphere::GetWindWithTurbulenceResponse>, Status> {
+        let res: atmosphere::GetWindWithTurbulenceResponse =
             self.request("getWindWithTurbulence", request).await?;
         Ok(Response::new(res))
     }
 
     async fn get_temperature_and_pressure(
         &self,
-        request: Request<GetTemperatureAndPressureRequest>,
-    ) -> Result<Response<GetTemperatureAndPressureResponse>, Status> {
-        let res: GetTemperatureAndPressureResponse =
+        request: Request<atmosphere::GetTemperatureAndPressureRequest>,
+    ) -> Result<Response<atmosphere::GetTemperatureAndPressureResponse>, Status> {
+        let res: atmosphere::GetTemperatureAndPressureResponse =
             self.request("getTemperatureAndPressure", request).await?;
         Ok(Response::new(res))
     }

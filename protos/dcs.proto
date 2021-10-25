@@ -15,18 +15,6 @@ import "world.proto";
 
 package dcs;
 
-// https://wiki.hoggitworld.com/view/DCS_singleton_atmosphere
-service Atmosphere {
-	// https://wiki.hoggitworld.com/view/DCS_func_getWind
-	rpc GetWind(GetWindRequest) returns (GetWindResponse) {}
-
-	// https://wiki.hoggitworld.com/view/DCS_func_getWindWithTurbulence
-	rpc GetWindWithTurbulence(GetWindWithTurbulenceRequest) returns (GetWindWithTurbulenceResponse) {}
-
-	// https://wiki.hoggitworld.com/view/DCS_func_getWindWithTurbulence
-	rpc GetTemperatureAndPressure(GetTemperatureAndPressureRequest) returns (GetTemperatureAndPressureResponse) {}
-}
-
 // https://wiki.hoggitworld.com/view/DCS_singleton_coalition
 service Coalitions {
 	// https://wiki.hoggitworld.com/view/DCS_func_getPlayers

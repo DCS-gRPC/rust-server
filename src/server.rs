@@ -6,7 +6,7 @@ use crate::chat::Chat;
 use crate::rpc::{dcs, HookRpc, MissionRpc};
 use crate::shutdown::{Shutdown, ShutdownHandle};
 use crate::stats::Stats;
-use dcs::atmosphere_server::AtmosphereServer;
+use dcs::atmosphere::atmosphere_service_server::AtmosphereServiceServer;
 use dcs::coalitions_server::CoalitionsServer;
 use dcs::controllers_server::ControllersServer;
 use dcs::custom_server::CustomServer;
@@ -166,7 +166,7 @@ async fn try_run(
     }
 
     transport::Server::builder()
-        .add_service(AtmosphereServer::new(mission_rpc.clone()))
+        .add_service(AtmosphereServiceServer::new(mission_rpc.clone()))
         .add_service(CoalitionsServer::new(mission_rpc.clone()))
         .add_service(ControllersServer::new(mission_rpc.clone()))
         .add_service(CustomServer::new(mission_rpc.clone()))

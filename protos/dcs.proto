@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 import "atmosphere.proto";
-import "coalitions.proto";
+import "coalition.proto";
 import "common.proto";
 import "controllers.proto";
 import "custom.proto";
@@ -14,15 +14,6 @@ import "unit.proto";
 import "world.proto";
 
 package dcs;
-
-// https://wiki.hoggitworld.com/view/DCS_singleton_coalition
-service Coalitions {
-	// https://wiki.hoggitworld.com/view/DCS_func_getPlayers
-	rpc GetPlayers(GetPlayersRequest) returns (GetPlayersResponse) {}
-
-	// https://wiki.hoggitworld.com/view/DCS_func_getGroups
-	rpc GetGroups(GetGroupsRequest) returns (GetGroupsResponse) {}
-}
 
 service Controllers {
     // https://wiki.hoggitworld.com/view/DCS_option_alarmState

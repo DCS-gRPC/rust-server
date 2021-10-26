@@ -7,7 +7,7 @@ use dcs::atmosphere::atmosphere_service_server::AtmosphereService;
 use dcs::coalitions_server::Coalitions;
 use dcs::controllers_server::Controllers;
 use dcs::custom_server::Custom;
-use dcs::groups_server::Groups;
+use dcs::group::group_service_server::GroupService;
 use dcs::hook_server::Hook;
 use dcs::mission_server::Mission;
 use dcs::timer::timer_service_server::TimerService;
@@ -408,7 +408,7 @@ impl Controllers for MissionRpc {
 }
 
 #[tonic::async_trait]
-impl Groups for MissionRpc {
+impl GroupService for MissionRpc {
     async fn get_units(
         &self,
         request: Request<group::GetUnitsRequest>,

@@ -3,7 +3,6 @@
 !.github
 !.cargo
 /target
-Cargo.lock
 scratchpad.txt
 grpcurl.exe
 /doc

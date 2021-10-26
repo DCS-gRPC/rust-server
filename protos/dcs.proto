@@ -70,48 +70,6 @@ service Timer {
 	rpc GetTimeZero(GetTimeZeroRequest) returns (GetTimeZeroResponse) {}
 }
 
-// https://wiki.hoggitworld.com/view/DCS_singleton_trigger
-service Triggers {
-	// https://wiki.hoggitworld.com/view/DCS_func_outText
-	rpc OutText(OutTextRequest) returns (EmptyResponse) {}
-
-	// https://wiki.hoggitworld.com/view/DCS_func_outTextForCoalition
-	rpc OutTextForCoalition(OutTextForCoalitionRequest) returns (EmptyResponse) {}
-
-	// https://wiki.hoggitworld.com/view/DCS_func_outTextForGroup
-	rpc OutTextForGroup(OutTextForGroupRequest) returns (EmptyResponse) {}
-
-	// https://wiki.hoggitworld.com/view/DCS_func_getUserFlag
-	rpc GetUserFlag(GetUserFlagRequest) returns (GetUserFlagResponse) {}
-
-	// https://wiki.hoggitworld.com/view/DCS_func_setUserFlag
-	rpc SetUserFlag(SetUserFlagRequest) returns (EmptyResponse) {}
-
-	// https://wiki.hoggitworld.com/view/DCS_func_markToAll
-	rpc MarkToAll(MarkToAllRequest) returns (MarkToAllResponse) {}
-
-	// https://wiki.hoggitworld.com/view/DCS_func_markToCoalition
-	rpc MarkToCoalition(MarkToCoalitionRequest) returns (MarkToCoalitionResponse) {}
-
-	// https://wiki.hoggitworld.com/view/DCS_func_markToGroup
-	rpc MarkToGroup(MarkToGroupRequest) returns (MarkToGroupResponse) {}
-
-	// https://wiki.hoggitworld.com/view/DCS_func_removeMark
-	rpc RemoveMark(RemoveMarkRequest) returns (EmptyResponse) {}
-
-	// https://wiki.hoggitworld.com/view/DCS_func_explosion
-	rpc Explosion(ExplosionRequest) returns (EmptyResponse) {}
-
-	// https://wiki.hoggitworld.com/view/DCS_func_smoke
-	rpc Smoke(SmokeRequest) returns (EmptyResponse) {}
-
-	// https://wiki.hoggitworld.com/view/DCS_func_illuminationBomb
-	rpc IlluminationBomb(IlluminationBombRequest) returns (EmptyResponse) {}
-
-	// https://wiki.hoggitworld.com/view/DCS_func_signalFlare
-	rpc SignalFlare(SignalFlareRequest) returns (EmptyResponse) {}
-}
-
 // https://wiki.hoggitworld.com/view/DCS_Class_Group
 service Groups {
 	// https://wiki.hoggitworld.com/view/DCS_func_getUnits

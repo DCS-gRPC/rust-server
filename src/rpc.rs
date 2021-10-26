@@ -12,7 +12,7 @@ use dcs::hook_server::Hook;
 use dcs::mission_server::Mission;
 use dcs::timer::timer_service_server::TimerService;
 use dcs::trigger::trigger_service_server::TriggerService;
-use dcs::units_server::Units;
+use dcs::unit::unit_service_server::UnitService;
 use dcs::world::world_service_server::WorldService;
 use dcs::*;
 use dcs_module_ipc::IPC;
@@ -42,6 +42,10 @@ pub mod dcs {
 
     pub mod trigger {
         tonic::include_proto!("dcs.trigger");
+    }
+
+    pub mod unit {
+        tonic::include_proto!("dcs.unit");
     }
 
     pub mod world {
@@ -415,45 +419,47 @@ impl Groups for MissionRpc {
 }
 
 #[tonic::async_trait]
-impl Units for MissionRpc {
+impl UnitService for MissionRpc {
     async fn get_radar(
         &self,
-        request: Request<GetRadarRequest>,
-    ) -> Result<Response<GetRadarResponse>, Status> {
-        let res: GetRadarResponse = self.request("getRadar", request).await?;
+        request: Request<unit::GetRadarRequest>,
+    ) -> Result<Response<unit::GetRadarResponse>, Status> {
+        let res: unit::GetRadarResponse = self.request("getRadar", request).await?;
         Ok(Response::new(res))
     }
 
     async fn get_position(
         &self,
-        request: Request<GetUnitPositionRequest>,
-    ) -> Result<Response<GetUnitPositionResponse>, Status> {
-        let res: GetUnitPositionResponse = self.request("getUnitPosition", request).await?;
+        request: Request<unit::GetUnitPositionRequest>,
+    ) -> Result<Response<unit::GetUnitPositionResponse>, Status> {
+        let res: unit::GetUnitPositionResponse = self.request("getUnitPosition", request).await?;
         Ok(Response::new(res))
     }
 
     async fn get_player_name(
         &self,
-        request: Request<GetUnitPlayerNameRequest>,
-    ) -> Result<Response<GetUnitPlayerNameResponse>, Status> {
-        let res: GetUnitPlayerNameResponse = self.request("getUnitPlayerName", request).await?;
+        request: Request<unit::GetUnitPlayerNameRequest>,
+    ) -> Result<Response<unit::GetUnitPlayerNameResponse>, Status> {
+        let res: unit::GetUnitPlayerNameResponse =
+            self.request("getUnitPlayerName", request).await?;
         Ok(Response::new(res))
     }
 
     async fn get_unit_descriptor(
         &self,
-        request: Request<GetUnitDescriptorRequest>,
-    ) -> Result<Response<GetUnitDescriptorResponse>, Status> {
-        let res: GetUnitDescriptorResponse = self.request("getUnitDescriptor", request).await?;
+        request: Request<unit::GetUnitDescriptorRequest>,
+    ) -> Result<Response<unit::GetUnitDescriptorResponse>, Status> {
+        let res: unit::GetUnitDescriptorResponse =
+            self.request("getUnitDescriptor", request).await?;
         Ok(Response::new(res))
     }
 
     async fn set_emission(
         &self,
-        request: Request<SetEmissionRequest>,
-    ) -> Result<Response<SetEmissionResponse>, Status> {
+        request: Request<unit::SetEmissionRequest>,
+    ) -> Result<Response<unit::SetEmissionResponse>, Status> {
         self.notification("setEmission", request).await?;
-        Ok(Response::new(SetEmissionResponse {}))
+        Ok(Response::new(unit::SetEmissionResponse {}))
     }
 }
 

@@ -3,8 +3,8 @@ use std::time::{Duration, Instant};
 
 use crate::rpc::dcs::coalitions_server::Coalitions;
 use crate::rpc::dcs::event::Event;
+use crate::rpc::dcs::group::group_service_server::GroupService;
 use crate::rpc::dcs::group::GetUnitsRequest;
-use crate::rpc::dcs::groups_server::Groups;
 use crate::rpc::dcs::unit::unit_service_server::UnitService;
 use crate::rpc::dcs::unit_update::{UnitGone, Update};
 use crate::rpc::dcs::{unit, Coalition, GetGroupsRequest, Position, StreamUnitsRequest, Unit};

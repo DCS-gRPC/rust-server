@@ -58,12 +58,6 @@ service Mission {
 	rpc StreamUnits(StreamUnitsRequest) returns (stream UnitUpdate) {}
 }
 
-// https://wiki.hoggitworld.com/view/DCS_Class_Group
-service Groups {
-	// https://wiki.hoggitworld.com/view/DCS_func_getUnits
-	rpc GetUnits(dcs.group.GetUnitsRequest) returns (dcs.group.GetUnitsResponse) {}
-}
-
 // APis that are part of the hook environment
 service Hook {
     // https://wiki.hoggitworld.com/view/DCS_func_getMissionName

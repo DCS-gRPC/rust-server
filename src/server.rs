@@ -10,6 +10,7 @@ use dcs::atmosphere::atmosphere_service_server::AtmosphereServiceServer;
 use dcs::coalitions_server::CoalitionsServer;
 use dcs::controllers_server::ControllersServer;
 use dcs::custom_server::CustomServer;
+use dcs::group::group_service_server::GroupServiceServer;
 use dcs::hook_server::HookServer;
 use dcs::mission_server::MissionServer;
 use dcs::timer::timer_service_server::TimerServiceServer;
@@ -170,6 +171,7 @@ async fn try_run(
         .add_service(CoalitionsServer::new(mission_rpc.clone()))
         .add_service(ControllersServer::new(mission_rpc.clone()))
         .add_service(CustomServer::new(mission_rpc.clone()))
+        .add_service(GroupServiceServer::new(mission_rpc.clone()))
         .add_service(HookServer::new(hook_rpc))
         .add_service(MissionServer::new(mission_rpc.clone()))
         .add_service(TimerServiceServer::new(mission_rpc.clone()))

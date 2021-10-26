@@ -4,6 +4,12 @@ import "common.proto";
 
 package dcs.group;
 
+// https://wiki.hoggitworld.com/view/DCS_Class_Group
+service GroupService {
+	// https://wiki.hoggitworld.com/view/DCS_func_getUnits
+	rpc GetUnits(GetUnitsRequest) returns (GetUnitsResponse) {}
+}
+
 enum GroupCategory {
   AIRPLANE = 0;
   HELICOPTER = 1;

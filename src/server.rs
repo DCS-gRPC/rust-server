@@ -12,7 +12,7 @@ use dcs::controllers_server::ControllersServer;
 use dcs::custom_server::CustomServer;
 use dcs::hook_server::HookServer;
 use dcs::mission_server::MissionServer;
-use dcs::timer_server::TimerServer;
+use dcs::timer::timer_service_server::TimerServiceServer;
 use dcs::trigger::trigger_service_server::TriggerServiceServer;
 use dcs::units_server::UnitsServer;
 use dcs::world::world_service_server::WorldServiceServer;
@@ -172,7 +172,7 @@ async fn try_run(
         .add_service(CustomServer::new(mission_rpc.clone()))
         .add_service(HookServer::new(hook_rpc))
         .add_service(MissionServer::new(mission_rpc.clone()))
-        .add_service(TimerServer::new(mission_rpc.clone()))
+        .add_service(TimerServiceServer::new(mission_rpc.clone()))
         .add_service(TriggerServiceServer::new(mission_rpc.clone()))
         .add_service(UnitsServer::new(mission_rpc.clone()))
         .add_service(WorldServiceServer::new(mission_rpc))

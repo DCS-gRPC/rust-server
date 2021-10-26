@@ -13,7 +13,7 @@ use dcs::mission_server::Mission;
 use dcs::timer_server::Timer;
 use dcs::trigger::trigger_service_server::TriggerService;
 use dcs::units_server::Units;
-use dcs::world_server::World;
+use dcs::world::world_service_server::WorldService;
 use dcs::*;
 use dcs_module_ipc::IPC;
 use futures_util::{Stream, StreamExt, TryStreamExt};
@@ -38,6 +38,10 @@ pub mod dcs {
 
     pub mod trigger {
         tonic::include_proto!("dcs.trigger");
+    }
+
+    pub mod world {
+        tonic::include_proto!("dcs.world");
     }
 }
 
@@ -347,20 +351,20 @@ impl AtmosphereService for MissionRpc {
 }
 
 #[tonic::async_trait]
-impl World for MissionRpc {
+impl WorldService for MissionRpc {
     async fn get_airbases(
         &self,
-        request: Request<GetAirbasesRequest>,
-    ) -> Result<Response<GetAirbasesResponse>, Status> {
-        let res: GetAirbasesResponse = self.request("getAirbases", request).await?;
+        request: Request<world::GetAirbasesRequest>,
+    ) -> Result<Response<world::GetAirbasesResponse>, Status> {
+        let res: world::GetAirbasesResponse = self.request("getAirbases", request).await?;
         Ok(Response::new(res))
     }
 
     async fn get_mark_panels(
         &self,
-        request: Request<GetMarkPanelsRequest>,
-    ) -> Result<Response<GetMarkPanelsResponse>, Status> {
-        let res: GetMarkPanelsResponse = self.request("getMarkPanels", request).await?;
+        request: Request<world::GetMarkPanelsRequest>,
+    ) -> Result<Response<world::GetMarkPanelsResponse>, Status> {
+        let res: world::GetMarkPanelsResponse = self.request("getMarkPanels", request).await?;
         Ok(Response::new(res))
     }
 }
@@ -536,9 +540,9 @@ fn to_status(err: dcs_module_ipc::Error) -> Status {
 
 #[cfg(test)]
 mod tests {
+    use super::dcs::world::GetAirbasesResponse;
     use super::dcs::{
-        event, initiator, Airbase, AirbaseCategory, Coalition, Event, GetAirbasesResponse,
-        Initiator, Position, Unit,
+        event, initiator, Airbase, AirbaseCategory, Coalition, Event, Initiator, Position, Unit,
     };
 
     #[test]

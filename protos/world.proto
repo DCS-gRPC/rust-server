@@ -2,18 +2,28 @@ syntax = "proto3";
 
 import "common.proto";
 
-package dcs;
+package dcs.world;
+
+// https://wiki.hoggitworld.com/view/DCS_singleton_world
+service WorldService {
+	// https://wiki.hoggitworld.com/view/DCS_func_getAirbases
+	rpc GetAirbases(GetAirbasesRequest) returns (GetAirbasesResponse) {}
+
+	// https://wiki.hoggitworld.com/view/DCS_func_getMarkPanels
+	rpc GetMarkPanels(GetMarkPanelsRequest) returns (GetMarkPanelsResponse) {}
+}
+
 
 message GetAirbasesRequest {
-  optional Coalition coalition = 1;
+  optional dcs.Coalition coalition = 1;
 }
 
 message GetAirbasesResponse {
-  repeated Airbase airbases = 1;
+  repeated dcs.Airbase airbases = 1;
 }
 
 message GetMarkPanelsRequest {}
 
 message GetMarkPanelsResponse {
-	repeated MarkPanel mark_panels = 1;
+	repeated dcs.MarkPanel mark_panels = 1;
 }

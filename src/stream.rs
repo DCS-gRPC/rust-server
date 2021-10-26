@@ -5,12 +5,9 @@ use crate::rpc::dcs::coalitions_server::Coalitions;
 use crate::rpc::dcs::event::Event;
 use crate::rpc::dcs::group::GetUnitsRequest;
 use crate::rpc::dcs::groups_server::Groups;
+use crate::rpc::dcs::unit::unit_service_server::UnitService;
 use crate::rpc::dcs::unit_update::{UnitGone, Update};
-use crate::rpc::dcs::units_server::Units;
-use crate::rpc::dcs::{
-    Coalition, GetGroupsRequest, GetUnitPlayerNameRequest, GetUnitPositionRequest, Position,
-    StreamUnitsRequest, Unit,
-};
+use crate::rpc::dcs::{unit, Coalition, GetGroupsRequest, Position, StreamUnitsRequest, Unit};
 use crate::rpc::MissionRpc;
 use futures_util::stream::StreamExt;
 use futures_util::TryFutureExt;
@@ -254,9 +251,9 @@ impl UnitState {
         let mut changed = false;
 
         // update position
-        let position = Units::get_position(
+        let position = UnitService::get_position(
             &ctx.rpc,
-            Request::new(GetUnitPositionRequest {
+            Request::new(unit::GetUnitPositionRequest {
                 name: self.unit.name.clone(),
             }),
         )
@@ -271,9 +268,9 @@ impl UnitState {
         }
 
         // update player name
-        let player_name = Units::get_player_name(
+        let player_name = UnitService::get_player_name(
             &ctx.rpc,
-            Request::new(GetUnitPlayerNameRequest {
+            Request::new(unit::GetUnitPlayerNameRequest {
                 name: self.unit.name.clone(),
             }),
         )

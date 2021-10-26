@@ -77,19 +77,3 @@ service Hook {
 	rpc Eval(EvalRequest) returns (EvalResponse) {}
 }
 
-// https://wiki.hoggitworld.com/view/DCS_Class_Unit
-service Units {
-	// https://wiki.hoggitworld.com/view/DCS_func_getRadar
-	rpc GetRadar(GetRadarRequest) returns (GetRadarResponse) {}
-
-	// https://wiki.hoggitworld.com/view/DCS_func_getPoint
-	rpc GetPosition(GetUnitPositionRequest) returns (GetUnitPositionResponse) {}
-
-	// https://wiki.hoggitworld.com/view/DCS_func_getPlayerName
-	rpc GetPlayerName(GetUnitPlayerNameRequest) returns (GetUnitPlayerNameResponse) {}
-
-	rpc GetUnitDescriptor(GetUnitDescriptorRequest) returns (GetUnitDescriptorResponse) {}
-
-	// https://wiki.hoggitworld.com/view/DCS_func_enableEmission
-	rpc SetEmission(SetEmissionRequest) returns (SetEmissionResponse) {}
-}

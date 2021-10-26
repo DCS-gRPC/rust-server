@@ -14,7 +14,7 @@ use dcs::hook_server::HookServer;
 use dcs::mission_server::MissionServer;
 use dcs::timer::timer_service_server::TimerServiceServer;
 use dcs::trigger::trigger_service_server::TriggerServiceServer;
-use dcs::units_server::UnitsServer;
+use dcs::unit::unit_service_server::UnitServiceServer;
 use dcs::world::world_service_server::WorldServiceServer;
 use dcs::*;
 use dcs_module_ipc::IPC;
@@ -174,7 +174,7 @@ async fn try_run(
         .add_service(MissionServer::new(mission_rpc.clone()))
         .add_service(TimerServiceServer::new(mission_rpc.clone()))
         .add_service(TriggerServiceServer::new(mission_rpc.clone()))
-        .add_service(UnitsServer::new(mission_rpc.clone()))
+        .add_service(UnitServiceServer::new(mission_rpc.clone()))
         .add_service(WorldServiceServer::new(mission_rpc))
         .serve_with_shutdown(addr, after_shutdown.map(|_| ()))
         .await?;

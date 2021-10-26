@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+import "common.proto";
+import "group.proto";
+
+package dcs.coalition;
+
+// https://wiki.hoggitworld.com/view/DCS_singleton_coalition
+service CoalitionService {
+	// https://wiki.hoggitworld.com/view/DCS_func_getPlayers
+	rpc GetPlayers(GetPlayersRequest) returns (GetPlayersResponse) {}
+
+	// https://wiki.hoggitworld.com/view/DCS_func_getGroups
+	rpc GetGroups(GetGroupsRequest) returns (GetGroupsResponse) {}
+}
+
+message GetPlayersRequest {
+	Coalition coalition = 1;
+}
+
+message GetPlayersResponse {
+	repeated Unit units = 1;
+}
+
+message GetGroupsRequest {
+  Coalition coalition = 1;
+  optional dcs.group.GroupCategory category = 2;
+}
+
+message GetGroupsResponse {
+  repeated Group groups = 1;
+}

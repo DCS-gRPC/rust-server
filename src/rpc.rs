@@ -4,7 +4,7 @@ use crate::chat::Chat;
 use crate::shutdown::{AbortableStream, ShutdownHandle};
 use crate::stats::Stats;
 use dcs::atmosphere::atmosphere_service_server::AtmosphereService;
-use dcs::coalitions_server::Coalitions;
+use dcs::coalition::coalition_service_server::CoalitionService;
 use dcs::controllers_server::Controllers;
 use dcs::custom_server::Custom;
 use dcs::group::group_service_server::GroupService;
@@ -26,6 +26,10 @@ pub mod dcs {
 
     pub mod atmosphere {
         tonic::include_proto!("dcs.atmosphere");
+    }
+
+    pub mod coalition {
+        tonic::include_proto!("dcs.coalition");
     }
 
     pub mod group {
@@ -378,20 +382,20 @@ impl WorldService for MissionRpc {
 }
 
 #[tonic::async_trait]
-impl Coalitions for MissionRpc {
+impl CoalitionService for MissionRpc {
     async fn get_players(
         &self,
-        request: Request<GetPlayersRequest>,
-    ) -> Result<Response<GetPlayersResponse>, Status> {
-        let res: GetPlayersResponse = self.request("getPlayers", request).await?;
+        request: Request<coalition::GetPlayersRequest>,
+    ) -> Result<Response<coalition::GetPlayersResponse>, Status> {
+        let res: coalition::GetPlayersResponse = self.request("getPlayers", request).await?;
         Ok(Response::new(res))
     }
 
     async fn get_groups(
         &self,
-        request: Request<GetGroupsRequest>,
-    ) -> Result<Response<GetGroupsResponse>, Status> {
-        let res: GetGroupsResponse = self.request("getGroups", request).await?;
+        request: Request<coalition::GetGroupsRequest>,
+    ) -> Result<Response<coalition::GetGroupsResponse>, Status> {
+        let res: coalition::GetGroupsResponse = self.request("getGroups", request).await?;
         Ok(Response::new(res))
     }
 }

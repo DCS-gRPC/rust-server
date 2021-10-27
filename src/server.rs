@@ -12,12 +12,12 @@ use dcs::controller::controller_service_server::ControllerServiceServer;
 use dcs::custom::custom_service_server::CustomServiceServer;
 use dcs::group::group_service_server::GroupServiceServer;
 use dcs::hook_server::HookServer;
-use dcs::mission_server::MissionServer;
+use dcs::mission::mission_service_server::MissionServiceServer;
+use dcs::mission::Event;
 use dcs::timer::timer_service_server::TimerServiceServer;
 use dcs::trigger::trigger_service_server::TriggerServiceServer;
 use dcs::unit::unit_service_server::UnitServiceServer;
 use dcs::world::world_service_server::WorldServiceServer;
-use dcs::*;
 use dcs_module_ipc::IPC;
 use futures_util::FutureExt;
 use serde::{Deserialize, Serialize};
@@ -173,7 +173,7 @@ async fn try_run(
         .add_service(CustomServiceServer::new(mission_rpc.clone()))
         .add_service(GroupServiceServer::new(mission_rpc.clone()))
         .add_service(HookServer::new(hook_rpc))
-        .add_service(MissionServer::new(mission_rpc.clone()))
+        .add_service(MissionServiceServer::new(mission_rpc.clone()))
         .add_service(TimerServiceServer::new(mission_rpc.clone()))
         .add_service(TriggerServiceServer::new(mission_rpc.clone()))
         .add_service(UnitServiceServer::new(mission_rpc.clone()))

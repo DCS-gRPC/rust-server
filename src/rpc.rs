@@ -9,7 +9,8 @@ use dcs::controller::controller_service_server::ControllerService;
 use dcs::custom::custom_service_server::CustomService;
 use dcs::group::group_service_server::GroupService;
 use dcs::hook_server::Hook;
-use dcs::mission_server::Mission;
+use dcs::mission::mission_service_server::MissionService;
+use dcs::mission::Event;
 use dcs::timer::timer_service_server::TimerService;
 use dcs::trigger::trigger_service_server::TriggerService;
 use dcs::unit::unit_service_server::UnitService;
@@ -46,6 +47,10 @@ pub mod dcs {
 
     pub mod hook {
         tonic::include_proto!("dcs.hook");
+    }
+
+    pub mod mission {
+        tonic::include_proto!("dcs.mission");
     }
 
     pub mod timer {
@@ -164,15 +169,16 @@ impl HookRpc {
 }
 
 #[tonic::async_trait]
-impl Mission for MissionRpc {
+impl MissionService for MissionRpc {
     type StreamEventsStream =
-        Pin<Box<dyn Stream<Item = Result<Event, tonic::Status>> + Send + Sync + 'static>>;
-    type StreamUnitsStream =
-        Pin<Box<dyn Stream<Item = Result<UnitUpdate, tonic::Status>> + Send + Sync + 'static>>;
+        Pin<Box<dyn Stream<Item = Result<mission::Event, tonic::Status>> + Send + Sync + 'static>>;
+    type StreamUnitsStream = Pin<
+        Box<dyn Stream<Item = Result<mission::UnitUpdate, tonic::Status>> + Send + Sync + 'static>,
+    >;
 
     async fn stream_events(
         &self,
-        _request: Request<StreamEventsRequest>,
+        _request: Request<mission::StreamEventsRequest>,
     ) -> Result<Response<Self::StreamEventsStream>, Status> {
         let events = self.events().await;
         let stream = AbortableStream::new(self.shutdown_signal.signal(), events.map(Ok));
@@ -181,7 +187,7 @@ impl Mission for MissionRpc {
 
     async fn stream_units(
         &self,
-        request: Request<StreamUnitsRequest>,
+        request: Request<mission::StreamUnitsRequest>,
     ) -> Result<Response<Self::StreamUnitsStream>, Status> {
         let rpc = self.clone();
         let (tx, rx) = mpsc::channel(128);
@@ -197,7 +203,7 @@ impl Mission for MissionRpc {
         let stream = AbortableStream::new(
             self.shutdown_signal.signal(),
             ReceiverStream::new(rx).map(|result| {
-                result.map(|update| UnitUpdate {
+                result.map(|update| mission::UnitUpdate {
                     update: Some(update),
                 })
             }),
@@ -568,10 +574,9 @@ fn to_status(err: dcs_module_ipc::Error) -> Status {
 
 #[cfg(test)]
 mod tests {
+    use super::dcs::mission::{event, Event};
     use super::dcs::world::GetAirbasesResponse;
-    use super::dcs::{
-        event, initiator, Airbase, AirbaseCategory, Coalition, Event, Initiator, Position, Unit,
-    };
+    use super::dcs::{initiator, Airbase, AirbaseCategory, Coalition, Initiator, Position, Unit};
 
     #[test]
     fn test_event_deserialization() {

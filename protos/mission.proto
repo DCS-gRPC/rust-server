@@ -2,7 +2,20 @@ syntax = "proto3";
 
 import "common.proto";
 
-package dcs;
+package dcs.mission;
+
+// Contains the streaming APIs that streaming information out of the DCS server.
+service MissionService {
+	// Streams DCS game generated Events.
+	// See https://wiki.hoggitworld.com/view/Category:Events
+	rpc StreamEvents(StreamEventsRequest) returns (stream Event) {}
+
+	// Streams unit updates
+	// Provides similar functionality as Tacview but at a much lower update rate
+	// so puts less load on the server. Suitable for things like online maps but
+	// not as a Tacview replacement.
+	rpc StreamUnits(StreamUnitsRequest) returns (stream UnitUpdate) {}
+}
 
 message StreamEventsRequest {}
 

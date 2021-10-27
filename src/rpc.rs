@@ -8,7 +8,7 @@ use dcs::coalition::coalition_service_server::CoalitionService;
 use dcs::controller::controller_service_server::ControllerService;
 use dcs::custom::custom_service_server::CustomService;
 use dcs::group::group_service_server::GroupService;
-use dcs::hook_server::Hook;
+use dcs::hook::hook_service_server::HookService;
 use dcs::mission::mission_service_server::MissionService;
 use dcs::mission::Event;
 use dcs::timer::timer_service_server::TimerService;
@@ -517,7 +517,7 @@ impl CustomService for MissionRpc {
 }
 
 #[tonic::async_trait]
-impl Hook for HookRpc {
+impl HookService for HookRpc {
     type StreamChatStream = Pin<
         Box<dyn Stream<Item = Result<hook::ChatMessage, tonic::Status>> + Send + Sync + 'static>,
     >;

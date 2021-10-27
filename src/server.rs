@@ -11,7 +11,7 @@ use dcs::coalition::coalition_service_server::CoalitionServiceServer;
 use dcs::controller::controller_service_server::ControllerServiceServer;
 use dcs::custom::custom_service_server::CustomServiceServer;
 use dcs::group::group_service_server::GroupServiceServer;
-use dcs::hook_server::HookServer;
+use dcs::hook::hook_service_server::HookServiceServer;
 use dcs::mission::mission_service_server::MissionServiceServer;
 use dcs::mission::Event;
 use dcs::timer::timer_service_server::TimerServiceServer;
@@ -172,7 +172,7 @@ async fn try_run(
         .add_service(ControllerServiceServer::new(mission_rpc.clone()))
         .add_service(CustomServiceServer::new(mission_rpc.clone()))
         .add_service(GroupServiceServer::new(mission_rpc.clone()))
-        .add_service(HookServer::new(hook_rpc))
+        .add_service(HookServiceServer::new(hook_rpc))
         .add_service(MissionServiceServer::new(mission_rpc.clone()))
         .add_service(TimerServiceServer::new(mission_rpc.clone()))
         .add_service(TriggerServiceServer::new(mission_rpc.clone()))

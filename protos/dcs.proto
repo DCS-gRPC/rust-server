@@ -3,7 +3,7 @@ syntax = "proto3";
 import "atmosphere.proto";
 import "coalition.proto";
 import "common.proto";
-import "controllers.proto";
+import "controller.proto";
 import "custom.proto";
 import "group.proto";
 import "hook.proto";
@@ -14,11 +14,6 @@ import "unit.proto";
 import "world.proto";
 
 package dcs;
-
-service Controllers {
-    // https://wiki.hoggitworld.com/view/DCS_option_alarmState
-	rpc SetAlarmState(SetAlarmStateRequest) returns (EmptyResponse) {}
-}
 
 // The Custom service is for APIs that do not map to the "standard library" of DCS APIs provided
 // by Eagle Dynamics.

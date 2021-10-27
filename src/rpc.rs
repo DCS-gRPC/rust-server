@@ -5,7 +5,7 @@ use crate::shutdown::{AbortableStream, ShutdownHandle};
 use crate::stats::Stats;
 use dcs::atmosphere::atmosphere_service_server::AtmosphereService;
 use dcs::coalition::coalition_service_server::CoalitionService;
-use dcs::controllers_server::Controllers;
+use dcs::controller::controller_service_server::ControllerService;
 use dcs::custom_server::Custom;
 use dcs::group::group_service_server::GroupService;
 use dcs::hook_server::Hook;
@@ -30,6 +30,10 @@ pub mod dcs {
 
     pub mod coalition {
         tonic::include_proto!("dcs.coalition");
+    }
+
+    pub mod controller {
+        tonic::include_proto!("dcs.controller");
     }
 
     pub mod group {
@@ -401,10 +405,10 @@ impl CoalitionService for MissionRpc {
 }
 
 #[tonic::async_trait]
-impl Controllers for MissionRpc {
+impl ControllerService for MissionRpc {
     async fn set_alarm_state(
         &self,
-        request: Request<SetAlarmStateRequest>,
+        request: Request<controller::SetAlarmStateRequest>,
     ) -> Result<Response<EmptyResponse>, Status> {
         self.notification("setAlarmState", request).await?;
         Ok(Response::new(EmptyResponse {}))

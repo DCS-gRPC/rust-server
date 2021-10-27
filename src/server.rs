@@ -8,7 +8,7 @@ use crate::shutdown::{Shutdown, ShutdownHandle};
 use crate::stats::Stats;
 use dcs::atmosphere::atmosphere_service_server::AtmosphereServiceServer;
 use dcs::coalition::coalition_service_server::CoalitionServiceServer;
-use dcs::controllers_server::ControllersServer;
+use dcs::controller::controller_service_server::ControllerServiceServer;
 use dcs::custom_server::CustomServer;
 use dcs::group::group_service_server::GroupServiceServer;
 use dcs::hook_server::HookServer;
@@ -169,7 +169,7 @@ async fn try_run(
     transport::Server::builder()
         .add_service(AtmosphereServiceServer::new(mission_rpc.clone()))
         .add_service(CoalitionServiceServer::new(mission_rpc.clone()))
-        .add_service(ControllersServer::new(mission_rpc.clone()))
+        .add_service(ControllerServiceServer::new(mission_rpc.clone()))
         .add_service(CustomServer::new(mission_rpc.clone()))
         .add_service(GroupServiceServer::new(mission_rpc.clone()))
         .add_service(HookServer::new(hook_rpc))

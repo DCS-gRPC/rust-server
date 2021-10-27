@@ -28,10 +28,13 @@ do
  	sanitizeModule('os')
 	sanitizeModule('io')
 -	sanitizeModule('lfs')
--	require = nil
+-	_G['require'] = nil
+	_G['loadlib'] = nil
+-	_G['package'] = nil
 +	-- sanitizeModule('lfs')
-+	-- require = nil
-	loadlib = nil
++	-- _G['require'] = nil
+	_G['loadlib'] = nil
++	-- _G['package'] = nil
 end
 ```
 

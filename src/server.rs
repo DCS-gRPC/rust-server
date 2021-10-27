@@ -9,7 +9,7 @@ use crate::stats::Stats;
 use dcs::atmosphere::atmosphere_service_server::AtmosphereServiceServer;
 use dcs::coalition::coalition_service_server::CoalitionServiceServer;
 use dcs::controller::controller_service_server::ControllerServiceServer;
-use dcs::custom_server::CustomServer;
+use dcs::custom::custom_service_server::CustomServiceServer;
 use dcs::group::group_service_server::GroupServiceServer;
 use dcs::hook_server::HookServer;
 use dcs::mission_server::MissionServer;
@@ -170,7 +170,7 @@ async fn try_run(
         .add_service(AtmosphereServiceServer::new(mission_rpc.clone()))
         .add_service(CoalitionServiceServer::new(mission_rpc.clone()))
         .add_service(ControllerServiceServer::new(mission_rpc.clone()))
-        .add_service(CustomServer::new(mission_rpc.clone()))
+        .add_service(CustomServiceServer::new(mission_rpc.clone()))
         .add_service(GroupServiceServer::new(mission_rpc.clone()))
         .add_service(HookServer::new(hook_rpc))
         .add_service(MissionServer::new(mission_rpc.clone()))

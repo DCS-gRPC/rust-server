@@ -1,9 +1,9 @@
 use std::io::{self, BufRead};
 
 use clap::Parser;
-use dcs_grpc_server::rpc::dcs::custom_client::CustomClient;
+use dcs_grpc_server::rpc::dcs::custom::custom_service_client::CustomServiceClient;
+use dcs_grpc_server::rpc::dcs::custom::{EvalRequest, EvalResponse};
 use dcs_grpc_server::rpc::dcs::hook_client::HookClient;
-use dcs_grpc_server::rpc::dcs::{EvalRequest, EvalResponse};
 use serde_json::Value;
 use tonic::{transport, Code, Request, Response, Status};
 
@@ -15,7 +15,7 @@ struct Opts {
 }
 
 enum Client<T> {
-    Mission(CustomClient<T>),
+    Mission(CustomServiceClient<T>),
     Hook(HookClient<T>),
 }
 
@@ -25,7 +25,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let endpoint =
         transport::Endpoint::from_static("http://127.0.0.1:50051").keep_alive_while_idle(true);
     let mut client = match opts.env.as_str() {
-        "mission" => Client::Mission(CustomClient::connect(endpoint).await?),
+        "mission" => Client::Mission(CustomServiceClient::connect(endpoint).await?),
         "hook" => Client::Hook(HookClient::connect(endpoint).await?),
         _ => unreachable!("invalid --env value"),
     };

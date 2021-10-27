@@ -6,7 +6,7 @@ use crate::stats::Stats;
 use dcs::atmosphere::atmosphere_service_server::AtmosphereService;
 use dcs::coalition::coalition_service_server::CoalitionService;
 use dcs::controller::controller_service_server::ControllerService;
-use dcs::custom_server::Custom;
+use dcs::custom::custom_service_server::CustomService;
 use dcs::group::group_service_server::GroupService;
 use dcs::hook_server::Hook;
 use dcs::mission_server::Mission;
@@ -34,6 +34,10 @@ pub mod dcs {
 
     pub mod controller {
         tonic::include_proto!("dcs.controller");
+    }
+
+    pub mod custom {
+        tonic::include_proto!("dcs.custom");
     }
 
     pub mod group {
@@ -472,25 +476,28 @@ impl UnitService for MissionRpc {
 }
 
 #[tonic::async_trait]
-impl Custom for MissionRpc {
+impl CustomService for MissionRpc {
     async fn request_mission_assignment(
         &self,
-        request: Request<MissionAssignmentRequest>,
-    ) -> Result<Response<MissionAssignmentResponse>, Status> {
+        request: Request<custom::MissionAssignmentRequest>,
+    ) -> Result<Response<custom::MissionAssignmentResponse>, Status> {
         self.notification("requestMissionAssignment", request)
             .await?;
-        Ok(Response::new(MissionAssignmentResponse {}))
+        Ok(Response::new(custom::MissionAssignmentResponse {}))
     }
 
     async fn join_mission(
         &self,
-        request: Request<MissionJoinRequest>,
-    ) -> Result<Response<MissionJoinResponse>, Status> {
+        request: Request<custom::MissionJoinRequest>,
+    ) -> Result<Response<custom::MissionJoinResponse>, Status> {
         self.notification("joinMission", request).await?;
-        Ok(Response::new(MissionJoinResponse {}))
+        Ok(Response::new(custom::MissionJoinResponse {}))
     }
 
-    async fn eval(&self, request: Request<EvalRequest>) -> Result<Response<EvalResponse>, Status> {
+    async fn eval(
+        &self,
+        request: Request<custom::EvalRequest>,
+    ) -> Result<Response<custom::EvalResponse>, Status> {
         if !self.eval_enabled {
             return Err(Status::permission_denied("eval operation is disabled"));
         }
@@ -499,7 +506,7 @@ impl Custom for MissionRpc {
         let json = serde_json::to_string(&json).map_err(|err| {
             Status::internal(format!("failed to deserialize eval result: {}", err))
         })?;
-        Ok(Response::new(EvalResponse { json }))
+        Ok(Response::new(custom::EvalResponse { json }))
     }
 }
 
@@ -529,7 +536,10 @@ impl Hook for HookRpc {
         Ok(Response::new(Box::pin(stream)))
     }
 
-    async fn eval(&self, request: Request<EvalRequest>) -> Result<Response<EvalResponse>, Status> {
+    async fn eval(
+        &self,
+        request: Request<custom::EvalRequest>,
+    ) -> Result<Response<custom::EvalResponse>, Status> {
         if !self.eval_enabled {
             return Err(Status::permission_denied("eval operation is disabled"));
         }
@@ -538,7 +548,7 @@ impl Hook for HookRpc {
         let json = serde_json::to_string(&json).map_err(|err| {
             Status::internal(format!("failed to deserialize eval result: {}", err))
         })?;
-        Ok(Response::new(EvalResponse { json }))
+        Ok(Response::new(custom::EvalResponse { json }))
     }
 }
 

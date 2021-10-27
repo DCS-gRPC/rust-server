@@ -1,6 +1,22 @@
 syntax = "proto3";
 
-package dcs;
+package dcs.custom;
+
+// The Custom service is for APIs that do not map to the "standard library" of DCS APIs provided
+// by Eagle Dynamics.
+//
+// Expect to find APIs here that may be useful for mission frameworks etc.
+service CustomService {
+	// DCT Function
+	rpc RequestMissionAssignment(MissionAssignmentRequest) returns (MissionAssignmentResponse) {}
+
+	// DCT Function
+	rpc JoinMission(MissionJoinRequest) returns (MissionJoinResponse) {}
+
+	// Evaluate some Lua inside of the mission and return the result as a JSON string.
+	// Disabled by default.
+	rpc Eval(EvalRequest) returns (EvalResponse) {}
+}
 
 message MissionAssignmentRequest {
 	string unit_name = 1;

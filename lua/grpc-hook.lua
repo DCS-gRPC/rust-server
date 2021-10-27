@@ -9,15 +9,15 @@ local function init()
     log.write("[GRPC-Hook]", log.INFO, "mission loaded, setting up gRPC listener ...")
 
     _G.GRPC = { basePath = lfs.writedir()..[[Scripts\DCS-gRPC\]] }
-
-    local luaPath = _G.GRPC.basePath..[[grpc.lua]]
-    local f = assert(loadfile(luaPath))
-
-    if f == nil then
-      error("[GRPC-Hook]: Could not load "..luaPath)
+    local ok, grpc = pcall(require, "dcs_grpc_server_hot_reload")
+    if ok then
+      log.write("[GRPC-Hook]", log.INFO, "loaded hot reload version")
     else
-      f()
+      grpc = require("dcs_grpc_server")
     end
+
+    _G.grpc = grpc
+    assert(pcall(assert(loadfile(_G.GRPC.basePath .. [[grpc.lua]]))))
   end
 
   function handler.onSimulationFrame()

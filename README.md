@@ -15,88 +15,71 @@ Once extracted you will have a `Scripts\DCS-gRPC` folder, a `Mods\Tech\DCS-gRPC`
 `Scripts\Hooks\DCS-gRPC.lua` file in your server folder. As well as these scripts there will be a `Docs/DCS-gRPC`
 folder containing documentation and a `Tools/DCS-gRPC` folder containing client tools.
 
-### MissionScripting Sanitisation Removal
+### Prepare DCS
 
-DCS-gRPC requires the removal of sanitisation features in DCS scripting.
-
-Remove the sanitation of `require` and the `lfs` from your `DCS World\Scripts\MissionScripting.lua`.
-
-After this change, it is recommended to only run missions and scripts that you trust.
+To make the gRPC server available in the mission scripting environment, add the following line to your `DCS World\Scripts\MissionScripting.lua`.
 
 ```diff
-do
- 	sanitizeModule('os')
-	sanitizeModule('io')
--	sanitizeModule('lfs')
--	_G['require'] = nil
-	_G['loadlib'] = nil
--	_G['package'] = nil
-+	-- sanitizeModule('lfs')
-+	-- _G['require'] = nil
-	_G['loadlib'] = nil
-+	-- _G['package'] = nil
-end
+  --Initialization script for the Mission lua Environment (SSE)
+
+  dofile('Scripts/ScriptingSystem.lua')
++ dofile(lfs.writedir()..[[Scripts\DCS-gRPC\grpc-mission.lua]])
+
+  --Sanitize Mission Scripting environment
+  --This makes unavailable some unsecure functions.
+  --Mission downloaded from server to client may contain potentialy harmful lua code that may use these functions.
+  --You can remove the code below and make availble these functions at your own risk.
+
+  local function sanitizeModule(name)
+    _G[name] = nil
+    package.loaded[name] = nil
+  end
+
+  do
+    sanitizeModule('os')
+    sanitizeModule('io')
+    sanitizeModule('lfs')
+    _G['require'] = nil
+    _G['loadlib'] = nil
+    _G['package'] = nil
+  end
 ```
 
-### Mission Editing
-
-You can enable DCS-gRPC in two ways.
-
-#### DO SCRIPT FILE
-
-Add a `DO SCRIPT FILE` trigger action loading the `Scripts\DCS-gRPC\grpc-mission.lua` file. This will load
-DCS-gRPC with default values set
-
-
-#### DO SCRIPT
+### Prepare Mission
 
 Add the following code to your mission. This will start the DCS-gRPC server. You can add this code to a `DO SCRIPT`
 trigger in your .miz file or you can add this code to an existing lua file that your mission may be running.
 
 ```lua
-package.cpath = package.cpath..lfs.writedir()..[[Mods\tech\DCS-gRPC\?.dll;]]
+-- Optional: Change settings if desired, e.g.:
+GRPC.debug = true
 
-GRPC = {
-  basePath = lfs.writedir()..[[Scripts\DCS-gRPC\]]
-  -- Add optional settings here if desired. Remember to add a comma to the line above if you do.
-}
-
-local luaPath = GRPC.basePath .. [[grpc.lua]]
-local f = assert( loadfile(luaPath) )
-
-if f == nil then
-  error ("[GRPC]: Could not load " .. luaPath )
-else
-  f()
-end
+-- Required: Load the gRPC server into the mission
+GRPC.load()
 ```
-
-Using this method easily allows you to add optional settings listed below to the `GRPC` object.
 
 ### Settings
 
 The behaviour of the gRPC server can be fine-tuned using various settings that can be set on the `GRPC` global (before the `grpc.lua` is executed). The available settings and their defaults are:
 
 ```lua
-GRPC = {
-  -- the base path where the lua files of the gRPC server are located
-  basePath = lfs.writedir()..[[Scripts\DCS-gRPC\]],
+-- the base path where the lua files of the gRPC server are located
+GRPC.basePath = lfs.writedir()..[[Scripts\DCS-gRPC\]]
 
-  -- whether the `Eval` method is enabled or not
-  evalEnabled = false,
+-- whether the `Eval` method is enabled or not
+GRPC.evalEnabled = false
 
-  -- the host the gRPC listens on (use "0.0.0.0" to listen on all IP addresses of the host)
-  host = '127.0.0.1',
+-- the host the gRPC listens on (use "0.0.0.0" to listen on all IP addresses of the host)
+GRPC.host = '127.0.0.1'
 
-  -- the port to listen on
-  port = 50051,
+-- the port to listen on
+GRPC.port = 50051
 
-  -- whether debug logging is enabled or not
-  debug = false,
+-- whether debug logging is enabled or not
+GRPC.debug = false
 
-  -- limit of calls per second that are executed inside of the mission scripting environment
-  throughputLimit = 600,
-}
+-- limit of calls per second that are executed inside of the mission scripting environment
+GRPC.throughputLimit = 600
 ```
 
 ### Confirmation
@@ -138,48 +121,25 @@ You may need to use the following in powershell
 cargo build
 ```
 
-### MissionScripting Sanitisation Removal
+Or if you want to use the hot reloading DLL (this is the same as `make build`):
 
-DCS-gRPC requires the removal of sanitisation features in DCS scripting.
+```
+cargo build --features hot-reload
+copy target/debug/dcs_grpc_server.dll target/debug/dcs_grpc_server_hot_reload.dll
+```
 
-Remove the sanitation of `require` and the `lfs` from your `DCS World\Scripts\MissionScripting.lua`.
+### Prepare Mission
 
-After this change, it is recommended to only run missions and scripts that you trust.
+For development, either update the preivously added line in `DCS World\Scripts\MissionScripting.lua` to point to your checked out repository of the gRPC server ...
 
 ```diff
-do
- 	sanitizeModule('os')
-	sanitizeModule('io')
--	sanitizeModule('lfs')
--	require = nil
-+	-- sanitizeModule('lfs')
-+	-- require = nil
-	loadlib = nil
-end
+- dofile(lfs.writedir()..[[Scripts\DCS-gRPC\grpc-mission.lua]])
++ package.cpath = package.cpath..[[C:\Development\DCS-gRPC\rust-server\target\debug\?.dll;]]
++ GRPC = { basePath = [[C:\Development\DCS-gRPC\rust-server\lua]] }
++ dofile([[C:\Development\DCS-gRPC\rust-server\lua\grpc-mission.lua]])
 ```
 
-### Mission Setup
-
-Add the following script to your mission (adjust the paths to match your repo location):
-
-```lua
-package.cpath = package.cpath..[[C:\Development\DCS-gRPC\rust-server\target\debug\?.dll;]]
-GRPC = { basePath = [[C:\Development\DCS-gRPC\rust-server\lua\]] }
-dofile(GRPC.basePath
-```
-
-#### Link files
-
-Instead of pointing your mission to your dev environment, you can also create symbolic links instead.
-This can be done using powershell. Before running the commands, update the paths accordingly.
-
-Build to make sure all files exist:
-
-```bash
-make build
-```
-
-Create directories and links:
+... or create symbolic links. Before running the commands in a powershell: 1) update the paths accordingly, and 2) build the gRPC server at least once to make sure that all files exist.
 
 ```ps1
 New-Item -ItemType SymbolicLink -Path "C:\Users\YOUR_USER\Saved Games\DCS.openbeta\Scripts\DCS-gRPC" -Value "C:\Development\DCS-gRPC\rust-server\rust-server\lua"

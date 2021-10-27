@@ -17,7 +17,7 @@ use std::time::Instant;
 use mlua::{prelude::*, LuaSerdeExt};
 use mlua::{Function, Value};
 use once_cell::sync::Lazy;
-use rpc::dcs::Event;
+use rpc::dcs::mission::Event;
 use server::{Config, Server};
 use thiserror::Error;
 

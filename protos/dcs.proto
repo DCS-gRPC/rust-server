@@ -12,32 +12,3 @@ import "timer.proto";
 import "trigger.proto";
 import "unit.proto";
 import "world.proto";
-
-package dcs;
-
-// Contains the streaming APIs that streaming information out of the DCS server.
-service Mission {
-	// Streams DCS game generated Events.
-	// See https://wiki.hoggitworld.com/view/Category:Events
-	rpc StreamEvents(StreamEventsRequest) returns (stream Event) {}
-
-	// Streams unit updates
-	// Provides similar functionality as Tacview but at a much lower update rate
-	// so puts less load on the server. Suitable for things like online maps but
-	// not as a Tacview replacement.
-	rpc StreamUnits(StreamUnitsRequest) returns (stream UnitUpdate) {}
-}
-
-// APis that are part of the hook environment
-service Hook {
-    // https://wiki.hoggitworld.com/view/DCS_func_getMissionName
-	rpc GetMissionName(dcs.hook.GetMissionNameRequest) returns (dcs.hook.GetMissionNameResponse) {}
-
-	// Stream all chat messages.
-	rpc StreamChat(dcs.hook.StreamChatRequest) returns (stream dcs.hook.ChatMessage) {}
-
-	// Evaluate some Lua inside of the hook environment and return the result as a JSON string.
-	// Disabled by default.
-	rpc Eval(custom.EvalRequest) returns (custom.EvalResponse) {}
-}
-

@@ -33,17 +33,6 @@ end
 -- load and start RPC
 --
 
-local ok, grpc = pcall(require, "dcs_grpc_server_hot_reload")
-if ok then
-  if isMissionEnv then
-    env.info("[GRPC] loaded hot reload version")
-  else
-    log.write("[GRPC-Hook]", log.INFO, "loaded hot reload version")
-  end
-else
-  grpc = require("dcs_grpc_server")
-end
-
 if isMissionEnv then
   grpc.start({
     host = GRPC.host,

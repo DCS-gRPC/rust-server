@@ -115,9 +115,18 @@ message Weapon {
 	Position position = 3;  // The position of the Weapon
 }
 
+/**
+ * An instance of a DCS static object
+ *
+ * These objects are often buildings but can also be vehicles that have no AI or other game behaviour aside from 
+ * being destroyable
+ */
 message Static {
 }
 
+/**
+ * An instance of a DCS scenery object
+ */
 message Scenery {
 }
 
@@ -135,9 +144,18 @@ message Airbase {
   string display_name = 8; // TODO: Fill this in
 }
 
+/**
+ * An instance of a DCS Cargo object
+ */
 message Cargo {
 }
 
+/*
+ * The initiator of an event
+ *
+ * The initiator of an event. For things like shooting events it is usually a vehicle but it can be almost anything
+ * depending on the event
+ */
 message Initiator {
 	oneof initiator {
 		Unknown unknown = 1;
@@ -150,6 +168,12 @@ message Initiator {
 	}
 }
 
+/*
+ * The target of an event
+ *
+ * The target of an event. For things like shooting events it is usually a vehicle but it can be almost anything
+ * depending on the event
+ */
 message Target {
   oneof target {
     Unknown unknown = 1;
@@ -162,8 +186,12 @@ message Target {
   }
 }
 
-// End of Object subtypes
-
+/*
+ * A MarkPanel
+ *
+ * A MarkPanel visible on the F10 map. These can be used for reference by players but can also be used by things
+ * like Jester for setting waypoints
+ */
 message MarkPanel {
 	uint32 id = 1; 
 	double time = 2; // I have no idea what this time value means

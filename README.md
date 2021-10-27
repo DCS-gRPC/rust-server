@@ -197,13 +197,13 @@ New-Item -ItemType SymbolicLink -Path "C:\Users\YOUR_USER\Saved Games\DCS.openbe
 Test the running server via [grpcurl](https://github.com/fullstorydev/grpcurl): (Remove the `.exe` when running on Linux)
 
 ```bash
-grpcurl.exe -plaintext -import-path ./protos -proto ./protos/dcs.proto -d '{\"text\": \"Works!\", \"display_time\": 10, \"clear_view\": false}' 127.0.0.1:50051 dcs.Triggers/OutText
+grpcurl.exe -plaintext -import-path ./protos -proto ./protos/dcs.proto -d '{\"text\": \"Works!\", \"display_time\": 10, \"clear_view\": false}' 127.0.0.1:50051 dcs.trigger.TriggerService/OutText
 ```
 
 or watch the mission event stream via:
 
 ```bash
-grpcurl.exe -plaintext -import-path ./protos -proto ./protos/dcs.proto -d '{}' 127.0.0.1:50051 dcs.Mission/StreamEvents
+grpcurl.exe -plaintext -import-path ./protos -proto ./protos/dcs.proto -d '{}' 127.0.0.1:50051 dcs.mission.MissionService/StreamEvents
 ```
 
 #### REPL

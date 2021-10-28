@@ -15,6 +15,9 @@ service MissionService {
 	// so puts less load on the server. Suitable for things like online maps but
 	// not as a Tacview replacement.
 	rpc StreamUnits(StreamUnitsRequest) returns (stream UnitUpdate) {}
+
+  // Returns the mission start date and time as an ISO 8601 formatted string.
+  rpc GetMissionStartTime(GetMissionStartTimeRequest) returns (GetMissionStartTimeResponse) {}
 }
 
 message StreamEventsRequest {}
@@ -362,4 +365,10 @@ message UnitUpdate {
     // The unit does not exist anymore.
     UnitGone gone = 2;
   }
+}
+
+message GetMissionStartTimeRequest {}
+
+message GetMissionStartTimeResponse {
+  string datetime = 1;
 }

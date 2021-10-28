@@ -3,8 +3,12 @@ use std::pin::Pin;
 use super::dcs::mission::mission_service_server::MissionService;
 use super::dcs::*;
 use super::MissionRpc;
+use crate::rpc::dcs::timer::timer_service_server::TimerService;
 use crate::shutdown::AbortableStream;
+use chrono::Duration;
+use chrono::{TimeZone, Utc};
 use futures_util::{Stream, StreamExt};
+use serde::Deserialize;
 use tokio::sync::mpsc;
 use tokio_stream::wrappers::ReceiverStream;
 use tonic::{Request, Response, Status};
@@ -50,5 +54,30 @@ impl MissionService for MissionRpc {
             }),
         );
         Ok(Response::new(Box::pin(stream)))
+    }
+
+    async fn get_mission_start_time(
+        &self,
+        request: Request<mission::GetMissionStartTimeRequest>,
+    ) -> Result<Response<mission::GetMissionStartTimeResponse>, Status> {
+        #[derive(Debug, Deserialize)]
+        struct Date {
+            day: u32,
+            month: u32,
+            year: i32,
+        }
+
+        let date: Date = self.request("getMissionDate", request).await?;
+        let start_time = self
+            .get_time_zero(Request::new(timer::GetTimeZeroRequest {}))
+            .await?
+            .into_inner();
+
+        let dt = Utc.ymd(date.year, date.month, date.day).and_hms(0, 0, 0);
+        let dt = dt + Duration::seconds(start_time.time as i64);
+
+        Ok(Response::new(mission::GetMissionStartTimeResponse {
+            datetime: dt.format("%Y-%m-%dT%H:%M:%SZ").to_string(),
+        }))
     }
 }

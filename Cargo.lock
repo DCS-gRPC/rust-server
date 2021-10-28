@@ -159,6 +159,7 @@ dependencies = [
 name = "dcs-grpc-server"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "clap",
  "dcs-module-ipc",
  "futures-util",

@@ -1,8 +1,10 @@
+use std::path::PathBuf;
 ///! This module is a wrapper around all exposed Lua methods which are forwarded to a dynamically
 ///! loaded dcs_grpc_server.dll. Upon calling the `stop()` method, the library is unloaded, and re-
 ///! loaded during the next `start()` call.
 use std::sync::{Arc, RwLock};
 
+use crate::Config;
 use libloading::{Library, Symbol};
 use mlua::prelude::*;
 use mlua::{Function, Value};
@@ -11,8 +13,19 @@ use once_cell::sync::Lazy;
 static LIBRARY: Lazy<RwLock<Option<Library>>> = Lazy::new(|| RwLock::new(None));
 
 pub fn start(lua: &Lua, config: Value) -> LuaResult<()> {
-    let write_dir = super::write_dir(lua)?;
-    let lib_path = write_dir.clone() + "Mods/Tech/DCS-gRPC/dcs_grpc_server.dll";
+    let lib_path = {
+        let config: Config = match lua.from_value(config.clone()) {
+            Ok(event) => event,
+            Err(err) => {
+                log::error!("failed to deserialize config: {}", err);
+                return Ok(());
+            }
+        };
+
+        let mut lib_path = PathBuf::from(&config.write_dir);
+        lib_path.push("Mods/Tech/DCS-gRPC/dcs_grpc_server.dll");
+        lib_path
+    };
 
     let new_lib = unsafe { Library::new(lib_path) }.map_err(|err| {
         log::error!("Load: {}", err);

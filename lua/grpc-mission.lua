@@ -18,8 +18,11 @@ else
   grpc = require("dcs_grpc_server")
 end
 
+-- Keep a reference to `lfs` before it gets sanitized
+local lfs = _G.lfs
+
 function GRPC.load()
-  local env = setmetatable({grpc = grpc}, {__index = _G})
+  local env = setmetatable({grpc = grpc, lfs = lfs}, {__index = _G})
   local f = setfenv(assert(loadfile(GRPC.basePath .. [[grpc.lua]])), env)
   f()
 end

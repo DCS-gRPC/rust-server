@@ -10,6 +10,7 @@ mod shutdown;
 mod stats;
 mod stream;
 
+use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, RwLock};
 use std::time::Instant;
@@ -24,17 +25,7 @@ use thiserror::Error;
 static INITIALIZED: Lazy<AtomicBool> = Lazy::new(|| AtomicBool::new(false));
 static SERVER: Lazy<RwLock<Option<Server>>> = Lazy::new(|| RwLock::new(None));
 
-pub(crate) fn write_dir(lua: &Lua) -> LuaResult<String> {
-    // get lfs.writedir()
-    let write_dir: String = {
-        let globals = lua.globals();
-        let lfs: LuaTable = globals.get("lfs")?;
-        lfs.call_method("writedir", ())?
-    };
-    Ok(write_dir)
-}
-
-pub fn init(lua: &Lua, debug: bool) -> LuaResult<()> {
+pub fn init(config: &Config) -> LuaResult<()> {
     if INITIALIZED
         .compare_exchange(false, true, Ordering::Acquire, Ordering::Relaxed)
         .unwrap_or(true)
@@ -48,8 +39,8 @@ pub fn init(lua: &Lua, debug: bool) -> LuaResult<()> {
     use log4rs::config::{Appender, Config, Logger, Root};
     use log4rs::encode::pattern::PatternEncoder;
 
-    let write_dir = write_dir(lua)?;
-    let log_file = write_dir + "Logs/gRPC.log";
+    let mut log_file = PathBuf::from(&config.write_dir);
+    log_file.push("Logs/gRPC.log");
 
     let requests = FileAppender::builder()
         .encoder(Box::new(PatternEncoder::new(
@@ -59,12 +50,12 @@ pub fn init(lua: &Lua, debug: bool) -> LuaResult<()> {
         .build(log_file)
         .unwrap();
 
-    let level = if debug {
+    let level = if config.debug {
         LevelFilter::Debug
     } else {
         LevelFilter::Info
     };
-    let config = Config::builder()
+    let log_config = Config::builder()
         .appender(Appender::builder().build("file", Box::new(requests)))
         .logger(Logger::builder().build("dcs_grpc_server", level))
         .logger(Logger::builder().build("tokio", level))
@@ -72,7 +63,7 @@ pub fn init(lua: &Lua, debug: bool) -> LuaResult<()> {
         .build(Root::builder().appender("file").build(LevelFilter::Off))
         .unwrap();
 
-    log4rs::init_config(config).unwrap();
+    log4rs::init_config(log_config).unwrap();
 
     Ok(())
 }
@@ -93,7 +84,7 @@ pub fn start(lua: &Lua, config: Value) -> LuaResult<()> {
         }
     };
 
-    init(lua, config.debug)?;
+    init(&config)?;
 
     log::info!("Starting ...");
 

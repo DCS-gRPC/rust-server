@@ -46,6 +46,7 @@ struct ServerState {
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Config {
+    pub write_dir: String,
     pub host: String,
     pub port: u16,
     pub debug: bool,

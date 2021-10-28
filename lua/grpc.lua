@@ -35,6 +35,7 @@ end
 
 if isMissionEnv then
   grpc.start({
+    writeDir = lfs.writedir(),
     host = GRPC.host,
     port = GRPC.port,
     debug = GRPC.debug,

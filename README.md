@@ -63,9 +63,6 @@ GRPC.load()
 The behaviour of the gRPC server can be fine-tuned using various settings that can be set on the `GRPC` global (before the `grpc.lua` is executed). The available settings and their defaults are:
 
 ```lua
--- the base path where the lua files of the gRPC server are located
-GRPC.basePath = lfs.writedir()..[[Scripts\DCS-gRPC\]]
-
 -- whether the `Eval` method is enabled or not
 GRPC.evalEnabled = false
 

@@ -71,4 +71,23 @@ impl MissionService for MissionRpc {
             datetime: dt.format("%Y-%m-%dT%H:%M:%SZ").to_string(),
         }))
     }
+
+    async fn get_scenario_current_time(
+        &self,
+        _: Request<mission::GetScenarioCurrentTimeRequest>,
+    ) -> Result<Response<mission::GetScenarioCurrentTimeResponse>, Status> {
+        let current = self
+            .get_absolute_time(Request::new(timer::GetAbsoluteTimeRequest {}))
+            .await?
+            .into_inner();
+
+        let dt = Utc
+            .ymd(current.year, current.month, current.day)
+            .and_hms(0, 0, 0);
+        let dt = dt + Duration::seconds(current.time as i64);
+
+        Ok(Response::new(mission::GetScenarioCurrentTimeResponse {
+            datetime: dt.format("%Y-%m-%dT%H:%M:%SZ").to_string(),
+        }))
+    }
 }

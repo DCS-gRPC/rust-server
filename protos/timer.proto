@@ -23,7 +23,11 @@ message GetTimeResponse {
 message GetAbsoluteTimeRequest {}
 
 message GetAbsoluteTimeResponse {
+	// The current time in seconds since 00:00 of the start date of the mission.
 	double time = 1;
+	uint32 day = 2;
+	uint32 month = 3;
+	int32 year = 4;
 }
 
 message GetTimeZeroRequest {}

@@ -16,8 +16,11 @@ service MissionService {
 	// not as a Tacview replacement.
 	rpc StreamUnits(StreamUnitsRequest) returns (stream UnitUpdate) {}
 
-  // Returns the mission start date and time as an ISO 8601 formatted string.
+  // Returns the mission's in-game starttime as an ISO 8601 formatted datetime string.
   rpc GetScenarioStartTime(GetScenarioStartTimeRequest) returns (GetScenarioStartTimeResponse) {}
+
+  // Returns the mission's in-game current time as an ISO 8601 formatted datetime string.
+  rpc GetScenarioCurrentTime(GetScenarioCurrentTimeRequest) returns (GetScenarioCurrentTimeResponse) {}
 }
 
 message StreamEventsRequest {}
@@ -370,5 +373,11 @@ message UnitUpdate {
 message GetScenarioStartTimeRequest {}
 
 message GetScenarioStartTimeResponse {
+  string datetime = 1;
+}
+
+message GetScenarioCurrentTimeRequest {}
+
+message GetScenarioCurrentTimeResponse {
   string datetime = 1;
 }

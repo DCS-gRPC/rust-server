@@ -16,7 +16,10 @@ end
 GRPC.methods.getAbsoluteTime = function(params)
   return GRPC.success(
     {
-      time = timer.getAbsTime()
+      time = timer.getAbsTime(),
+      day = env.mission.date.Day,
+      month = env.mission.date.Month,
+      year = env.mission.date.Year,
     }
   )
 end

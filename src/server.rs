@@ -47,6 +47,7 @@ struct ServerState {
 #[serde(rename_all = "camelCase")]
 pub struct Config {
     pub write_dir: String,
+    pub dll_path: String,
     pub host: String,
     pub port: u16,
     pub debug: bool,

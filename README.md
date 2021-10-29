@@ -131,9 +131,11 @@ For development, update the preivously added line in `DCS World\Scripts\MissionS
 
 ```diff
 - dofile(lfs.writedir()..[[Scripts\DCS-gRPC\grpc-mission.lua]])
-+ package.cpath = package.cpath..[[C:\Development\DCS-gRPC\rust-server\target\debug\?.dll;]]
-+ GRPC = { basePath = [[C:\Development\DCS-gRPC\rust-server\lua\]] }
-+ dofile([[C:\Development\DCS-gRPC\rust-server\lua\grpc-mission.lua]])
++ GRPC = {
++ 	dllPath = [[C:\Development\DCS-gRPC\rust-server\target\debug\]],
++ 	luaPath = [[C:\Development\DCS-gRPC\rust-server\lua\]]
++ }
++ dofile(GRPC.luaPath .. [[grpc-mission.lua]])
 ```
 
 ### Debugging

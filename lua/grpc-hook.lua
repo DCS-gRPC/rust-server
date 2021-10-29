@@ -8,7 +8,22 @@ local function init()
   function handler.onMissionLoadEnd()
     log.write("[GRPC-Hook]", log.INFO, "mission loaded, setting up gRPC listener ...")
 
-    _G.GRPC = { basePath = lfs.writedir()..[[Scripts\DCS-gRPC\]] }
+    -- Load config (written by `grpc-mission.lua`)
+    _G.GRPC = {}
+    setfenv(assert(loadfile(lfs.writedir() .. [[Data\dcs-grpc.lua]])), GRPC)()
+
+    if not GRPC.luaPath then
+      GRPC.luaPath = lfs.writedir() .. [[Scripts\DCS-gRPC\]]
+    end
+    if not GRPC.dllPath then
+      GRPC.dllPath = lfs.writedir() .. [[Mods\tech\DCS-gRPC\]]
+    end
+
+    -- Let DCS know where to find the DLLs
+    if not string.find(package.cpath, "DCS-gRPC") then
+      package.cpath = package.cpath .. GRPC.dllPath .. [[?.dll;]]
+    end
+
     local ok, grpc = pcall(require, "dcs_grpc_hot_reload")
     if ok then
       log.write("[GRPC-Hook]", log.INFO, "loaded hot reload version")
@@ -17,7 +32,7 @@ local function init()
     end
 
     _G.grpc = grpc
-    assert(pcall(assert(loadfile(_G.GRPC.basePath .. [[grpc.lua]]))))
+    assert(pcall(assert(loadfile(_G.GRPC.luaPath .. [[grpc.lua]]))))
   end
 
   function handler.onSimulationFrame()

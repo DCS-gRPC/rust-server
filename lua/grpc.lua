@@ -12,8 +12,11 @@ if _G.GRPC == nil then
   GRPC = {}
 end
 
-if GRPC.basePath == nil then
-  GRPC.basePath = lfs.writedir()..[[Scripts\DCS-gRPC\]]
+if GRPC.luaPath == nil then
+  GRPC.luaPath = lfs.writedir()..[[Scripts\DCS-gRPC\]]
+end
+if GRPC.dllPath == nil then
+  GRPC.dllPath = lfs.writedir()..[[Mods\Tech\DCS-gRPC\]]
 end
 if GRPC.evalEnabled == nil then
   GRPC.evalEnabled = false
@@ -36,6 +39,7 @@ end
 if isMissionEnv then
   grpc.start({
     writeDir = lfs.writedir(),
+    dllPath = GRPC.dllPath,
     host = GRPC.host,
     port = GRPC.port,
     debug = GRPC.debug,
@@ -48,7 +52,7 @@ end
 --
 
 GRPC.exporters = {}
-dofile(GRPC.basePath .. [[exporters\object.lua]])
+dofile(GRPC.luaPath .. [[exporters\object.lua]])
 
 --
 -- Helper methods
@@ -177,17 +181,17 @@ end
 --
 
 GRPC.methods = {}
-dofile(GRPC.basePath .. [[methods\atmosphere.lua]])
-dofile(GRPC.basePath .. [[methods\coalitions.lua]])
-dofile(GRPC.basePath .. [[methods\controllers.lua]])
-dofile(GRPC.basePath .. [[methods\custom.lua]])
-dofile(GRPC.basePath .. [[methods\group.lua]])
-dofile(GRPC.basePath .. [[methods\hook.lua]])
-dofile(GRPC.basePath .. [[methods\mission.lua]])
-dofile(GRPC.basePath .. [[methods\timer.lua]])
-dofile(GRPC.basePath .. [[methods\trigger.lua]])
-dofile(GRPC.basePath .. [[methods\unit.lua]])
-dofile(GRPC.basePath .. [[methods\world.lua]])
+dofile(GRPC.luaPath .. [[methods\atmosphere.lua]])
+dofile(GRPC.luaPath .. [[methods\coalitions.lua]])
+dofile(GRPC.luaPath .. [[methods\controllers.lua]])
+dofile(GRPC.luaPath .. [[methods\custom.lua]])
+dofile(GRPC.luaPath .. [[methods\group.lua]])
+dofile(GRPC.luaPath .. [[methods\hook.lua]])
+dofile(GRPC.luaPath .. [[methods\mission.lua]])
+dofile(GRPC.luaPath .. [[methods\timer.lua]])
+dofile(GRPC.luaPath .. [[methods\trigger.lua]])
+dofile(GRPC.luaPath .. [[methods\unit.lua]])
+dofile(GRPC.luaPath .. [[methods\world.lua]])
 
 --
 -- RPC request handler

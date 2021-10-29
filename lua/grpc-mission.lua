@@ -1,13 +1,25 @@
--- Allow manually setting GRPC before this file is loaded.
-if _G.GRPC == nil then
-  GRPC = {
-    basePath = lfs.writedir() .. [[Scripts\DCS-gRPC\]],
-  }
+-- Allow manually setting GRPC and path settings.
+if not _G.GRPC then
+  _GGRPC = {}
+end
+if not GRPC.luaPath then
+  GRPC.luaPath = lfs.writedir() .. [[Scripts\DCS-gRPC\]]
+end
+if not GRPC.dllPath then
+  GRPC.dllPath = lfs.writedir() .. [[Mods\tech\DCS-gRPC\]]
 end
 
--- Allow manually adding a DCS-gRPC DLL path.
-if string.find(package.cpath, "DCS-gRPC") == nil then
-  package.cpath = package.cpath .. lfs.writedir()..[[Mods\tech\DCS-gRPC\?.dll;]]
+-- Let DCS know where to find the DLLs
+package.cpath = package.cpath .. GRPC.dllPath .. [[?.dll;]]
+
+-- Make paths available to gRPC hook
+file, err = io.open(lfs.writedir() .. [[Data\dcs-grpc.lua]], "w")
+if err then
+	env.error("[GRPC] Error writing config")
+else
+	file:write("luaPath = [[" .. GRPC.luaPath .. "]]\ndllPath = [[" .. GRPC.dllPath .. "]]\n")
+	file:flush()
+	file:close()
 end
 
 -- Load DLL before `require` gets sanitized.
@@ -23,6 +35,6 @@ local lfs = _G.lfs
 
 function GRPC.load()
   local env = setmetatable({grpc = grpc, lfs = lfs}, {__index = _G})
-  local f = setfenv(assert(loadfile(GRPC.basePath .. [[grpc.lua]])), env)
+  local f = setfenv(assert(loadfile(GRPC.luaPath .. [[grpc.lua]])), env)
   f()
 end

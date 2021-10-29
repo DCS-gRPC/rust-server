@@ -22,8 +22,8 @@ pub fn start(lua: &Lua, config: Value) -> LuaResult<()> {
             }
         };
 
-        let mut lib_path = PathBuf::from(&config.write_dir);
-        lib_path.push("Mods/Tech/DCS-gRPC/dcs_grpc.dll");
+        let mut lib_path = PathBuf::from(&config.dll_path);
+        lib_path.push("dcs_grpc.dll");
         lib_path
     };
 

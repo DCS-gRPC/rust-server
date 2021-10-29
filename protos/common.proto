@@ -34,7 +34,7 @@ enum AirbaseCategory {
 /**
  * Coalitions in DCS
  *
- * The coalitions supported by DCS. The NEUTRAL coalition is a relatively new one and may not be as supported as 
+ * The coalitions supported by DCS. The NEUTRAL coalition is a relatively new one and may not be as supported as
  * the belligerant ones.
  */
 enum Coalition {
@@ -166,7 +166,9 @@ message Position {
   // Longitude in Decimal Degrees format
   double lon = 2;
   // Altitude in Meters above Mean Sea Level (MSL)
-  double alt = 3; 
+  double alt = 3;
+  // Time in seconds since the scenario started.
+  double time = 4;
 }
 
 /**
@@ -220,7 +222,7 @@ message Weapon {
 /**
  * An instance of a DCS static object
  *
- * These objects are often buildings but can also be vehicles that have no AI or other game behaviour aside from 
+ * These objects are often buildings but can also be vehicles that have no AI or other game behaviour aside from
  * being destroyable
  */
 message Static {
@@ -295,7 +297,7 @@ message Target {
  * like Jester for setting waypoints
  */
 message MarkPanel {
-	uint32 id = 1; 
+	uint32 id = 1;
 	double time = 2; // I have no idea what this time value means
 	Unit initiator = 3;
 	optional Coalition coalition = 4;

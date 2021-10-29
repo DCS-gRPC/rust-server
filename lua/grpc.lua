@@ -173,6 +173,7 @@ GRPC.toLatLonPosition = function(pos)
     lat = lat,
     lon = lon,
     alt = alt,
+    time = timer.getTime(),
   }
 end
 

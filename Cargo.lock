@@ -120,7 +120,7 @@ dependencies = [
  "libc",
  "num-integer",
  "num-traits",
- "time",
+ "time 0.1.43",
  "winapi",
 ]
 
@@ -159,10 +159,10 @@ dependencies = [
 name = "dcs-grpc"
 version = "0.1.0"
 dependencies = [
- "chrono",
  "dcs-grpc-stubs",
  "dcs-module-ipc",
  "futures-util",
+ "igrf",
  "libloading",
  "log",
  "log4rs",
@@ -172,6 +172,7 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror",
+ "time 0.3.4",
  "tokio",
  "tokio-stream",
  "tonic",
@@ -479,6 +480,16 @@ dependencies = [
  "pin-project-lite",
  "tokio",
  "tokio-io-timeout",
+]
+
+[[package]]
+name = "igrf"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "aeb750ac62b7b81c05b0090d0fc42cdab0ec685835ee6a83a51aad21a15fc79a"
+dependencies = [
+ "thiserror",
+ "time 0.3.4",
 ]
 
 [[package]]
@@ -1166,6 +1177,16 @@ checksum = "ca8a50ef2360fbd1eeb0ecd46795a87a19024eb4b53c5dc916ca1fd95fe62438"
 dependencies = [
  "libc",
  "winapi",
+]
+
+[[package]]
+name = "time"
+version = "0.3.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "99beeb0daeac2bd1e86ac2c21caddecb244b39a093594da1a661ec2060c7aedd"
+dependencies = [
+ "itoa",
+ "libc",
 ]
 
 [[package]]

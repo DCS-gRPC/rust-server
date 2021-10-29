@@ -2,12 +2,12 @@ use std::pin::Pin;
 
 use super::MissionRpc;
 use crate::shutdown::AbortableStream;
-use chrono::Duration;
-use chrono::{TimeZone, Utc};
 use futures_util::{Stream, StreamExt};
 use stubs::mission::mission_service_server::MissionService;
 use stubs::timer::timer_service_server::TimerService;
 use stubs::*;
+use time::format_description::well_known::Rfc3339;
+use time::{Date, Duration, Month, PrimitiveDateTime, Time, UtcOffset};
 use tokio::sync::mpsc;
 use tokio_stream::wrappers::ReceiverStream;
 use tonic::{Request, Response, Status};
@@ -64,11 +64,8 @@ impl MissionService for MissionRpc {
             .await?
             .into_inner();
 
-        let dt = Utc.ymd(start.year, start.month, start.day).and_hms(0, 0, 0);
-        let dt = dt + Duration::seconds(start.time as i64);
-
         Ok(Response::new(mission::GetScenarioStartTimeResponse {
-            datetime: dt.format("%Y-%m-%dT%H:%M:%SZ").to_string(),
+            datetime: to_datetime(start.year, start.month, start.day, start.time)?,
         }))
     }
 
@@ -81,13 +78,25 @@ impl MissionService for MissionRpc {
             .await?
             .into_inner();
 
-        let dt = Utc
-            .ymd(current.year, current.month, current.day)
-            .and_hms(0, 0, 0);
-        let dt = dt + Duration::seconds(current.time as i64);
-
         Ok(Response::new(mission::GetScenarioCurrentTimeResponse {
-            datetime: dt.format("%Y-%m-%dT%H:%M:%SZ").to_string(),
+            datetime: to_datetime(current.year, current.month, current.day, current.time)?,
         }))
     }
+}
+
+fn to_datetime(year: i32, month: u32, day: u32, time: f64) -> Result<String, Status> {
+    let month = u8::try_from(month)
+        .map_err(|err| Status::internal(format!("received invalid month: {}", err)))?;
+    let month = Month::try_from(month)
+        .map_err(|err| Status::internal(format!("received invalid month: {}", err)))?;
+    let day = u8::try_from(day)
+        .map_err(|err| Status::internal(format!("received invalid day: {}", err)))?;
+    let date = Date::from_calendar_date(year, month, day)
+        .map_err(|err| Status::internal(format!("received invalid date: {}", err)))?;
+    let time = Time::from_hms(0, 0, 0).unwrap() + Duration::seconds(time as i64);
+    let datetime = PrimitiveDateTime::new(date, time).assume_offset(UtcOffset::UTC);
+
+    datetime.format(&Rfc3339).map_err(|err| {
+        Status::internal(format!("failed to format date as ISO 8601 string: {}", err))
+    })
 }

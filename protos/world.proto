@@ -6,11 +6,11 @@ package dcs.world;
 
 // https://wiki.hoggitworld.com/view/DCS_singleton_world
 service WorldService {
-	// https://wiki.hoggitworld.com/view/DCS_func_getAirbases
-	rpc GetAirbases(GetAirbasesRequest) returns (GetAirbasesResponse) {}
+  // https://wiki.hoggitworld.com/view/DCS_func_getAirbases
+  rpc GetAirbases(GetAirbasesRequest) returns (GetAirbasesResponse) {}
 
-	// https://wiki.hoggitworld.com/view/DCS_func_getMarkPanels
-	rpc GetMarkPanels(GetMarkPanelsRequest) returns (GetMarkPanelsResponse) {}
+  // https://wiki.hoggitworld.com/view/DCS_func_getMarkPanels
+  rpc GetMarkPanels(GetMarkPanelsRequest) returns (GetMarkPanelsResponse) {}
 }
 
 
@@ -25,5 +25,5 @@ message GetAirbasesResponse {
 message GetMarkPanelsRequest {}
 
 message GetMarkPanelsResponse {
-	repeated dcs.MarkPanel mark_panels = 1;
+  repeated dcs.MarkPanel mark_panels = 1;
 }

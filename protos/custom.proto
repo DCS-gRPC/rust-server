@@ -7,27 +7,27 @@ package dcs.custom;
 //
 // Expect to find APIs here that may be useful for mission frameworks etc.
 service CustomService {
-	// DCT Function
-	rpc RequestMissionAssignment(MissionAssignmentRequest) returns (MissionAssignmentResponse) {}
+  // DCT Function
+  rpc RequestMissionAssignment(MissionAssignmentRequest) returns (MissionAssignmentResponse) {}
 
-	// DCT Function
-	rpc JoinMission(MissionJoinRequest) returns (MissionJoinResponse) {}
+  // DCT Function
+  rpc JoinMission(MissionJoinRequest) returns (MissionJoinResponse) {}
 
-	// Evaluate some Lua inside of the mission and return the result as a JSON string.
-	// Disabled by default.
-	rpc Eval(EvalRequest) returns (EvalResponse) {}
+  // Evaluate some Lua inside of the mission and return the result as a JSON string.
+  // Disabled by default.
+  rpc Eval(EvalRequest) returns (EvalResponse) {}
 }
 
 message MissionAssignmentRequest {
-	string unit_name = 1;
-	string mission_type = 2;
+  string unit_name = 1;
+  string mission_type = 2;
 }
 
 message MissionAssignmentResponse {}
 
 message MissionJoinRequest {
-	string unit_name = 1;
-	int32 mission_code = 2;
+  string unit_name = 1;
+  int32 mission_code = 2;
 }
 
 message MissionJoinResponse {}

@@ -6,54 +6,54 @@ package dcs.atmosphere;
 
 // https://wiki.hoggitworld.com/view/DCS_singleton_atmosphere
 service AtmosphereService {
-	// https://wiki.hoggitworld.com/view/DCS_func_getWind
-	rpc GetWind(atmosphere.GetWindRequest) returns (atmosphere.GetWindResponse) {}
+  // https://wiki.hoggitworld.com/view/DCS_func_getWind
+  rpc GetWind(atmosphere.GetWindRequest) returns (atmosphere.GetWindResponse) {}
 
-	// https://wiki.hoggitworld.com/view/DCS_func_getWindWithTurbulence
-	rpc GetWindWithTurbulence(atmosphere.GetWindWithTurbulenceRequest) returns (atmosphere.GetWindWithTurbulenceResponse) {}
+  // https://wiki.hoggitworld.com/view/DCS_func_getWindWithTurbulence
+  rpc GetWindWithTurbulence(atmosphere.GetWindWithTurbulenceRequest) returns (atmosphere.GetWindWithTurbulenceResponse) {}
 
-	// https://wiki.hoggitworld.com/view/DCS_func_getWindWithTurbulence
-	rpc GetTemperatureAndPressure(atmosphere.GetTemperatureAndPressureRequest) returns (atmosphere.GetTemperatureAndPressureResponse) {}
+  // https://wiki.hoggitworld.com/view/DCS_func_getWindWithTurbulence
+  rpc GetTemperatureAndPressure(atmosphere.GetTemperatureAndPressureRequest) returns (atmosphere.GetTemperatureAndPressureResponse) {}
 }
 
 message GetWindRequest {
-	// The position on the map we want the wind information for.
-	// Requires lat/lon/alt fields to be populated, there are
-	// no default values
-	dcs.Position position = 1;
+  // The position on the map we want the wind information for.
+  // Requires lat/lon/alt fields to be populated, there are
+  // no default values
+  dcs.Position position = 1;
 }
 
 message GetWindResponse {
     // The heading the wind is coming from.
-	float heading = 1;
-	// The strength of the wind in meters per second
-	float strength = 2;
+  float heading = 1;
+  // The strength of the wind in meters per second
+  float strength = 2;
 }
 
 message GetWindWithTurbulenceRequest {
-	// The position on the map we want the wind information for.
-	// Requires lat/lon/alt fields to be populated, there are
-	// no default values
-	dcs.Position position = 1;
+  // The position on the map we want the wind information for.
+  // Requires lat/lon/alt fields to be populated, there are
+  // no default values
+  dcs.Position position = 1;
 }
 
 message GetWindWithTurbulenceResponse {
-	// The heading the wind is coming from.
-	float heading = 1;
-	// The strength of the wind in meters per second
-	float strength = 2;
+  // The heading the wind is coming from.
+  float heading = 1;
+  // The strength of the wind in meters per second
+  float strength = 2;
 }
 
 message GetTemperatureAndPressureRequest {
-	// The position on the map we want the wind information for.
-	// Requires lat/lon/alt fields to be populated, there are
-	// no default values
-	dcs.Position position = 1;
+  // The position on the map we want the wind information for.
+  // Requires lat/lon/alt fields to be populated, there are
+  // no default values
+  dcs.Position position = 1;
 }
 
 message GetTemperatureAndPressureResponse {
     // The temperature in Kelvin
-	float temperature = 1;
-	// The pressure in Pascals
-	float pressure = 2;
+  float temperature = 1;
+  // The pressure in Pascals
+  float pressure = 2;
 }

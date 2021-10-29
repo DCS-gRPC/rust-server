@@ -6,19 +6,19 @@ package dcs.coalition;
 
 // https://wiki.hoggitworld.com/view/DCS_singleton_coalition
 service CoalitionService {
-	// https://wiki.hoggitworld.com/view/DCS_func_getPlayers
-	rpc GetPlayers(GetPlayersRequest) returns (GetPlayersResponse) {}
+  // https://wiki.hoggitworld.com/view/DCS_func_getPlayers
+  rpc GetPlayers(GetPlayersRequest) returns (GetPlayersResponse) {}
 
-	// https://wiki.hoggitworld.com/view/DCS_func_getGroups
-	rpc GetGroups(GetGroupsRequest) returns (GetGroupsResponse) {}
+  // https://wiki.hoggitworld.com/view/DCS_func_getGroups
+  rpc GetGroups(GetGroupsRequest) returns (GetGroupsResponse) {}
 }
 
 message GetPlayersRequest {
-	Coalition coalition = 1;
+  Coalition coalition = 1;
 }
 
 message GetPlayersResponse {
-	repeated Unit units = 1;
+  repeated Unit units = 1;
 }
 
 message GetGroupsRequest {

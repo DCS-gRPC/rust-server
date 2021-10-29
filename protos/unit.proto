@@ -6,22 +6,22 @@ package dcs.unit;
 
 // https://wiki.hoggitworld.com/view/DCS_Class_Unit
 service UnitService {
-	// https://wiki.hoggitworld.com/view/DCS_func_getRadar
-	rpc GetRadar(GetRadarRequest) returns (GetRadarResponse) {}
+  // https://wiki.hoggitworld.com/view/DCS_func_getRadar
+  rpc GetRadar(GetRadarRequest) returns (GetRadarResponse) {}
 
-	// https://wiki.hoggitworld.com/view/DCS_func_getPoint
-	rpc GetPosition(GetUnitPositionRequest) returns (GetUnitPositionResponse) {}
+  // https://wiki.hoggitworld.com/view/DCS_func_getPoint
+  rpc GetPosition(GetUnitPositionRequest) returns (GetUnitPositionResponse) {}
 
-	// https://wiki.hoggitworld.com/view/DCS_func_getPlayerName
-	rpc GetPlayerName(GetUnitPlayerNameRequest) returns (GetUnitPlayerNameResponse) {}
+  // https://wiki.hoggitworld.com/view/DCS_func_getPlayerName
+  rpc GetPlayerName(GetUnitPlayerNameRequest) returns (GetUnitPlayerNameResponse) {}
 
-	rpc GetUnitDescriptor(GetUnitDescriptorRequest) returns (GetUnitDescriptorResponse) {}
+  rpc GetUnitDescriptor(GetUnitDescriptorRequest) returns (GetUnitDescriptorResponse) {}
 
-	// https://wiki.hoggitworld.com/view/DCS_func_enableEmission
-	rpc SetEmission(SetEmissionRequest) returns (SetEmissionResponse) {}
+  // https://wiki.hoggitworld.com/view/DCS_func_enableEmission
+  rpc SetEmission(SetEmissionRequest) returns (SetEmissionResponse) {}
 
-	// https://wiki.hoggitworld.com/view/DCS_func_getByName
-	rpc GetUnit(GetUnitRequest) returns (GetUnitResponse) {}
+  // https://wiki.hoggitworld.com/view/DCS_func_getByName
+  rpc GetUnit(GetUnitRequest) returns (GetUnitResponse) {}
 }
 
 message GetRadarRequest {
@@ -34,7 +34,7 @@ message GetRadarResponse {
 }
 
 message GetUnitPositionRequest {
-	string name = 1;
+  string name = 1;
 }
 
 message GetUnitPositionResponse {
@@ -42,7 +42,7 @@ message GetUnitPositionResponse {
 }
 
 message GetUnitPlayerNameRequest {
-	string name = 1;
+  string name = 1;
 }
 
 message GetUnitPlayerNameResponse {
@@ -59,16 +59,16 @@ message GetUnitDescriptorResponse {
 }
 
 message SetEmissionRequest {
-	string name = 1;
-	bool emitting = 2;
+  string name = 1;
+  bool emitting = 2;
 }
 
 message SetEmissionResponse {}
 
 message GetUnitRequest {
-	string name = 1;
+  string name = 1;
 }
 
 message GetUnitResponse {
-	Unit unit = 1;
+  Unit unit = 1;
 }

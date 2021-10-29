@@ -4,38 +4,38 @@ package dcs.timer;
 
 // https://wiki.hoggitworld.com/view/DCS_singleton_timer
 service TimerService {
-	// https://wiki.hoggitworld.com/view/DCS_func_getTime
-	rpc GetTime(GetTimeRequest) returns (GetTimeResponse) {}
+  // https://wiki.hoggitworld.com/view/DCS_func_getTime
+  rpc GetTime(GetTimeRequest) returns (GetTimeResponse) {}
 
-	// https://wiki.hoggitworld.com/view/DCS_func_getAbsTime
-	rpc GetAbsoluteTime(GetAbsoluteTimeRequest) returns (GetAbsoluteTimeResponse) {}
+  // https://wiki.hoggitworld.com/view/DCS_func_getAbsTime
+  rpc GetAbsoluteTime(GetAbsoluteTimeRequest) returns (GetAbsoluteTimeResponse) {}
 
-	// https://wiki.hoggitworld.com/view/DCS_func_getTime0
-	rpc GetTimeZero(GetTimeZeroRequest) returns (GetTimeZeroResponse) {}
+  // https://wiki.hoggitworld.com/view/DCS_func_getTime0
+  rpc GetTimeZero(GetTimeZeroRequest) returns (GetTimeZeroResponse) {}
 }
 
 message GetTimeRequest {}
 
 message GetTimeResponse {
-	double time = 1;
+  double time = 1;
 }
 
 message GetAbsoluteTimeRequest {}
 
 message GetAbsoluteTimeResponse {
-	// The current time in seconds since 00:00 of the start date of the mission.
-	double time = 1;
-	uint32 day = 2;
-	uint32 month = 3;
-	int32 year = 4;
+  // The current time in seconds since 00:00 of the start date of the mission.
+  double time = 1;
+  uint32 day = 2;
+  uint32 month = 3;
+  int32 year = 4;
 }
 
 message GetTimeZeroRequest {}
 
 message GetTimeZeroResponse {
-	// The time in seconds since 00:00.
-	double time = 1;
-	uint32 day = 2;
-	uint32 month = 3;
-	int32 year = 4;
+  // The time in seconds since 00:00.
+  double time = 1;
+  uint32 day = 2;
+  uint32 month = 3;
+  int32 year = 4;
 }

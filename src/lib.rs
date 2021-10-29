@@ -25,12 +25,12 @@ use thiserror::Error;
 static INITIALIZED: Lazy<AtomicBool> = Lazy::new(|| AtomicBool::new(false));
 static SERVER: Lazy<RwLock<Option<Server>>> = Lazy::new(|| RwLock::new(None));
 
-pub fn init(config: &Config) -> LuaResult<()> {
+pub fn init(config: &Config) {
     if INITIALIZED
         .compare_exchange(false, true, Ordering::Acquire, Ordering::Relaxed)
         .unwrap_or(true)
     {
-        return Ok(());
+        return;
     }
 
     // init logging
@@ -64,8 +64,6 @@ pub fn init(config: &Config) -> LuaResult<()> {
         .unwrap();
 
     log4rs::init_config(log_config).unwrap();
-
-    Ok(())
 }
 
 #[no_mangle]
@@ -84,7 +82,7 @@ pub fn start(lua: &Lua, config: Value) -> LuaResult<()> {
         }
     };
 
-    init(&config)?;
+    init(&config);
 
     log::info!("Starting ...");
 

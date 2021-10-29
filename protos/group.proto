@@ -10,14 +10,6 @@ service GroupService {
 	rpc GetUnits(GetUnitsRequest) returns (GetUnitsResponse) {}
 }
 
-enum GroupCategory {
-  AIRPLANE = 0;
-  HELICOPTER = 1;
-  GROUND = 2;
-  SHIP = 3;
-  TRAIN = 4;
-}
-
 message GetUnitsRequest {
   string group_name = 1;
   // Whether the response should include only active units (`true`), only inactive units (`false`),

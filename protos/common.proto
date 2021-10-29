@@ -206,6 +206,20 @@ message Unit {
 message Group {
   uint32 id = 1; // The DCS generated ID
   string name = 2; // The name of the group as assigned in the mission editor
+	Coalition coalition = 3; // The coalition of the group
+	GroupCategory category = 4; // The group category.
+}
+
+/**
+ * Group category enumerator.
+ */
+// TODO: remove `GROUP_` prefix once `GroupCategory` got moved into `dcs.group.`.
+enum GroupCategory {
+  GROUP_AIRPLANE = 0;
+  GROUP_HELICOPTER = 1;
+  GROUP_GROUND = 2;
+  GROUP_SHIP = 3;
+  GROUP_TRAIN = 4;
 }
 
 /**
@@ -216,7 +230,7 @@ message Group {
 message Weapon {
 	uint32 id = 1; // The DCS generated ID
 	string type = 2; // The DCS type-name of the weapon. e.g "Matra_S530D", "HAWK_RAKETA" or "weapons.shells.53-UOR-281U"
-	Position position = 3;  // The position of the Weapon
+	Position position = 3; // The position of the Weapon
 }
 
 /**

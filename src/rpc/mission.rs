@@ -55,10 +55,10 @@ impl MissionService for MissionRpc {
         Ok(Response::new(Box::pin(stream)))
     }
 
-    async fn get_mission_start_time(
+    async fn get_scenario_start_time(
         &self,
-        _: Request<mission::GetMissionStartTimeRequest>,
-    ) -> Result<Response<mission::GetMissionStartTimeResponse>, Status> {
+        _: Request<mission::GetScenarioStartTimeRequest>,
+    ) -> Result<Response<mission::GetScenarioStartTimeResponse>, Status> {
         let start = self
             .get_time_zero(Request::new(timer::GetTimeZeroRequest {}))
             .await?
@@ -67,7 +67,7 @@ impl MissionService for MissionRpc {
         let dt = Utc.ymd(start.year, start.month, start.day).and_hms(0, 0, 0);
         let dt = dt + Duration::seconds(start.time as i64);
 
-        Ok(Response::new(mission::GetMissionStartTimeResponse {
+        Ok(Response::new(mission::GetScenarioStartTimeResponse {
             datetime: dt.format("%Y-%m-%dT%H:%M:%SZ").to_string(),
         }))
     }

@@ -404,11 +404,3 @@ GRPC.onDcsEvent = function(event)
     return nil
   end
 end
-
-GRPC.methods.getMissionDate = function(params)
-  return GRPC.success({
-    day = env.mission.date.Day,
-    month = env.mission.date.Month,
-    year = env.mission.date.Year,
-  })
-end

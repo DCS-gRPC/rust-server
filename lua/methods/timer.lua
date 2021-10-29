@@ -7,7 +7,7 @@
 GRPC.methods.getTime = function(params)
   return GRPC.success(
     {
-      time = timer.getTime() 
+      time = timer.getTime()
     }
   )
 end
@@ -16,7 +16,7 @@ end
 GRPC.methods.getAbsoluteTime = function(params)
   return GRPC.success(
     {
-      time = timer.getAbsTime() 
+      time = timer.getAbsTime()
     }
   )
 end
@@ -25,7 +25,10 @@ end
 GRPC.methods.getTimeZero = function(params)
   return GRPC.success(
     {
-      time = timer.getTime0() 
+      time = timer.getTime0(),
+      day = env.mission.date.Day,
+      month = env.mission.date.Month,
+      year = env.mission.date.Year,
     }
   )
 end

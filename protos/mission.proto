@@ -17,7 +17,7 @@ service MissionService {
 	rpc StreamUnits(StreamUnitsRequest) returns (stream UnitUpdate) {}
 
   // Returns the mission start date and time as an ISO 8601 formatted string.
-  rpc GetMissionStartTime(GetMissionStartTimeRequest) returns (GetMissionStartTimeResponse) {}
+  rpc GetScenarioStartTime(GetScenarioStartTimeRequest) returns (GetScenarioStartTimeResponse) {}
 }
 
 message StreamEventsRequest {}
@@ -367,8 +367,8 @@ message UnitUpdate {
   }
 }
 
-message GetMissionStartTimeRequest {}
+message GetScenarioStartTimeRequest {}
 
-message GetMissionStartTimeResponse {
+message GetScenarioStartTimeResponse {
   string datetime = 1;
 }

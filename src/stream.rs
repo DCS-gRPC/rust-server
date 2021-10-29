@@ -1,18 +1,18 @@
 use std::collections::HashMap;
 use std::time::{Duration, Instant};
 
-use crate::rpc::dcs::coalition::coalition_service_server::CoalitionService;
-use crate::rpc::dcs::coalition::GetGroupsRequest;
-use crate::rpc::dcs::group::group_service_server::GroupService;
-use crate::rpc::dcs::group::GetUnitsRequest;
-use crate::rpc::dcs::mission::event::Event;
-use crate::rpc::dcs::mission::unit_update::{UnitGone, Update};
-use crate::rpc::dcs::mission::StreamUnitsRequest;
-use crate::rpc::dcs::unit::unit_service_server::UnitService;
-use crate::rpc::dcs::{unit, Coalition, Position, Unit};
 use crate::rpc::MissionRpc;
 use futures_util::stream::StreamExt;
 use futures_util::TryFutureExt;
+use stubs::coalition::coalition_service_server::CoalitionService;
+use stubs::coalition::GetGroupsRequest;
+use stubs::group::group_service_server::GroupService;
+use stubs::group::GetUnitsRequest;
+use stubs::mission::event::Event;
+use stubs::mission::unit_update::{UnitGone, Update};
+use stubs::mission::StreamUnitsRequest;
+use stubs::unit::unit_service_server::UnitService;
+use stubs::{unit, Coalition, Position, Unit};
 use tokio::sync::mpsc::error::SendError;
 use tokio::sync::mpsc::Sender;
 use tokio::time::MissedTickBehavior;
@@ -95,7 +95,7 @@ pub async fn stream_units(
         // wait for either the next event or the next tick, whatever happens first
         tokio::select! {
             // listen to events that update the current state
-            Some(crate::rpc::dcs::mission::Event { event: Some(event), .. }) = events.next() => {
+            Some(stubs::mission::Event { event: Some(event), .. }) = events.next() => {
                 handle_event(&mut state, event).await?;
             }
 
@@ -124,8 +124,8 @@ struct Context {
 
 /// Update the given [State] based on the given [Event].
 async fn handle_event(state: &mut State, event: Event) -> Result<(), Error> {
-    use crate::rpc::dcs::mission::event::{BirthEvent, DeadEvent};
-    use crate::rpc::dcs::{initiator, Initiator};
+    use stubs::mission::event::{BirthEvent, DeadEvent};
+    use stubs::{initiator, Initiator};
 
     match event {
         Event::Birth(BirthEvent {

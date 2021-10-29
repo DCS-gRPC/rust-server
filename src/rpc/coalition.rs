@@ -1,6 +1,6 @@
-use super::dcs::coalition::coalition_service_server::CoalitionService;
-use super::dcs::*;
 use super::MissionRpc;
+use stubs::coalition::coalition_service_server::CoalitionService;
+use stubs::*;
 use tonic::{Request, Response, Status};
 
 #[tonic::async_trait]

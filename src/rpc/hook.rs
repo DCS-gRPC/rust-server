@@ -1,10 +1,10 @@
 use std::pin::Pin;
 
-use super::dcs::hook::hook_service_server::HookService;
-use super::dcs::*;
 use super::HookRpc;
 use crate::shutdown::AbortableStream;
 use futures_util::{Stream, TryStreamExt};
+use stubs::hook::hook_service_server::HookService;
+use stubs::*;
 use tokio_stream::wrappers::BroadcastStream;
 use tonic::{Request, Response, Status};
 

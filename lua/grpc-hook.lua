@@ -9,11 +9,11 @@ local function init()
     log.write("[GRPC-Hook]", log.INFO, "mission loaded, setting up gRPC listener ...")
 
     _G.GRPC = { basePath = lfs.writedir()..[[Scripts\DCS-gRPC\]] }
-    local ok, grpc = pcall(require, "dcs_grpc_server_hot_reload")
+    local ok, grpc = pcall(require, "dcs_grpc_hot_reload")
     if ok then
       log.write("[GRPC-Hook]", log.INFO, "loaded hot reload version")
     else
-      grpc = require("dcs_grpc_server")
+      grpc = require("dcs_grpc")
     end
 
     _G.grpc = grpc

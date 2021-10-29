@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 ///! This module is a wrapper around all exposed Lua methods which are forwarded to a dynamically
-///! loaded dcs_grpc_server.dll. Upon calling the `stop()` method, the library is unloaded, and re-
+///! loaded dcs_grpc.dll. Upon calling the `stop()` method, the library is unloaded, and re-
 ///! loaded during the next `start()` call.
 use std::sync::{Arc, RwLock};
 
@@ -23,7 +23,7 @@ pub fn start(lua: &Lua, config: Value) -> LuaResult<()> {
         };
 
         let mut lib_path = PathBuf::from(&config.write_dir);
-        lib_path.push("Mods/Tech/DCS-gRPC/dcs_grpc_server.dll");
+        lib_path.push("Mods/Tech/DCS-gRPC/dcs_grpc.dll");
         lib_path
     };
 

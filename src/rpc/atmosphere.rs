@@ -1,6 +1,6 @@
-use super::dcs::atmosphere::atmosphere_service_server::AtmosphereService;
-use super::dcs::*;
 use super::MissionRpc;
+use stubs::atmosphere::atmosphere_service_server::AtmosphereService;
+use stubs::*;
 use tonic::{Request, Response, Status};
 
 #[tonic::async_trait]

@@ -1,6 +1,6 @@
-use super::dcs::trigger::trigger_service_server::TriggerService;
-use super::dcs::*;
 use super::MissionRpc;
+use stubs::trigger::trigger_service_server::TriggerService;
+use stubs::*;
 use tonic::{Request, Response, Status};
 
 #[tonic::async_trait]

@@ -122,28 +122,18 @@ Or if you want to use the hot reloading DLL (this is the same as `make build`):
 
 ```
 cargo build --features hot-reload
-copy target/debug/dcs_grpc_server.dll target/debug/dcs_grpc_server_hot_reload.dll
+copy target/debug/dcs_grpc.dll target/debug/dcs_grpc_hot_reload.dll
 ```
 
 ### Prepare Mission
 
-For development, either update the preivously added line in `DCS World\Scripts\MissionScripting.lua` to point to your checked out repository of the gRPC server ...
+For development, update the preivously added line in `DCS World\Scripts\MissionScripting.lua` to point to your checked out repository of the gRPC server:
 
 ```diff
 - dofile(lfs.writedir()..[[Scripts\DCS-gRPC\grpc-mission.lua]])
 + package.cpath = package.cpath..[[C:\Development\DCS-gRPC\rust-server\target\debug\?.dll;]]
-+ GRPC = { basePath = [[C:\Development\DCS-gRPC\rust-server\lua]] }
++ GRPC = { basePath = [[C:\Development\DCS-gRPC\rust-server\lua\]] }
 + dofile([[C:\Development\DCS-gRPC\rust-server\lua\grpc-mission.lua]])
-```
-
-... or create symbolic links. Before running the commands in a powershell: 1) update the paths accordingly, and 2) build the gRPC server at least once to make sure that all files exist.
-
-```ps1
-New-Item -ItemType SymbolicLink -Path "C:\Users\YOUR_USER\Saved Games\DCS.openbeta\Scripts\DCS-gRPC" -Value "C:\Development\DCS-gRPC\rust-server\rust-server\lua"
-New-Item -ItemType SymbolicLink -Path "C:\Users\YOUR_USER\Saved Games\DCS.openbeta\Scripts\Hooks\DCS-gRPC.lua" -Value "C:\Development\DCS-gRPC\rust-server\rust-server\lua\grpc-hook.lua"
-New-Item -Path "C:\Users\YOUR_USER\Saved Games\DCS.openbeta\Mods\Tech\DCS-gRPC" -ItemType "directory"
-New-Item -ItemType SymbolicLink -Path "C:\Users\YOUR_USER\Saved Games\DCS.openbeta\Mods\Tech\DCS-gRPC\dcs_grpc_server.dll" -Value "C:\Development\DCS-gRPC\rust-server\rust-server\target\debug\dcs_grpc_server.dll"
-New-Item -ItemType SymbolicLink -Path "C:\Users\YOUR_USER\Saved Games\DCS.openbeta\Mods\Tech\DCS-gRPC\dcs_grpc_server_hot_reload.dll" -Value "C:\Development\DCS-gRPC\rust-server\rust-server\target\debug\dcs_grpc_server_hot_reload.dll"
 ```
 
 ### Debugging

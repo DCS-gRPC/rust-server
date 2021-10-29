@@ -1,58 +1,10 @@
 use crate::chat::Chat;
 use crate::shutdown::ShutdownHandle;
 use crate::stats::Stats;
-use dcs::mission::Event;
 use dcs_module_ipc::IPC;
 use futures_util::Stream;
+use stubs::mission::Event;
 use tonic::{Request, Status};
-
-pub mod dcs {
-    tonic::include_proto!("dcs");
-
-    pub mod atmosphere {
-        tonic::include_proto!("dcs.atmosphere");
-    }
-
-    pub mod coalition {
-        tonic::include_proto!("dcs.coalition");
-    }
-
-    pub mod controller {
-        tonic::include_proto!("dcs.controller");
-    }
-
-    pub mod custom {
-        tonic::include_proto!("dcs.custom");
-    }
-
-    pub mod group {
-        tonic::include_proto!("dcs.group");
-    }
-
-    pub mod hook {
-        tonic::include_proto!("dcs.hook");
-    }
-
-    pub mod mission {
-        tonic::include_proto!("dcs.mission");
-    }
-
-    pub mod timer {
-        tonic::include_proto!("dcs.timer");
-    }
-
-    pub mod trigger {
-        tonic::include_proto!("dcs.trigger");
-    }
-
-    pub mod unit {
-        tonic::include_proto!("dcs.unit");
-    }
-
-    pub mod world {
-        tonic::include_proto!("dcs.world");
-    }
-}
 
 mod atmosphere;
 mod coalition;
@@ -180,9 +132,9 @@ fn to_status(err: dcs_module_ipc::Error) -> Status {
 
 #[cfg(test)]
 mod tests {
-    use super::dcs::mission::{event, Event};
-    use super::dcs::world::GetAirbasesResponse;
-    use super::dcs::{initiator, Airbase, AirbaseCategory, Coalition, Initiator, Position, Unit};
+    use stubs::mission::{event, Event};
+    use stubs::world::GetAirbasesResponse;
+    use stubs::{initiator, Airbase, AirbaseCategory, Coalition, Initiator, Position, Unit};
 
     #[test]
     fn test_event_deserialization() {

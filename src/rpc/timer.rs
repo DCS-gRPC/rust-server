@@ -1,6 +1,6 @@
-use super::dcs::timer::timer_service_server::TimerService;
-use super::dcs::*;
 use super::MissionRpc;
+use stubs::timer::timer_service_server::TimerService;
+use stubs::*;
 use tonic::{Request, Response, Status};
 
 #[tonic::async_trait]

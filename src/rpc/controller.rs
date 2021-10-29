@@ -1,6 +1,6 @@
-use super::dcs::controller::controller_service_server::ControllerService;
-use super::dcs::*;
 use super::MissionRpc;
+use stubs::controller::controller_service_server::ControllerService;
+use stubs::*;
 use tonic::{Request, Response, Status};
 
 #[tonic::async_trait]

@@ -11,11 +11,11 @@ if string.find(package.cpath, "DCS-gRPC") == nil then
 end
 
 -- Load DLL before `require` gets sanitized.
-local ok, grpc = pcall(require, "dcs_grpc_server_hot_reload")
+local ok, grpc = pcall(require, "dcs_grpc_hot_reload")
 if ok then
   env.info("[GRPC] loaded hot reload version")
 else
-  grpc = require("dcs_grpc_server")
+  grpc = require("dcs_grpc")
 end
 
 -- Keep a reference to `lfs` before it gets sanitized

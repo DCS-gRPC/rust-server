@@ -156,11 +156,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "dcs-grpc-server"
+name = "dcs-grpc"
 version = "0.1.0"
 dependencies = [
  "chrono",
- "clap",
+ "dcs-grpc-stubs",
  "dcs-module-ipc",
  "futures-util",
  "libloading",
@@ -169,12 +169,32 @@ dependencies = [
  "mlua",
  "once_cell",
  "pin-project",
- "prost",
  "serde",
  "serde_json",
  "thiserror",
  "tokio",
  "tokio-stream",
+ "tonic",
+]
+
+[[package]]
+name = "dcs-grpc-repl"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "dcs-grpc-stubs",
+ "serde_json",
+ "thiserror",
+ "tokio",
+ "tonic",
+]
+
+[[package]]
+name = "dcs-grpc-stubs"
+version = "0.1.0"
+dependencies = [
+ "prost",
+ "serde",
  "tonic",
  "tonic-build",
 ]

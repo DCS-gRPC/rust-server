@@ -1,9 +1,9 @@
 use std::io::{self, BufRead};
 
 use clap::Parser;
-use dcs_grpc_server::rpc::dcs::custom::custom_service_client::CustomServiceClient;
-use dcs_grpc_server::rpc::dcs::custom::{EvalRequest, EvalResponse};
-use dcs_grpc_server::rpc::dcs::hook::hook_service_client::HookServiceClient;
+use stubs::custom::custom_service_client::CustomServiceClient;
+use stubs::custom::{EvalRequest, EvalResponse};
+use stubs::hook::hook_service_client::HookServiceClient;
 use serde_json::Value;
 use tonic::{transport, Code, Request, Response, Status};
 

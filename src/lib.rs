@@ -18,8 +18,8 @@ use std::time::Instant;
 use mlua::{prelude::*, LuaSerdeExt};
 use mlua::{Function, Value};
 use once_cell::sync::Lazy;
-use rpc::dcs::mission::Event;
 use server::{Config, Server};
+use stubs::mission::Event;
 use thiserror::Error;
 
 static INITIALIZED: Lazy<AtomicBool> = Lazy::new(|| AtomicBool::new(false));
@@ -57,7 +57,7 @@ pub fn init(config: &Config) -> LuaResult<()> {
     };
     let log_config = Config::builder()
         .appender(Appender::builder().build("file", Box::new(requests)))
-        .logger(Logger::builder().build("dcs_grpc_server", level))
+        .logger(Logger::builder().build("dcs_grpc", level))
         .logger(Logger::builder().build("tokio", level))
         .logger(Logger::builder().build("tonic", level))
         .build(Root::builder().appender("file").build(LevelFilter::Off))
@@ -248,7 +248,7 @@ pub enum Error {
 
 #[cfg(feature = "hot-reload")]
 #[mlua::lua_module]
-pub fn dcs_grpc_server_hot_reload(lua: &Lua) -> LuaResult<LuaTable> {
+pub fn dcs_grpc_hot_reload(lua: &Lua) -> LuaResult<LuaTable> {
     let exports = lua.create_table()?;
     exports.set("start", lua.create_function(hot_reload::start)?)?;
     exports.set("stop", lua.create_function(hot_reload::stop)?)?;
@@ -267,7 +267,7 @@ pub fn dcs_grpc_server_hot_reload(lua: &Lua) -> LuaResult<LuaTable> {
 
 #[cfg(not(feature = "hot-reload"))]
 #[mlua::lua_module]
-pub fn dcs_grpc_server(lua: &Lua) -> LuaResult<LuaTable> {
+pub fn dcs_grpc(lua: &Lua) -> LuaResult<LuaTable> {
     let exports = lua.create_table()?;
     exports.set("start", lua.create_function(start)?)?;
     exports.set("stop", lua.create_function(stop)?)?;

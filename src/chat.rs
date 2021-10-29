@@ -1,4 +1,4 @@
-use crate::rpc::dcs::hook::ChatMessage;
+use stubs::hook::ChatMessage;
 use tokio::sync::broadcast;
 
 #[derive(Clone)]

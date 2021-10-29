@@ -46,4 +46,12 @@ impl UnitService for MissionRpc {
         self.notification("setEmission", request).await?;
         Ok(Response::new(unit::SetEmissionResponse {}))
     }
+
+    async fn get_unit(
+        &self,
+        request: Request<unit::GetUnitRequest>,
+    ) -> Result<Response<unit::GetUnitResponse>, Status> {
+        let res: unit::GetUnitResponse = self.request("getUnit", request).await?;
+        Ok(Response::new(res))
+    }
 }

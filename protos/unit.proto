@@ -19,6 +19,9 @@ service UnitService {
 
 	// https://wiki.hoggitworld.com/view/DCS_func_enableEmission
 	rpc SetEmission(SetEmissionRequest) returns (SetEmissionResponse) {}
+
+	// https://wiki.hoggitworld.com/view/DCS_func_getByName
+	rpc GetUnit(GetUnitRequest) returns (GetUnitResponse) {}
 }
 
 message GetRadarRequest {
@@ -61,3 +64,11 @@ message SetEmissionRequest {
 }
 
 message SetEmissionResponse {}
+
+message GetUnitRequest {
+	string name = 1;
+}
+
+message GetUnitResponse {
+	Unit unit = 1;
+}

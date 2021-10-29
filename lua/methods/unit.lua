@@ -80,11 +80,7 @@ GRPC.methods.getUnitDescriptor = function(params)
   end
 
   local desc = unit:getDesc()
-
-  env.info("[GRPC]".. table_to_string(desc.attributes))
-
   local attrs = {}
-
   for i, v in pairs(desc.attributes) do
     table.insert(attrs, i)
   end
@@ -102,3 +98,11 @@ GRPC.methods.setEmission = function(params)
   return GRPC.success(nil)
 end
 
+GRPC.methods.getUnit = function(params)
+  local unit = Unit.getByName(params.name)
+  if unit == nil then
+    return GRPC.errorNotFound("unit `" .. tostring(params.name) .. "` does not exist")
+  end
+
+  return GRPC.success({unit = GRPC.exporters.unit(unit)})
+end

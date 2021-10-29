@@ -29,5 +29,9 @@ message GetAbsoluteTimeResponse {
 message GetTimeZeroRequest {}
 
 message GetTimeZeroResponse {
+	// The time in seconds since 00:00.
 	double time = 1;
+	uint32 day = 2;
+	uint32 month = 3;
+	int32 year = 4;
 }

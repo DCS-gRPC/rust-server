@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package dcs;
+package dcs.common;
 
 /**
  * The category the object belongs to

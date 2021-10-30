@@ -7,19 +7,19 @@ package dcs.trigger;
 // https://wiki.hoggitworld.com/view/DCS_singleton_trigger
 service TriggerService {
   // https://wiki.hoggitworld.com/view/DCS_func_outText
-  rpc OutText(OutTextRequest) returns (dcs.EmptyResponse) {}
+  rpc OutText(OutTextRequest) returns (dcs.common.EmptyResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_outTextForCoalition
-  rpc OutTextForCoalition(OutTextForCoalitionRequest) returns (dcs.EmptyResponse) {}
+  rpc OutTextForCoalition(OutTextForCoalitionRequest) returns (dcs.common.EmptyResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_outTextForGroup
-  rpc OutTextForGroup(OutTextForGroupRequest) returns (dcs.EmptyResponse) {}
+  rpc OutTextForGroup(OutTextForGroupRequest) returns (dcs.common.EmptyResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_getUserFlag
   rpc GetUserFlag(GetUserFlagRequest) returns (GetUserFlagResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_setUserFlag
-  rpc SetUserFlag(SetUserFlagRequest) returns (dcs.EmptyResponse) {}
+  rpc SetUserFlag(SetUserFlagRequest) returns (dcs.common.EmptyResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_markToAll
   rpc MarkToAll(MarkToAllRequest) returns (MarkToAllResponse) {}
@@ -31,19 +31,19 @@ service TriggerService {
   rpc MarkToGroup(MarkToGroupRequest) returns (MarkToGroupResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_removeMark
-  rpc RemoveMark(RemoveMarkRequest) returns (dcs.EmptyResponse) {}
+  rpc RemoveMark(RemoveMarkRequest) returns (dcs.common.EmptyResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_explosion
-  rpc Explosion(ExplosionRequest) returns (dcs.EmptyResponse) {}
+  rpc Explosion(ExplosionRequest) returns (dcs.common.EmptyResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_smoke
-  rpc Smoke(SmokeRequest) returns (dcs.EmptyResponse) {}
+  rpc Smoke(SmokeRequest) returns (dcs.common.EmptyResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_illuminationBomb
-  rpc IlluminationBomb(IlluminationBombRequest) returns (dcs.EmptyResponse) {}
+  rpc IlluminationBomb(IlluminationBombRequest) returns (dcs.common.EmptyResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_signalFlare
-  rpc SignalFlare(SignalFlareRequest) returns (dcs.EmptyResponse) {}
+  rpc SignalFlare(SignalFlareRequest) returns (dcs.common.EmptyResponse) {}
 }
 
 message OutTextRequest {
@@ -56,7 +56,7 @@ message OutTextForCoalitionRequest {
   string text = 1;
   int32 display_time = 2;
   bool clear_view = 3;
-  dcs.Coalition coalition = 4;
+  dcs.common.Coalition coalition = 4;
 }
 
 message OutTextForGroupRequest {
@@ -81,7 +81,7 @@ message SetUserFlagRequest {
 
 message MarkToAllRequest {
   string text = 2;
-  dcs.Position position = 3;
+  dcs.common.Position position = 3;
   bool read_only = 4;
   string message = 5;
 }
@@ -93,8 +93,8 @@ message MarkToAllResponse {
 message MarkToCoalitionRequest {
   uint32 id = 1;
   string text = 2;
-  dcs.Position position = 3;
-  dcs.Coalition coalition = 4;
+  dcs.common.Position position = 3;
+  dcs.common.Coalition coalition = 4;
   bool readOnly = 5;
   string message = 6;
 }
@@ -106,7 +106,7 @@ message MarkToCoalitionResponse {
 message MarkToGroupRequest {
   uint32 id = 1;
   string text = 2;
-  dcs.Position position = 3;
+  dcs.common.Position position = 3;
   uint32 group_id = 4;
   bool read_only = 5;
   string message = 6;
@@ -121,7 +121,7 @@ message RemoveMarkRequest {
 }
 
 message ExplosionRequest {
-  dcs.Position position = 1;
+  dcs.common.Position position = 1;
   uint32 power = 2;
 }
 
@@ -138,14 +138,14 @@ message SmokeRequest {
 
   // Altitude paramter will be ignored. Smoke always eminated from ground
   // level which will be calculated server-side
-  dcs.Position position = 1;
+  dcs.common.Position position = 1;
   SmokeColor color = 2;
 }
 
 message IlluminationBombRequest {
   // The altitude of Illumination Bombs is meters above ground. Ground level
   // will be calculated server-side
-  dcs.Position position = 1;
+  dcs.common.Position position = 1;
   uint32 power = 2;
 }
 
@@ -161,7 +161,7 @@ message SignalFlareRequest {
 
   // Altitude paramter will be ignored. Signal flares always fire from
   // ground level which will be calculated server-side
-  dcs.Position position = 1;
+  dcs.common.Position position = 1;
   FlareColor color = 2;
   uint32 azimuth = 3;
 }

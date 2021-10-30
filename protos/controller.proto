@@ -6,7 +6,7 @@ package dcs.controller;
 
 service ControllerService {
   // https://wiki.hoggitworld.com/view/DCS_option_alarmState
-  rpc SetAlarmState(SetAlarmStateRequest) returns (dcs.EmptyResponse) {}
+  rpc SetAlarmState(SetAlarmStateRequest) returns (dcs.common.EmptyResponse) {}
 }
 
 message SetAlarmStateRequest {

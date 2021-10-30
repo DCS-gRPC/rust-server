@@ -8,6 +8,10 @@ pub mod coalition {
     tonic::include_proto!("dcs.coalition");
 }
 
+pub mod common {
+    tonic::include_proto!("dcs.common");
+}
+
 pub mod controller {
     tonic::include_proto!("dcs.controller");
 }

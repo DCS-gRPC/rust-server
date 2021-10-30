@@ -6,13 +6,15 @@ use futures_util::stream::StreamExt;
 use futures_util::TryFutureExt;
 use stubs::coalition::coalition_service_server::CoalitionService;
 use stubs::coalition::GetGroupsRequest;
+use stubs::common::{self, Coalition, Position, Unit};
 use stubs::group::group_service_server::GroupService;
 use stubs::group::GetUnitsRequest;
 use stubs::mission::event::Event;
+use stubs::mission::event::{BirthEvent, DeadEvent};
 use stubs::mission::unit_update::{UnitGone, Update};
 use stubs::mission::StreamUnitsRequest;
+use stubs::unit;
 use stubs::unit::unit_service_server::UnitService;
-use stubs::{unit, Coalition, Position, Unit};
 use tokio::sync::mpsc::error::SendError;
 use tokio::sync::mpsc::Sender;
 use tokio::time::MissedTickBehavior;
@@ -124,14 +126,11 @@ struct Context {
 
 /// Update the given [State] based on the given [Event].
 async fn handle_event(state: &mut State, event: Event) -> Result<(), Error> {
-    use stubs::mission::event::{BirthEvent, DeadEvent};
-    use stubs::{initiator, Initiator};
-
     match event {
         Event::Birth(BirthEvent {
             initiator:
-                Some(Initiator {
-                    initiator: Some(initiator::Initiator::Unit(unit)),
+                Some(common::Initiator {
+                    initiator: Some(common::initiator::Initiator::Unit(unit)),
                 }),
             ..
         }) => {
@@ -144,8 +143,8 @@ async fn handle_event(state: &mut State, event: Event) -> Result<(), Error> {
         // attempted updates.
         Event::Dead(DeadEvent {
             initiator:
-                Some(Initiator {
-                    initiator: Some(initiator::Initiator::Unit(Unit { name, .. })),
+                Some(common::Initiator {
+                    initiator: Some(common::initiator::Initiator::Unit(Unit { name, .. })),
                 }),
         }) => {
             if let Some(unit_state) = state.units.remove(&name) {

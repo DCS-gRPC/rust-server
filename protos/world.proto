@@ -15,15 +15,15 @@ service WorldService {
 
 
 message GetAirbasesRequest {
-  optional dcs.Coalition coalition = 1;
+  optional dcs.common.Coalition coalition = 1;
 }
 
 message GetAirbasesResponse {
-  repeated dcs.Airbase airbases = 1;
+  repeated dcs.common.Airbase airbases = 1;
 }
 
 message GetMarkPanelsRequest {}
 
 message GetMarkPanelsResponse {
-  repeated dcs.MarkPanel mark_panels = 1;
+  repeated dcs.common.MarkPanel mark_panels = 1;
 }

@@ -24,27 +24,27 @@ service CoalitionService {
 }
 
 message GetMainReferencePointRequest {
-	dcs.Coalition coalition = 1;
+	dcs.common.Coalition coalition = 1;
 }
 
 message GetMainReferencePointResponse {
-	dcs.Position position = 1;
+	dcs.common.Position position = 1;
 }
 
 
 message GetPlayersRequest {
-  dcs.Coalition coalition = 1;
+	dcs.common.Coalition coalition = 1;
 }
 
 message GetPlayersResponse {
-  repeated dcs.Unit units = 1;
+  repeated dcs.common.Unit units = 1;
 }
 
 message GetGroupsRequest {
-  dcs.Coalition coalition = 1;
-  optional dcs.GroupCategory category = 2;
+  dcs.common.Coalition coalition = 1;
+  optional dcs.common.GroupCategory category = 2;
 }
 
 message GetGroupsResponse {
-  repeated dcs.Group groups = 1;
+  repeated dcs.common.Group groups = 1;
 }

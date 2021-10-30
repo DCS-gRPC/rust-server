@@ -1,11 +1,13 @@
-tonic::include_proto!("dcs");
-
 pub mod atmosphere {
     tonic::include_proto!("dcs.atmosphere");
 }
 
 pub mod coalition {
     tonic::include_proto!("dcs.coalition");
+}
+
+pub mod common {
+    tonic::include_proto!("dcs.common");
 }
 
 pub mod controller {
@@ -46,9 +48,11 @@ pub mod world {
 
 #[cfg(test)]
 mod tests {
+    use super::common::{
+        initiator, Airbase, AirbaseCategory, Coalition, Initiator, Position, Unit,
+    };
     use super::mission::{event, Event};
     use super::world::GetAirbasesResponse;
-    use super::{initiator, Airbase, AirbaseCategory, Coalition, Initiator, Position, Unit};
 
     #[test]
     fn test_event_deserialization() {

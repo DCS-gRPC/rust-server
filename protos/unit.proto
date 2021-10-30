@@ -30,7 +30,7 @@ message GetRadarRequest {
 
 message GetRadarResponse {
   bool active = 1;
-  Target target = 2;
+  dcs.common.Target target = 2;
 }
 
 message GetUnitPositionRequest {
@@ -38,7 +38,7 @@ message GetUnitPositionRequest {
 }
 
 message GetUnitPositionResponse {
-  Position position = 1;
+	dcs.common.Position position = 1;
 }
 
 message GetUnitPlayerNameRequest {
@@ -70,5 +70,5 @@ message GetUnitRequest {
 }
 
 message GetUnitResponse {
-  Unit unit = 1;
+  dcs.common.Unit unit = 1;
 }

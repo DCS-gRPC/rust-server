@@ -1,6 +1,6 @@
 use super::MissionRpc;
 use stubs::trigger::trigger_service_server::TriggerService;
-use stubs::*;
+use stubs::{common, trigger};
 use tonic::{Request, Response, Status};
 
 #[tonic::async_trait]
@@ -8,25 +8,25 @@ impl TriggerService for MissionRpc {
     async fn out_text(
         &self,
         request: Request<trigger::OutTextRequest>,
-    ) -> Result<Response<EmptyResponse>, Status> {
+    ) -> Result<Response<common::EmptyResponse>, Status> {
         self.notification("outText", request).await?;
-        Ok(Response::new(EmptyResponse {}))
+        Ok(Response::new(common::EmptyResponse {}))
     }
 
     async fn out_text_for_coalition(
         &self,
         request: Request<trigger::OutTextForCoalitionRequest>,
-    ) -> Result<Response<EmptyResponse>, Status> {
+    ) -> Result<Response<common::EmptyResponse>, Status> {
         self.notification("outTextForCoalition", request).await?;
-        Ok(Response::new(EmptyResponse {}))
+        Ok(Response::new(common::EmptyResponse {}))
     }
 
     async fn out_text_for_group(
         &self,
         request: Request<trigger::OutTextForGroupRequest>,
-    ) -> Result<Response<EmptyResponse>, Status> {
+    ) -> Result<Response<common::EmptyResponse>, Status> {
         self.notification("outTextForGroup", request).await?;
-        Ok(Response::new(EmptyResponse {}))
+        Ok(Response::new(common::EmptyResponse {}))
     }
 
     async fn get_user_flag(
@@ -40,9 +40,9 @@ impl TriggerService for MissionRpc {
     async fn set_user_flag(
         &self,
         request: Request<trigger::SetUserFlagRequest>,
-    ) -> Result<Response<EmptyResponse>, Status> {
+    ) -> Result<Response<common::EmptyResponse>, Status> {
         self.notification("setUserFlag", request).await?;
-        Ok(Response::new(EmptyResponse {}))
+        Ok(Response::new(common::EmptyResponse {}))
     }
 
     async fn mark_to_all(
@@ -73,40 +73,40 @@ impl TriggerService for MissionRpc {
     async fn remove_mark(
         &self,
         request: Request<trigger::RemoveMarkRequest>,
-    ) -> Result<Response<EmptyResponse>, Status> {
+    ) -> Result<Response<common::EmptyResponse>, Status> {
         self.notification("removeMark", request).await?;
-        Ok(Response::new(EmptyResponse {}))
+        Ok(Response::new(common::EmptyResponse {}))
     }
 
     async fn explosion(
         &self,
         request: Request<trigger::ExplosionRequest>,
-    ) -> Result<Response<EmptyResponse>, Status> {
+    ) -> Result<Response<common::EmptyResponse>, Status> {
         self.notification("explosion", request).await?;
-        Ok(Response::new(EmptyResponse {}))
+        Ok(Response::new(common::EmptyResponse {}))
     }
 
     async fn smoke(
         &self,
         request: Request<trigger::SmokeRequest>,
-    ) -> Result<Response<EmptyResponse>, Status> {
+    ) -> Result<Response<common::EmptyResponse>, Status> {
         self.notification("smoke", request).await?;
-        Ok(Response::new(EmptyResponse {}))
+        Ok(Response::new(common::EmptyResponse {}))
     }
 
     async fn illumination_bomb(
         &self,
         request: Request<trigger::IlluminationBombRequest>,
-    ) -> Result<Response<EmptyResponse>, Status> {
+    ) -> Result<Response<common::EmptyResponse>, Status> {
         self.notification("illuminationBomb", request).await?;
-        Ok(Response::new(EmptyResponse {}))
+        Ok(Response::new(common::EmptyResponse {}))
     }
 
     async fn signal_flare(
         &self,
         request: Request<trigger::SignalFlareRequest>,
-    ) -> Result<Response<EmptyResponse>, Status> {
+    ) -> Result<Response<common::EmptyResponse>, Status> {
         self.notification("signalFlare", request).await?;
-        Ok(Response::new(EmptyResponse {}))
+        Ok(Response::new(common::EmptyResponse {}))
     }
 }

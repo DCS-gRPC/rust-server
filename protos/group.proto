@@ -18,5 +18,5 @@ message GetUnitsRequest {
 }
 
 message GetUnitsResponse {
-  repeated Unit units = 1;
+  repeated dcs.common.Unit units = 1;
 }

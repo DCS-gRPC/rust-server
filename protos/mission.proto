@@ -31,20 +31,20 @@ message Event {
   // weapons - those are handled by [ShootingStartEvent]).
   message ShotEvent {
     // The object that fired the weapon.
-    Initiator initiator = 1;
+    dcs.common.Initiator initiator = 1;
     // The weapon that has been fired.
-    Weapon weapon = 2;
+    dcs.common.Weapon weapon = 2;
   }
 
   // Occurs when an object is hit by a weapon.
   message HitEvent {
     // The object that fired the weapon. Not set when for example fyling an aircraft into a
     // building (building will be the target and weapon_name the name of the aircraft).
-    optional Initiator initiator = 1;
+    optional dcs.common.Initiator initiator = 1;
     // The weapon that the target has been hit with.
-    Weapon weapon = 2;
+    dcs.common.Weapon weapon = 2;
     // The object that has been hit.
-    Target target = 3;
+    dcs.common.Target target = 3;
     // The weapon the target got hit by.
     string weapon_name = 4;
   }
@@ -52,44 +52,44 @@ message Event {
   // Occurs when an aircraft takes off from an airbase, farp, or ship.
   message TakeoffEvent {
     // The object that took off.
-    Initiator initiator = 1;
+    dcs.common.Initiator initiator = 1;
     // The airbase, farp or ship the unit took off from.
-    Airbase place = 2;
+    dcs.common.Airbase place = 2;
   }
 
   // Occurs when an aircraft lands at an airbase, farp or ship.
   message LandEvent {
     // The object that landed.
-    Initiator initiator = 1;
+    dcs.common.Initiator initiator = 1;
     // The airbase, farp or ship the unit landed at.
-    Airbase place = 2;
+    dcs.common.Airbase place = 2;
   }
 
   // Occurs when an aircraft crashes into the ground and is completely
   // destroyed.
   message CrashEvent {
     // The object that crashed.
-    Initiator initiator = 1;
+    dcs.common.Initiator initiator = 1;
   }
 
   // Occurs when a pilot ejects from its aircraft.
   message EjectionEvent {
     // The unit a pilot ejected from.
-    Initiator initiator = 1;
+    dcs.common.Initiator initiator = 1;
     // The ejection seat.
-    Target target = 3;
+    dcs.common.Target target = 3;
   }
 
   // Occurs when an aircraft connects with a tanker and begins taking on fuel.
   message RefuelingEvent {
     // The object that is receiving fuel.
-    Initiator initiator = 1;
+    dcs.common.Initiator initiator = 1;
   }
 
   // Occurs when an object is completely destroyed.
   message DeadEvent {
     // The object that has been destroyed.
-    Initiator initiator = 1;
+    dcs.common.Initiator initiator = 1;
   }
 
   // Occurs when a pilot of an aircraft is killed. Can occur either if the
@@ -98,15 +98,15 @@ message Event {
   // destroying the plane.
   message PilotDeadEvent {
     // The unit the pilot has died in.
-    Initiator initiator = 1;
+    dcs.common.Initiator initiator = 1;
   }
 
   // Occurs when a ground unit captures either an airbase or a farp.
   message BaseCaptureEvent {
     // The object that captured the base.
-    Initiator initiator = 1;
+    dcs.common.Initiator initiator = 1;
     // The airbase that was captured, can be a FARP or Airbase
-    Airbase place = 2;
+    dcs.common.Airbase place = 2;
   }
 
   // Occurs when the mission starts.
@@ -118,55 +118,55 @@ message Event {
   // Occurs when an aircraft is finished taking fuel.
   message RefuelingStopEvent {
     // he unit that was receiving fuel.
-    Initiator initiator = 1;
+    dcs.common.Initiator intiator = 1;
   }
 
   // Occurs when any object is spawned into the mission.
   message BirthEvent {
     // The object that was spawned.
-    Initiator initiator = 1;
+    dcs.common.Initiator initiator = 1;
     // The airbase, farp or ship the unit took off from.
-    optional Airbase place = 2;
+    optional dcs.common.Airbase place = 2;
   }
 
   // Occurs e.g. when a player controlled aircraft blacks out.
   message HumanFailureEvent {
     // The unit the system failure occurred in.
-    Initiator initiator = 1;
+    dcs.common.Initiator initiator = 1;
   }
 
   // Occurs when a system on an aircraft fails. This can be due to damage or due to random failures
   // set up in the mission editor.
   message DetailedFailureEvent {
     // The target the failure occurred for.
-    Target target = 1;
+    dcs.common.Target target = 1;
   }
 
   // Occurs when any aircraft starts its engines.
   message EngineStartupEvent {
     // The object that starts its engines.
-    Initiator initiator = 1;
+    dcs.common.Initiator initiator = 1;
     // The airbase, farp or ship the unit started their engine at.
-    Airbase place = 2;
+    dcs.common.Airbase place = 2;
   }
 
   message EngineShutdownEvent {
     // Occurs when any aircraft shuts down its engines.
-    Initiator initiator = 1;
+    dcs.common.Initiator initiator = 1;
     // The airbase, farp or ship the unit shut down their engine at.
-    Airbase place = 2;
+    dcs.common.Airbase place = 2;
   }
 
   // Occurs when a player takes direct control of a unit.
   message PlayerEnterUnitEvent {
     // The unit the player took control of.
-    Initiator initiator = 1;
+    dcs.common.Initiator initiator = 1;
   }
 
   // Occurs when a player relieves direct control of a unit.
   message PlayerLeaveUnitEvent {
     // The unit the player relieves control of.
-    Initiator initiator = 1;
+    dcs.common.Initiator initiator = 1;
   }
 
   // Occurs when a unit begins firing a machine gun- or autocannon-based weapon
@@ -174,7 +174,7 @@ message Event {
   // [ShotEvent].
   message ShootingStartEvent {
     // The object that started firing.
-    Initiator initiator = 1;
+    dcs.common.Initiator initiator = 1;
     // The name of the shoot weapon.
     string weapon_name = 2;
   }
@@ -183,7 +183,7 @@ message Event {
   // Event will always correspond with a [ShootingStartEvent] event.
   message ShootingEndEvent {
     // The object that was shooting and has no stopped firing.
-    Initiator initiator = 1;
+    dcs.common.Initiator initiator = 1;
     // The name of the shoot weapon.
     string weapon_name = 2;
   }
@@ -192,17 +192,17 @@ message Event {
   // functions.
   message MarkAddEvent {
     // The object that added the mark.
-    Initiator initiator = 1;
+    dcs.common.Initiator initiator = 1;
     oneof visibility {
       // The group the mark's visibility is restricted for.
       uint64 group_id = 2;
       // The coalition the mark's visibility is restricted for.
-      Coalition coalition = 3;
+      dcs.common.Coalition coalition = 3;
     }
     // The mark's id.
     uint32 id = 4;
     // The position the mark has been added at.
-    Position pos = 5;
+    dcs.common.Position pos = 5;
     // The mark's label.
     string text = 6;
   }
@@ -210,17 +210,17 @@ message Event {
   // Occurs when marks got changed.
   message MarkChangeEvent {
     // The object that changed the mark.
-    Initiator initiator = 1;
+    dcs.common.Initiator initiator = 1;
     oneof visibility {
       // The group the mark's visibility is restricted for.
       uint64 group_id = 2;
       // The coalition the mark's visibility is restricted for.
-      Coalition coalition = 3;
+      dcs.common.Coalition coalition = 3;
     }
     // The mark's id.
     uint32 id = 4;
     // The position of the changed mark.
-    Position pos = 5;
+    dcs.common.Position pos = 5;
     // The mark's label.
     string text = 6;
   }
@@ -228,17 +228,17 @@ message Event {
   // Occurs when marks get removed.
   message MarkRemoveEvent {
     // The object that removed the mark.
-    Initiator initiator = 1;
+    dcs.common.Initiator initiator = 1;
     oneof visibility {
       // The group the mark's visibility is restricted for.
       uint64 group_id = 2;
       // The coalition the mark's visibility is restricted for.
-      Coalition coalition = 3;
+      dcs.common.Coalition coalition = 3;
     }
     // The mark's id.
     uint32 id = 4;
     // The position the mark has been removed from.
-    Position pos = 5;
+    dcs.common.Position pos = 5;
     // The mark's label.
     string text = 6;
   }
@@ -246,11 +246,11 @@ message Event {
   // Occurs when an object is killed by a weapon.
   message KillEvent {
     // The object that fired the weapon.
-    Initiator initiator = 1;
+    dcs.common.Initiator initiator = 1;
     // The weapon that the target has been killed with.
-    Weapon weapon = 2;
+    dcs.common.Weapon weapon = 2;
     // The object that has been killed.
-    Target target = 3;
+    dcs.common.Target target = 3;
     // The name of the weapon that killed the target (exists instead of weapon for weapons that
     // trigger the shooting start and end events).
     string weapon_name = 4;
@@ -263,29 +263,29 @@ message Event {
   // A unit got destroyed.
   message UnitLostEvent {
     // The object that got destroyed weapon.
-    Initiator initiator = 1;
+    dcs.common.Initiator initiator = 1;
   }
 
   // A pilot detached from their ejection seat.
   message LandingAfterEjectionEvent {
     // The ejected pilot.
-    Initiator initiator = 1;
+    dcs.common.Initiator initiator = 1;
     // The position the pilot landed at.
-    Position place = 2;
+    dcs.common.Position place = 2;
   }
 
   // A pilot detached from their ejection seat.
   message DiscardChairAfterEjectionEvent {
     // The ejection seat.
-    Initiator initiator = 1;
+    dcs.common.Initiator initiator = 1;
     // The pilot.
-    Target target = 2;
+    dcs.common.Target target = 2;
   }
 
   // Fired for each payload of an aircraft spawened midair.
   message WeaponAddEvent {
     // The object that got spawned.
-    Initiator initiator = 1;
+    dcs.common.Initiator initiator = 1;
     // The name of the payload.
     string weapon_name = 2;
   }
@@ -293,7 +293,7 @@ message Event {
   // Occurs when an aircraft receives an LSO rating after recovering on an aircraft carrier.
   message LandingQualityMarkEvent {
     // The aircraft that received the rating.
-    Initiator initiator = 1;
+    dcs.common.Initiator initiator = 1;
     // The rating.
     string comment = 2;
   }
@@ -363,7 +363,7 @@ message UnitUpdate {
 
   oneof update {
     // The unit is either new or its position changed.
-    Unit unit = 1;
+    dcs.common.Unit unit = 1;
 
     // The unit does not exist anymore.
     UnitGone gone = 2;

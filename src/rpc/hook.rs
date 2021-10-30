@@ -10,8 +10,13 @@ use tonic::{Request, Response, Status};
 
 #[tonic::async_trait]
 impl HookService for HookRpc {
-    type StreamChatStream = Pin<
-        Box<dyn Stream<Item = Result<hook::ChatMessage, tonic::Status>> + Send + Sync + 'static>,
+    type StreamChatMessagesStream = Pin<
+        Box<
+            dyn Stream<Item = Result<hook::StreamChatMessagesResponse, tonic::Status>>
+                + Send
+                + Sync
+                + 'static,
+        >,
     >;
 
     async fn get_mission_name(
@@ -22,10 +27,10 @@ impl HookService for HookRpc {
         Ok(Response::new(res))
     }
 
-    async fn stream_chat(
+    async fn stream_chat_messages(
         &self,
-        _request: Request<hook::StreamChatRequest>,
-    ) -> Result<Response<Self::StreamChatStream>, Status> {
+        _request: Request<hook::StreamChatMessagesRequest>,
+    ) -> Result<Response<Self::StreamChatMessagesStream>, Status> {
         let rx = BroadcastStream::new(self.chat.subscribe());
         let stream = AbortableStream::new(
             self.shutdown_signal.signal(),
@@ -36,8 +41,8 @@ impl HookService for HookRpc {
 
     async fn eval(
         &self,
-        request: Request<custom::EvalRequest>,
-    ) -> Result<Response<custom::EvalResponse>, Status> {
+        request: Request<hook::EvalRequest>,
+    ) -> Result<Response<hook::EvalResponse>, Status> {
         if !self.eval_enabled {
             return Err(Status::permission_denied("eval operation is disabled"));
         }
@@ -46,6 +51,6 @@ impl HookService for HookRpc {
         let json = serde_json::to_string(&json).map_err(|err| {
             Status::internal(format!("failed to deserialize eval result: {}", err))
         })?;
-        Ok(Response::new(custom::EvalResponse { json }))
+        Ok(Response::new(hook::EvalResponse { json }))
     }
 }

@@ -1,49 +1,53 @@
 syntax = "proto3";
 
-import "common.proto";
+import "dcs/common/common.proto";
 
 package dcs.trigger;
 
 // https://wiki.hoggitworld.com/view/DCS_singleton_trigger
 service TriggerService {
   // https://wiki.hoggitworld.com/view/DCS_func_outText
-  rpc OutText(OutTextRequest) returns (dcs.common.EmptyResponse) {}
+  rpc OutText(OutTextRequest) returns (OutTextResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_outTextForCoalition
-  rpc OutTextForCoalition(OutTextForCoalitionRequest) returns (dcs.common.EmptyResponse) {}
+  rpc OutTextForCoalition(OutTextForCoalitionRequest)
+      returns (OutTextForCoalitionResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_outTextForGroup
-  rpc OutTextForGroup(OutTextForGroupRequest) returns (dcs.common.EmptyResponse) {}
+  rpc OutTextForGroup(OutTextForGroupRequest)
+      returns (OutTextForGroupResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_getUserFlag
   rpc GetUserFlag(GetUserFlagRequest) returns (GetUserFlagResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_setUserFlag
-  rpc SetUserFlag(SetUserFlagRequest) returns (dcs.common.EmptyResponse) {}
+  rpc SetUserFlag(SetUserFlagRequest) returns (SetUserFlagResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_markToAll
   rpc MarkToAll(MarkToAllRequest) returns (MarkToAllResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_markToCoalition
-  rpc MarkToCoalition(MarkToCoalitionRequest) returns (MarkToCoalitionResponse) {}
+  rpc MarkToCoalition(MarkToCoalitionRequest)
+      returns (MarkToCoalitionResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_markToGroup
   rpc MarkToGroup(MarkToGroupRequest) returns (MarkToGroupResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_removeMark
-  rpc RemoveMark(RemoveMarkRequest) returns (dcs.common.EmptyResponse) {}
+  rpc RemoveMark(RemoveMarkRequest) returns (RemoveMarkResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_explosion
-  rpc Explosion(ExplosionRequest) returns (dcs.common.EmptyResponse) {}
+  rpc Explosion(ExplosionRequest) returns (ExplosionResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_smoke
-  rpc Smoke(SmokeRequest) returns (dcs.common.EmptyResponse) {}
+  rpc Smoke(SmokeRequest) returns (SmokeResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_illuminationBomb
-  rpc IlluminationBomb(IlluminationBombRequest) returns (dcs.common.EmptyResponse) {}
+  rpc IlluminationBomb(IlluminationBombRequest)
+      returns (IlluminationBombResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_signalFlare
-  rpc SignalFlare(SignalFlareRequest) returns (dcs.common.EmptyResponse) {}
+  rpc SignalFlare(SignalFlareRequest) returns (SignalFlareResponse) {}
 }
 
 message OutTextRequest {
@@ -52,6 +56,8 @@ message OutTextRequest {
   bool clear_view = 3;
 }
 
+message OutTextResponse {}
+
 message OutTextForCoalitionRequest {
   string text = 1;
   int32 display_time = 2;
@@ -59,12 +65,16 @@ message OutTextForCoalitionRequest {
   dcs.common.Coalition coalition = 4;
 }
 
+message OutTextForCoalitionResponse {}
+
 message OutTextForGroupRequest {
   string text = 1;
   int32 display_time = 2;
   bool clear_view = 3;
-  uint32 groupId = 4;
+  uint32 group_id = 4;
 }
+
+message OutTextForGroupResponse {}
 
 message GetUserFlagRequest {
   string flag = 1;
@@ -78,6 +88,8 @@ message SetUserFlagRequest {
   string flag = 1;
   uint32 value = 2;
 }
+
+message SetUserFlagResponse {}
 
 message MarkToAllRequest {
   string text = 2;
@@ -95,7 +107,7 @@ message MarkToCoalitionRequest {
   string text = 2;
   dcs.common.Position position = 3;
   dcs.common.Coalition coalition = 4;
-  bool readOnly = 5;
+  bool read_only = 5;
   string message = 6;
 }
 
@@ -120,27 +132,33 @@ message RemoveMarkRequest {
   uint32 id = 1;
 }
 
+message RemoveMarkResponse {}
+
 message ExplosionRequest {
   dcs.common.Position position = 1;
   uint32 power = 2;
 }
 
+message ExplosionResponse {}
+
 message SmokeRequest {
   // Putting this inside the request because we cannot
   // have the same enum value in the same package.
   enum SmokeColor {
-    GREEN = 0;
-    RED = 1;
-    WHITE = 2;
-    ORANGE = 3;
-    BLUE = 4;
+    SMOKE_COLOR_GREEN = 0;
+    SMOKE_COLOR_RED = 1;
+    SMOKE_COLOR_WHITE = 2;
+    SMOKE_COLOR_ORANGE = 3;
+    SMOKE_COLOR_BLUE = 4;
   }
 
-  // Altitude paramter will be ignored. Smoke always eminated from ground
+  // Altitude parameter will be ignored. Smoke always eminates from ground
   // level which will be calculated server-side
   dcs.common.Position position = 1;
   SmokeColor color = 2;
 }
+
+message SmokeResponse {}
 
 message IlluminationBombRequest {
   // The altitude of Illumination Bombs is meters above ground. Ground level
@@ -149,19 +167,23 @@ message IlluminationBombRequest {
   uint32 power = 2;
 }
 
+message IlluminationBombResponse {}
+
 message SignalFlareRequest {
   // Putting this inside the request because we cannot
   // have the same enum value in the same package.
   enum FlareColor {
-    GREEN = 0;
-    RED = 1;
-    WHITE = 2;
-    YELLOW = 3;
+    FLARE_COLOR_GREEN = 0;
+    FLARE_COLOR_RED = 1;
+    FLARE_COLOR_WHITE = 2;
+    FLARE_COLOR_YELLOW = 3;
   }
 
-  // Altitude paramter will be ignored. Signal flares always fire from
+  // Altitude parameter will be ignored. Signal flares always fire from
   // ground level which will be calculated server-side
   dcs.common.Position position = 1;
   FlareColor color = 2;
   uint32 azimuth = 3;
 }
+
+message SignalFlareResponse {}

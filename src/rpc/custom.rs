@@ -9,19 +9,19 @@ use tonic::{Request, Response, Status};
 impl CustomService for MissionRpc {
     async fn request_mission_assignment(
         &self,
-        request: Request<custom::MissionAssignmentRequest>,
-    ) -> Result<Response<custom::MissionAssignmentResponse>, Status> {
+        request: Request<custom::RequestMissionAssignmentRequest>,
+    ) -> Result<Response<custom::RequestMissionAssignmentResponse>, Status> {
         self.notification("requestMissionAssignment", request)
             .await?;
-        Ok(Response::new(custom::MissionAssignmentResponse {}))
+        Ok(Response::new(custom::RequestMissionAssignmentResponse {}))
     }
 
     async fn join_mission(
         &self,
-        request: Request<custom::MissionJoinRequest>,
-    ) -> Result<Response<custom::MissionJoinResponse>, Status> {
+        request: Request<custom::JoinMissionRequest>,
+    ) -> Result<Response<custom::JoinMissionResponse>, Status> {
         self.notification("joinMission", request).await?;
-        Ok(Response::new(custom::MissionJoinResponse {}))
+        Ok(Response::new(custom::JoinMissionResponse {}))
     }
 
     async fn eval(

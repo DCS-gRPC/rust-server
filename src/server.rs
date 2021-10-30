@@ -10,7 +10,7 @@ use crate::stats::Stats;
 use dcs_module_ipc::IPC;
 use futures_util::FutureExt;
 use serde::{Deserialize, Serialize};
-use stubs::mission::Event;
+use stubs::mission::StreamEventsResponse;
 use tokio::runtime::Runtime;
 use tokio::sync::oneshot::{self, Receiver};
 use tokio::time::sleep;
@@ -27,7 +27,7 @@ pub struct Server {
 struct ServerState {
     addr: SocketAddr,
     config: Config,
-    ipc_mission: IPC<Event>,
+    ipc_mission: IPC<StreamEventsResponse>,
     ipc_hook: IPC<()>,
     chat: Chat,
     stats: Stats,
@@ -100,7 +100,7 @@ impl Server {
         self.state.chat.handle_message(player_id, message, all);
     }
 
-    pub fn ipc_mission(&self) -> &IPC<Event> {
+    pub fn ipc_mission(&self) -> &IPC<StreamEventsResponse> {
         &self.state.ipc_mission
     }
 

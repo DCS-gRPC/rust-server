@@ -51,16 +51,16 @@ mod tests {
     use super::common::{
         initiator, Airbase, AirbaseCategory, Coalition, Initiator, Position, Unit,
     };
-    use super::mission::{event, Event};
+    use super::mission::{stream_events_response as event, StreamEventsResponse};
     use super::world::GetAirbasesResponse;
 
     #[test]
     fn test_event_deserialization() {
-        let event: Event =
+        let event: StreamEventsResponse =
             serde_json::from_str(r#"{"time":4.2,"event":{"type":"missionStart"}}"#).unwrap();
         assert_eq!(
             event,
-            Event {
+            StreamEventsResponse {
                 time: 4.2,
                 event: Some(event::Event::MissionStart(event::MissionStartEvent {})),
             }
@@ -69,7 +69,7 @@ mod tests {
 
     #[test]
     fn test_enum_deserialization() {
-        let event: Event = serde_json::from_str(
+        let event: StreamEventsResponse = serde_json::from_str(
             r#"
                 {
 	                "time": 4.2,
@@ -99,7 +99,7 @@ mod tests {
 		                },
 		                "coalition": 2,
 		                "id": 42,
-		                "pos": {
+		                "position": {
 			                "lat": 1,
 			                "lon": 2,
 			                "alt": 3,
@@ -113,7 +113,7 @@ mod tests {
         .unwrap();
         assert_eq!(
             event,
-            Event {
+            StreamEventsResponse {
                 time: 4.2,
                 event: Some(event::Event::MarkAdd(event::MarkAddEvent {
                     initiator: Some(Initiator {
@@ -140,7 +140,7 @@ mod tests {
                         Coalition::Blue.into()
                     )),
                     id: 42,
-                    pos: Some(Position {
+                    position: Some(Position {
                         lat: 1.0,
                         lon: 2.0,
                         alt: 3.0,

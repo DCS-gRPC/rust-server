@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package dcs;
+
+import "dcs/atmosphere/atmosphere.proto";
+import "dcs/coalition/coalition.proto";
+import "dcs/common/common.proto";
+import "dcs/controller/controller.proto";
+import "dcs/custom/custom.proto";
+import "dcs/group/group.proto";
+import "dcs/hook/hook.proto";
+import "dcs/mission/mission.proto";
+import "dcs/timer/timer.proto";
+import "dcs/trigger/trigger.proto";
+import "dcs/unit/unit.proto";
+import "dcs/world/world.proto";

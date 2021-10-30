@@ -1,21 +1,19 @@
 syntax = "proto3";
 
-import "common.proto";
-import "custom.proto";
-
 package dcs.hook;
 
 // APis that are part of the hook environment
 service HookService {
-    // https://wiki.hoggitworld.com/view/DCS_func_getMissionName
+  // https://wiki.hoggitworld.com/view/DCS_func_getMissionName
   rpc GetMissionName(GetMissionNameRequest) returns (GetMissionNameResponse) {}
 
   // Stream all chat messages.
-  rpc StreamChat(StreamChatRequest) returns (stream ChatMessage) {}
+  rpc StreamChatMessages(StreamChatMessagesRequest)
+      returns (stream StreamChatMessagesResponse) {}
 
-  // Evaluate some Lua inside of the hook environment and return the result as a JSON string.
-  // Disabled by default.
-  rpc Eval(dcs.custom.EvalRequest) returns (dcs.custom.EvalResponse) {}
+  // Evaluate some Lua inside of the hook environment and return the result as a
+  // JSON string. Disabled by default.
+  rpc Eval(EvalRequest) returns (EvalResponse) {}
 }
 
 message GetMissionNameRequest {}
@@ -24,9 +22,9 @@ message GetMissionNameResponse {
   string name = 1;
 }
 
-message StreamChatRequest {}
+message StreamChatMessagesRequest {}
 
-message ChatMessage {
+message StreamChatMessagesResponse {
   // The ID of the player sending the chat messaage.
   uint32 player_id = 2;
 
@@ -35,4 +33,12 @@ message ChatMessage {
 
   // Whether the message was send to all or only to allies.
   bool all = 4;
+}
+
+message EvalRequest {
+  string lua = 1;
+}
+
+message EvalResponse {
+  string json = 1;
 }

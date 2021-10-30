@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-import "common.proto";
+import "dcs/common/common.proto";
 
 package dcs.unit;
 
@@ -10,18 +10,18 @@ service UnitService {
   rpc GetRadar(GetRadarRequest) returns (GetRadarResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_getPoint
-  rpc GetPosition(GetUnitPositionRequest) returns (GetUnitPositionResponse) {}
+  rpc GetPosition(GetPositionRequest) returns (GetPositionResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_getPlayerName
-  rpc GetPlayerName(GetUnitPlayerNameRequest) returns (GetUnitPlayerNameResponse) {}
+  rpc GetPlayerName(GetPlayerNameRequest) returns (GetPlayerNameResponse) {}
 
-  rpc GetUnitDescriptor(GetUnitDescriptorRequest) returns (GetUnitDescriptorResponse) {}
+  rpc GetDescriptor(GetDescriptorRequest) returns (GetDescriptorResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_enableEmission
   rpc SetEmission(SetEmissionRequest) returns (SetEmissionResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_getByName
-  rpc GetUnit(GetUnitRequest) returns (GetUnitResponse) {}
+  rpc Get(GetRequest) returns (GetResponse) {}
 }
 
 message GetRadarRequest {
@@ -33,28 +33,28 @@ message GetRadarResponse {
   dcs.common.Target target = 2;
 }
 
-message GetUnitPositionRequest {
+message GetPositionRequest {
   string name = 1;
 }
 
-message GetUnitPositionResponse {
-	dcs.common.Position position = 1;
+message GetPositionResponse {
+  dcs.common.Position position = 1;
 }
 
-message GetUnitPlayerNameRequest {
+message GetPlayerNameRequest {
   string name = 1;
 }
 
-message GetUnitPlayerNameResponse {
+message GetPlayerNameResponse {
   optional string player_name = 1;
 }
 
-message GetUnitDescriptorRequest {
+message GetDescriptorRequest {
   string name = 1;
 }
 
 // TODO fill these in as and when we need em
-message GetUnitDescriptorResponse {
+message GetDescriptorResponse {
   repeated string attributes = 1;
 }
 
@@ -65,10 +65,10 @@ message SetEmissionRequest {
 
 message SetEmissionResponse {}
 
-message GetUnitRequest {
+message GetRequest {
   string name = 1;
 }
 
-message GetUnitResponse {
+message GetResponse {
   dcs.common.Unit unit = 1;
 }

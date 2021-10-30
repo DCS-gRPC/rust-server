@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-import "common.proto";
+import "dcs/common/common.proto";
 
 package dcs.world;
 
@@ -12,7 +12,6 @@ service WorldService {
   // https://wiki.hoggitworld.com/view/DCS_func_getMarkPanels
   rpc GetMarkPanels(GetMarkPanelsRequest) returns (GetMarkPanelsResponse) {}
 }
-
 
 message GetAirbasesRequest {
   optional dcs.common.Coalition coalition = 1;

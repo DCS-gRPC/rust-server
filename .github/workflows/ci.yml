@@ -50,7 +50,7 @@ jobs:
       - name: Install luacheck
         run: |
           sudo apt-get install -y luarocks
-          luarocks install luacheck
+          sudo luarocks install luacheck
 
       - name: Checkout code
         uses: actions/checkout@v2

@@ -9,9 +9,10 @@ use stubs::coalition::GetGroupsRequest;
 use stubs::common::{self, Coalition, Position, Unit};
 use stubs::group::group_service_server::GroupService;
 use stubs::group::GetUnitsRequest;
-use stubs::mission::event::Event;
-use stubs::mission::event::{BirthEvent, DeadEvent};
-use stubs::mission::unit_update::{UnitGone, Update};
+use stubs::mission::stream_events_response::Event;
+use stubs::mission::stream_events_response::{BirthEvent, DeadEvent};
+use stubs::mission::stream_units_response::UnitGone;
+use stubs::mission::stream_units_response::Update;
 use stubs::mission::StreamUnitsRequest;
 use stubs::unit;
 use stubs::unit::unit_service_server::UnitService;
@@ -97,7 +98,7 @@ pub async fn stream_units(
         // wait for either the next event or the next tick, whatever happens first
         tokio::select! {
             // listen to events that update the current state
-            Some(stubs::mission::Event { event: Some(event), .. }) = events.next() => {
+            Some(stubs::mission::StreamEventsResponse { event: Some(event), .. }) = events.next() => {
                 handle_event(&mut state, event).await?;
             }
 
@@ -254,7 +255,7 @@ impl UnitState {
         // update position
         let position = UnitService::get_position(
             &ctx.rpc,
-            Request::new(unit::GetUnitPositionRequest {
+            Request::new(unit::GetPositionRequest {
                 name: self.unit.name.clone(),
             }),
         )
@@ -271,7 +272,7 @@ impl UnitState {
         // update player name
         let player_name = UnitService::get_player_name(
             &ctx.rpc,
-            Request::new(unit::GetUnitPlayerNameRequest {
+            Request::new(unit::GetPlayerNameRequest {
                 name: self.unit.name.clone(),
             }),
         )

@@ -8,7 +8,8 @@ service TimerService {
   rpc GetTime(GetTimeRequest) returns (GetTimeResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_getAbsTime
-  rpc GetAbsoluteTime(GetAbsoluteTimeRequest) returns (GetAbsoluteTimeResponse) {}
+  rpc GetAbsoluteTime(GetAbsoluteTimeRequest)
+      returns (GetAbsoluteTimeResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_getTime0
   rpc GetTimeZero(GetTimeZeroRequest) returns (GetTimeZeroResponse) {}

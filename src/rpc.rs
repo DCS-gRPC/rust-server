@@ -5,7 +5,7 @@ use crate::shutdown::ShutdownHandle;
 use crate::stats::Stats;
 use dcs_module_ipc::IPC;
 use futures_util::Stream;
-use stubs::mission::Event;
+use stubs::mission::StreamEventsResponse;
 use tokio::sync::RwLock;
 use tonic::{Request, Status};
 
@@ -23,7 +23,7 @@ mod world;
 
 #[derive(Clone)]
 pub struct MissionRpc {
-    ipc: IPC<Event>,
+    ipc: IPC<StreamEventsResponse>,
     stats: Stats,
     eval_enabled: bool,
     shutdown_signal: ShutdownHandle,
@@ -45,7 +45,11 @@ pub struct HookRpc {
 }
 
 impl MissionRpc {
-    pub fn new(ipc: IPC<Event>, stats: Stats, shutdown_signal: ShutdownHandle) -> Self {
+    pub fn new(
+        ipc: IPC<StreamEventsResponse>,
+        stats: Stats,
+        shutdown_signal: ShutdownHandle,
+    ) -> Self {
         MissionRpc {
             ipc,
             stats,
@@ -82,7 +86,7 @@ impl MissionRpc {
             .map_err(to_status)
     }
 
-    pub async fn events(&self) -> impl Stream<Item = Event> {
+    pub async fn events(&self) -> impl Stream<Item = StreamEventsResponse> {
         self.ipc.events().await
     }
 }

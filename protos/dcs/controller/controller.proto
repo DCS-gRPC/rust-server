@@ -1,19 +1,17 @@
 syntax = "proto3";
 
-import "common.proto";
-
 package dcs.controller;
 
 service ControllerService {
   // https://wiki.hoggitworld.com/view/DCS_option_alarmState
-  rpc SetAlarmState(SetAlarmStateRequest) returns (dcs.common.EmptyResponse) {}
+  rpc SetAlarmState(SetAlarmStateRequest) returns (SetAlarmStateResponse) {}
 }
 
 message SetAlarmStateRequest {
   enum AlarmState {
-    AUTO = 0;
-    GREEN = 1;
-    RED = 2;
+    ALARM_STATE_AUTO = 0;
+    ALARM_STATE_GREEN = 1;
+    ALARM_STATE_RED = 2;
   }
 
   oneof name {
@@ -22,3 +20,5 @@ message SetAlarmStateRequest {
   }
   AlarmState alarm_state = 3;
 }
+
+message SetAlarmStateResponse {}

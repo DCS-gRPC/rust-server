@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-import "common.proto";
+import "dcs/common/common.proto";
 
 package dcs.coalition;
 
@@ -13,27 +13,28 @@ service CoalitionService {
   rpc GetGroups(GetGroupsRequest) returns (GetGroupsResponse) {}
 
   /*
-	 * Get the Main Reference Point ("Bullseye") for the coalition
-	 *
-	 * This position is set at mission start and does not change for the duration
-	 * of the mission.
-	 *
-	 * See https://wiki.hoggitworld.com/view/DCS_func_getMainRefPoint for more details
-	 */
-  rpc GetMainReferencePoint(GetMainReferencePointRequest) returns (GetMainReferencePointResponse) {}
+   * Get the Main Reference Point ("Bullseye") for the coalition
+   *
+   * This position is set at mission start and does not change for the duration
+   * of the mission.
+   *
+   * See https://wiki.hoggitworld.com/view/DCS_func_getMainRefPoint for more
+   * details
+   */
+  rpc GetMainReferencePoint(GetMainReferencePointRequest)
+      returns (GetMainReferencePointResponse) {}
 }
 
 message GetMainReferencePointRequest {
-	dcs.common.Coalition coalition = 1;
+  dcs.common.Coalition coalition = 1;
 }
 
 message GetMainReferencePointResponse {
-	dcs.common.Position position = 1;
+  dcs.common.Position position = 1;
 }
 
-
 message GetPlayersRequest {
-	dcs.common.Coalition coalition = 1;
+  dcs.common.Coalition coalition = 1;
 }
 
 message GetPlayersResponse {

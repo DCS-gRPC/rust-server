@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-import "common.proto";
+import "dcs/common/common.proto";
 
 package dcs.mission;
 
@@ -8,25 +8,29 @@ package dcs.mission;
 service MissionService {
   // Streams DCS game generated Events.
   // See https://wiki.hoggitworld.com/view/Category:Events
-  rpc StreamEvents(StreamEventsRequest) returns (stream Event) {}
+  rpc StreamEvents(StreamEventsRequest) returns (stream StreamEventsResponse) {}
 
   // Streams unit updates
   // Provides similar functionality as Tacview but at a much lower update rate
   // so puts less load on the server. Suitable for things like online maps but
   // not as a Tacview replacement.
-  rpc StreamUnits(StreamUnitsRequest) returns (stream UnitUpdate) {}
+  rpc StreamUnits(StreamUnitsRequest) returns (stream StreamUnitsResponse) {}
 
-  // Returns the mission's in-game starttime as an ISO 8601 formatted datetime string.
-  rpc GetScenarioStartTime(GetScenarioStartTimeRequest) returns (GetScenarioStartTimeResponse) {}
+  // Returns the mission's in-game starttime as an ISO 8601 formatted datetime
+  // string.
+  rpc GetScenarioStartTime(GetScenarioStartTimeRequest)
+      returns (GetScenarioStartTimeResponse) {}
 
-  // Returns the mission's in-game current time as an ISO 8601 formatted datetime string.
-  rpc GetScenarioCurrentTime(GetScenarioCurrentTimeRequest) returns (GetScenarioCurrentTimeResponse) {}
+  // Returns the mission's in-game current time as an ISO 8601 formatted
+  // datetime string.
+  rpc GetScenarioCurrentTime(GetScenarioCurrentTimeRequest)
+      returns (GetScenarioCurrentTimeResponse) {}
 }
 
 message StreamEventsRequest {}
 
 // The DCS Event information. Contains event information and a timestamp.
-message Event {
+message StreamEventsResponse {
   // Occurs when a unit fires a weapon (but no machine gun- or autocannon-based
   // weapons - those are handled by [ShootingStartEvent]).
   message ShotEvent {
@@ -38,8 +42,9 @@ message Event {
 
   // Occurs when an object is hit by a weapon.
   message HitEvent {
-    // The object that fired the weapon. Not set when for example fyling an aircraft into a
-    // building (building will be the target and weapon_name the name of the aircraft).
+    // The object that fired the weapon. Not set when for example fyling an
+    // aircraft into a building (building will be the target and weapon_name the
+    // name of the aircraft).
     optional dcs.common.Initiator initiator = 1;
     // The weapon that the target has been hit with.
     dcs.common.Weapon weapon = 2;
@@ -135,8 +140,8 @@ message Event {
     dcs.common.Initiator initiator = 1;
   }
 
-  // Occurs when a system on an aircraft fails. This can be due to damage or due to random failures
-  // set up in the mission editor.
+  // Occurs when a system on an aircraft fails. This can be due to damage or due
+  // to random failures set up in the mission editor.
   message DetailedFailureEvent {
     // The target the failure occurred for.
     dcs.common.Target target = 1;
@@ -202,7 +207,7 @@ message Event {
     // The mark's id.
     uint32 id = 4;
     // The position the mark has been added at.
-    dcs.common.Position pos = 5;
+    dcs.common.Position position = 5;
     // The mark's label.
     string text = 6;
   }
@@ -220,7 +225,7 @@ message Event {
     // The mark's id.
     uint32 id = 4;
     // The position of the changed mark.
-    dcs.common.Position pos = 5;
+    dcs.common.Position position = 5;
     // The mark's label.
     string text = 6;
   }
@@ -238,7 +243,7 @@ message Event {
     // The mark's id.
     uint32 id = 4;
     // The position the mark has been removed from.
-    dcs.common.Position pos = 5;
+    dcs.common.Position position = 5;
     // The mark's label.
     string text = 6;
   }
@@ -251,14 +256,13 @@ message Event {
     dcs.common.Weapon weapon = 2;
     // The object that has been killed.
     dcs.common.Target target = 3;
-    // The name of the weapon that killed the target (exists instead of weapon for weapons that
-    // trigger the shooting start and end events).
+    // The name of the weapon that killed the target (exists instead of weapon
+    // for weapons that trigger the shooting start and end events).
     string weapon_name = 4;
   }
 
   // A score change (doesn't contain any useful information)
-  message ScoreEvent {
-  }
+  message ScoreEvent {}
 
   // A unit got destroyed.
   message UnitLostEvent {
@@ -290,7 +294,8 @@ message Event {
     string weapon_name = 2;
   }
 
-  // Occurs when an aircraft receives an LSO rating after recovering on an aircraft carrier.
+  // Occurs when an aircraft receives an LSO rating after recovering on an
+  // aircraft carrier.
   message LandingQualityMarkEvent {
     // The aircraft that received the rating.
     dcs.common.Initiator initiator = 1;
@@ -317,7 +322,7 @@ message Event {
     RefuelingStopEvent refueling_stop = 17;
     BirthEvent birth = 18;
     HumanFailureEvent human_failure = 19;
-    DetailedFailureEvent detailedFailure = 20;
+    DetailedFailureEvent detailed_failure = 20;
     EngineStartupEvent engine_startup = 21;
     EngineShutdownEvent engine_shutdown = 22;
     PlayerEnterUnitEvent player_enter_unit = 23;
@@ -331,9 +336,9 @@ message Event {
     KillEvent kill = 31;
     ScoreEvent score = 32;
     UnitLostEvent unit_lost = 33;
-    LandingAfterEjectionEvent landingAfterEjection = 34;
+    LandingAfterEjectionEvent landing_after_ejection = 34;
     // @exclude 35 reserved for S_EVENT_PARATROOPER_LENDING
-    DiscardChairAfterEjectionEvent discardChairAfterEjection = 36;
+    DiscardChairAfterEjectionEvent discard_chair_after_ejection = 36;
     WeaponAddEvent weapon_add = 37;
     // @exclude 38 reserved for S_EVENT_TRIGGER_ZONE
     LandingQualityMarkEvent landing_quality_mark = 39;
@@ -342,20 +347,19 @@ message Event {
 }
 
 message StreamUnitsRequest {
-  // The poll rate in seconds at which the gRPC server communicates with the DCS mission to retrieve
-  // the latest unit positions. The lower the `poll_rate` the higher the amount of requests send to
-  // to the DCS mission.
-  // Default: 5
+  // The poll rate in seconds at which the gRPC server communicates with the DCS
+  // mission to retrieve the latest unit positions. The lower the `poll_rate`
+  // the higher the amount of requests send to to the DCS mission. Default: 5
   optional uint32 poll_rate = 1;
 
-  // The maximum backoff in seconds which the gRPC postpones polling units that haven't moved
-  // recently. This is an optimization to dynamically reduce the poll rate for stationary units.
-  // Set it to the same value as `poll_rate` to disable the backoff.
-  // Default: 30
+  // The maximum backoff in seconds which the gRPC postpones polling units that
+  // haven't moved recently. This is an optimization to dynamically reduce the
+  // poll rate for stationary units. Set it to the same value as `poll_rate` to
+  // disable the backoff. Default: 30
   optional uint32 max_backoff = 2;
 }
 
-message UnitUpdate {
+message StreamUnitsResponse {
   message UnitGone {
     uint32 id = 1;
     string name = 2;

@@ -3,9 +3,9 @@ use std::io::{self, BufRead};
 use clap::Parser;
 use serde_json::Value;
 use stubs::custom::custom_service_client::CustomServiceClient;
-use stubs::custom::{EvalRequest, EvalResponse};
 use stubs::hook::hook_service_client::HookServiceClient;
-use tonic::{transport, Code, Request, Response, Status};
+use stubs::{custom, hook};
+use tonic::{transport, Code, Status};
 
 #[derive(Parser)]
 #[clap(name = "repl")]
@@ -34,10 +34,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut lines = stdin.lock().lines();
     loop {
         if let Some(line) = lines.next() {
-            let req = Request::new(EvalRequest { lua: line? });
+            let lua = line?;
             let result = match &mut client {
-                Client::Mission(client) => client.eval(req).await,
-                Client::Hook(client) => client.eval(req).await,
+                Client::Mission(client) => client
+                    .eval(custom::EvalRequest { lua })
+                    .await
+                    .map(|res| res.into_inner().json),
+                Client::Hook(client) => client
+                    .eval(hook::EvalRequest { lua })
+                    .await
+                    .map(|res| res.into_inner().json),
             };
 
             let json: Value = match handle_respone(result) {
@@ -61,8 +67,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 }
 
-fn handle_respone(res: Result<Response<EvalResponse>, Status>) -> Result<Value, Error> {
-    let json = res?.into_inner().json;
+fn handle_respone(json: Result<String, Status>) -> Result<Value, Error> {
+    let json = json?;
     let json: Value = serde_json::from_str(&json)?;
     Ok(json)
 }

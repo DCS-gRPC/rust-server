@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package dcs.custom;
+
+// The Custom service is for APIs that do not map to the "standard library" of
+// DCS APIs provided by Eagle Dynamics.
+//
+// Expect to find APIs here that may be useful for mission frameworks etc.
+service CustomService {
+  // DCT Function
+  rpc RequestMissionAssignment(RequestMissionAssignmentRequest)
+      returns (RequestMissionAssignmentResponse) {}
+
+  // DCT Function
+  rpc JoinMission(JoinMissionRequest) returns (JoinMissionResponse) {}
+
+  // Evaluate some Lua inside of the mission and return the result as a JSON
+  // string. Disabled by default.
+  rpc Eval(EvalRequest) returns (EvalResponse) {}
+
+  /**
+   * Calculates the magnetic declination at the given position using the
+   * International Geomagnetic Reference Field (IGRF) model. The result is not
+   * always exactly the same as what DCS seem to use, but it is very close (DCS
+   * doesn't expose its declination).
+   */
+  rpc GetMagneticDeclination(GetMagneticDeclinationRequest)
+      returns (GetMagneticDeclinationResponse) {}
+}
+
+message RequestMissionAssignmentRequest {
+  string unit_name = 1;
+  string mission_type = 2;
+}
+
+message RequestMissionAssignmentResponse {}
+
+message JoinMissionRequest {
+  string unit_name = 1;
+  int32 mission_code = 2;
+}
+
+message JoinMissionResponse {}
+
+message EvalRequest {
+  string lua = 1;
+}
+
+message EvalResponse {
+  string json = 1;
+}
+
+message GetMagneticDeclinationRequest {
+  /// Latitude in Decimal Degrees format
+  double lat = 1;
+  /// Longitude in Decimal Degrees format
+  double lon = 2;
+  /// Altitude in Meters above Mean Sea Level (MSL)
+  double alt = 3;
+}
+
+message GetMagneticDeclinationResponse {
+  /// Magnetic declination in degrees. A negative value is an westerly
+  /// declination, while a positive value is a easterly declination. `True
+  /// North` + `declination` = `Magnetic North`
+  double declination = 1;
+}

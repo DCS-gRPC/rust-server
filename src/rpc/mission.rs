@@ -14,10 +14,21 @@ use tonic::{Request, Response, Status};
 
 #[tonic::async_trait]
 impl MissionService for MissionRpc {
-    type StreamEventsStream =
-        Pin<Box<dyn Stream<Item = Result<mission::Event, tonic::Status>> + Send + Sync + 'static>>;
+    type StreamEventsStream = Pin<
+        Box<
+            dyn Stream<Item = Result<mission::StreamEventsResponse, tonic::Status>>
+                + Send
+                + Sync
+                + 'static,
+        >,
+    >;
     type StreamUnitsStream = Pin<
-        Box<dyn Stream<Item = Result<mission::UnitUpdate, tonic::Status>> + Send + Sync + 'static>,
+        Box<
+            dyn Stream<Item = Result<mission::StreamUnitsResponse, tonic::Status>>
+                + Send
+                + Sync
+                + 'static,
+        >,
     >;
 
     async fn stream_events(
@@ -47,7 +58,7 @@ impl MissionService for MissionRpc {
         let stream = AbortableStream::new(
             self.shutdown_signal.signal(),
             ReceiverStream::new(rx).map(|result| {
-                result.map(|update| mission::UnitUpdate {
+                result.map(|update| mission::StreamUnitsResponse {
                     update: Some(update),
                 })
             }),

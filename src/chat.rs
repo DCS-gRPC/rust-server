@@ -1,13 +1,13 @@
-use stubs::hook::ChatMessage;
+use stubs::hook::StreamChatMessagesResponse;
 use tokio::sync::broadcast;
 
 #[derive(Clone)]
 pub struct Chat {
-    stream: broadcast::Sender<ChatMessage>,
+    stream: broadcast::Sender<StreamChatMessagesResponse>,
 }
 
 impl Chat {
-    pub fn subscribe(&self) -> broadcast::Receiver<ChatMessage> {
+    pub fn subscribe(&self) -> broadcast::Receiver<StreamChatMessagesResponse> {
         self.stream.subscribe()
     }
 
@@ -18,7 +18,7 @@ impl Chat {
         }
 
         self.stream
-            .send(ChatMessage {
+            .send(StreamChatMessagesResponse {
                 player_id,
                 message,
                 all,

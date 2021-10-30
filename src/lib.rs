@@ -20,7 +20,7 @@ use mlua::{prelude::*, LuaSerdeExt};
 use mlua::{Function, Value};
 use once_cell::sync::Lazy;
 use server::{Config, Server};
-use stubs::mission::Event;
+use stubs::mission::StreamEventsResponse;
 use thiserror::Error;
 
 static INITIALIZED: Lazy<AtomicBool> = Lazy::new(|| AtomicBool::new(false));
@@ -175,7 +175,7 @@ pub fn next(lua: &Lua, (env, callback): (i32, Function)) -> LuaResult<bool> {
 pub fn event(lua: &Lua, event: Value) -> LuaResult<()> {
     let start = Instant::now();
 
-    let event: Event = match lua.from_value(event) {
+    let event: StreamEventsResponse = match lua.from_value(event) {
         Ok(event) => event,
         Err(err) => {
             log::error!("failed to deserialize event: {}", err);

@@ -1,9 +1,12 @@
+use std::sync::Arc;
+
 use crate::chat::Chat;
 use crate::shutdown::ShutdownHandle;
 use crate::stats::Stats;
 use dcs_module_ipc::IPC;
 use futures_util::Stream;
 use stubs::mission::Event;
+use tokio::sync::RwLock;
 use tonic::{Request, Status};
 
 mod atmosphere;
@@ -24,6 +27,12 @@ pub struct MissionRpc {
     stats: Stats,
     eval_enabled: bool,
     shutdown_signal: ShutdownHandle,
+    cache: Arc<RwLock<Cache>>,
+}
+
+#[derive(Default)]
+struct Cache {
+    scenario_start_time: Option<time::OffsetDateTime>,
 }
 
 #[derive(Clone)]
@@ -42,6 +51,7 @@ impl MissionRpc {
             stats,
             eval_enabled: false,
             shutdown_signal,
+            cache: Default::default(),
         }
     }
 

@@ -17,9 +17,11 @@ service CustomService {
   // Disabled by default.
   rpc Eval(EvalRequest) returns (EvalResponse) {}
 
-  /// Calculates the magnetic declination at the given position using the International Geomagnetic
-  /// Reference Field (IGRF) model. The result is not always exactly the same as what DCS seem to
-  /// use, but it is very close (DCS doesn't expose its declination).
+  /**
+   * Calculates the magnetic declination at the given position using the International Geomagnetic
+   * Reference Field (IGRF) model. The result is not always exactly the same as what DCS seem to
+   * use, but it is very close (DCS doesn't expose its declination).
+   */
   rpc GetMagneticDeclination(GetMagneticDeclinationRequest) returns (GetMagneticDeclinationResponse) {}
 }
 

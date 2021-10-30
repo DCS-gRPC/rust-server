@@ -2,10 +2,7 @@ use std::ops::Neg;
 
 use super::MissionRpc;
 use stubs::custom::custom_service_server::CustomService;
-use stubs::mission;
-use stubs::mission::mission_service_server::MissionService;
 use stubs::*;
-use time::format_description::well_known::Rfc3339;
 use tonic::{Request, Response, Status};
 
 #[tonic::async_trait]
@@ -47,15 +44,11 @@ impl CustomService for MissionRpc {
         request: Request<custom::GetMagneticDeclinationRequest>,
     ) -> Result<Response<custom::GetMagneticDeclinationResponse>, Status> {
         let position = request.into_inner();
-        let datetime = self
-            .get_scenario_current_time(Request::new(mission::GetScenarioCurrentTimeRequest {}))
-            .await?
-            .into_inner()
-            .datetime;
-        let date = time::Date::parse(&datetime, &Rfc3339).map_err(|err| {
-            Status::internal(format!("failed to parse scenario's current time: {}", err))
-        })?;
 
+        // As only the date is relevant, and a difference of some days don't really matter, it is
+        // fine to just use the scenario's start time, especially since it is cached and thus
+        // prevents unnecessary roundtrips to the MSE.
+        let date = self.get_scenario_start_time().await?.date();
         let declination = igrf::declination(position.lat, position.lon, position.alt as u32, date)
             .map(|f| f.d)
             .or_else(|err| match err {

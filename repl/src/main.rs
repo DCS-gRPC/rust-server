@@ -1,10 +1,10 @@
 use std::io::{self, BufRead};
 
 use clap::Parser;
+use serde_json::Value;
 use stubs::custom::custom_service_client::CustomServiceClient;
 use stubs::custom::{EvalRequest, EvalResponse};
 use stubs::hook::hook_service_client::HookServiceClient;
-use serde_json::Value;
 use tonic::{transport, Code, Request, Response, Status};
 
 #[derive(Parser)]

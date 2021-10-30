@@ -25,7 +25,8 @@ impl CoalitionService for MissionRpc {
         &self,
         request: Request<coalition::GetMainReferencePointRequest>,
     ) -> Result<Response<coalition::GetMainReferencePointResponse>, Status> {
-        let res: coalition::GetMainReferencePointResponse = self.request("getMainReferencePoint", request).await?;
+        let res: coalition::GetMainReferencePointResponse =
+            self.request("getMainReferencePoint", request).await?;
         Ok(Response::new(res))
     }
 }

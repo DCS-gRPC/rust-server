@@ -20,4 +20,12 @@ impl CoalitionService for MissionRpc {
         let res: coalition::GetGroupsResponse = self.request("getGroups", request).await?;
         Ok(Response::new(res))
     }
+
+    async fn get_main_reference_point(
+        &self,
+        request: Request<coalition::GetMainReferencePointRequest>,
+    ) -> Result<Response<coalition::GetMainReferencePointResponse>, Status> {
+        let res: coalition::GetMainReferencePointResponse = self.request("getMainReferencePoint", request).await?;
+        Ok(Response::new(res))
+    }
 }

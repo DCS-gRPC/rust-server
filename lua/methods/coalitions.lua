@@ -32,3 +32,11 @@ GRPC.methods.getGroups = function(params)
 
   return GRPC.success({groups = result})
 end
+
+GRPC.methods.getMainReferencePoint = function(params)
+  local referencePoint = coalition.getMainRefPoint(params.coalition)
+
+  return GRPC.success({
+    position = GRPC.toLatLonPosition(referencePoint)
+  })
+end

@@ -11,21 +11,40 @@ service CoalitionService {
 
   // https://wiki.hoggitworld.com/view/DCS_func_getGroups
   rpc GetGroups(GetGroupsRequest) returns (GetGroupsResponse) {}
+
+  /*
+	 * Get the Main Reference Point ("Bullseye") for the coalition
+	 *
+	 * This position is set at mission start and does not change for the duration
+	 * of the mission.
+	 *
+	 * See https://wiki.hoggitworld.com/view/DCS_func_getMainRefPoint for more details
+	 */
+  rpc GetMainReferencePoint(GetMainReferencePointRequest) returns (GetMainReferencePointResponse) {}
 }
 
+message GetMainReferencePointRequest {
+	dcs.Coalition coalition = 1;
+}
+
+message GetMainReferencePointResponse {
+	dcs.Position position = 1;
+}
+
+
 message GetPlayersRequest {
-  Coalition coalition = 1;
+  dcs.Coalition coalition = 1;
 }
 
 message GetPlayersResponse {
-  repeated Unit units = 1;
+  repeated dcs.Unit units = 1;
 }
 
 message GetGroupsRequest {
-  Coalition coalition = 1;
-  optional GroupCategory category = 2;
+  dcs.Coalition coalition = 1;
+  optional dcs.GroupCategory category = 2;
 }
 
 message GetGroupsResponse {
-  repeated Group groups = 1;
+  repeated dcs.Group groups = 1;
 }

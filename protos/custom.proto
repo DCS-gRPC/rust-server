@@ -16,6 +16,13 @@ service CustomService {
   // Evaluate some Lua inside of the mission and return the result as a JSON string.
   // Disabled by default.
   rpc Eval(EvalRequest) returns (EvalResponse) {}
+
+  /**
+   * Calculates the magnetic declination at the given position using the International Geomagnetic
+   * Reference Field (IGRF) model. The result is not always exactly the same as what DCS seem to
+   * use, but it is very close (DCS doesn't expose its declination).
+   */
+  rpc GetMagneticDeclination(GetMagneticDeclinationRequest) returns (GetMagneticDeclinationResponse) {}
 }
 
 message MissionAssignmentRequest {
@@ -38,4 +45,20 @@ message EvalRequest {
 
 message EvalResponse {
   string json = 1;
+}
+
+message GetMagneticDeclinationRequest {
+  /// Latitude in Decimal Degrees format
+  double lat = 1;
+  /// Longitude in Decimal Degrees format
+  double lon = 2;
+  /// Altitude in Meters above Mean Sea Level (MSL)
+  double alt = 3;
+}
+
+message GetMagneticDeclinationResponse {
+  /// Magnetic declination in degrees. A negative value is an westerly declination, while a positive
+  /// value is a easterly declination.
+  /// `True North` + `declination` = `Magnetic North`
+  double declination = 1;
 }

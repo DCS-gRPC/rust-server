@@ -4,23 +4,13 @@ use std::time::Duration;
 
 use crate::chat::Chat;
 use crate::rpc::{HookRpc, MissionRpc};
+use crate::services::DcsServices;
 use crate::shutdown::{Shutdown, ShutdownHandle};
 use crate::stats::Stats;
 use dcs_module_ipc::IPC;
 use futures_util::FutureExt;
 use serde::{Deserialize, Serialize};
-use stubs::atmosphere::atmosphere_service_server::AtmosphereServiceServer;
-use stubs::coalition::coalition_service_server::CoalitionServiceServer;
-use stubs::controller::controller_service_server::ControllerServiceServer;
-use stubs::custom::custom_service_server::CustomServiceServer;
-use stubs::group::group_service_server::GroupServiceServer;
-use stubs::hook::hook_service_server::HookServiceServer;
-use stubs::mission::mission_service_server::MissionServiceServer;
 use stubs::mission::Event;
-use stubs::timer::timer_service_server::TimerServiceServer;
-use stubs::trigger::trigger_service_server::TriggerServiceServer;
-use stubs::unit::unit_service_server::UnitServiceServer;
-use stubs::world::world_service_server::WorldServiceServer;
 use tokio::runtime::Runtime;
 use tokio::sync::oneshot::{self, Receiver};
 use tokio::time::sleep;
@@ -169,17 +159,7 @@ async fn try_run(
     }
 
     transport::Server::builder()
-        .add_service(AtmosphereServiceServer::new(mission_rpc.clone()))
-        .add_service(CoalitionServiceServer::new(mission_rpc.clone()))
-        .add_service(ControllerServiceServer::new(mission_rpc.clone()))
-        .add_service(CustomServiceServer::new(mission_rpc.clone()))
-        .add_service(GroupServiceServer::new(mission_rpc.clone()))
-        .add_service(HookServiceServer::new(hook_rpc))
-        .add_service(MissionServiceServer::new(mission_rpc.clone()))
-        .add_service(TimerServiceServer::new(mission_rpc.clone()))
-        .add_service(TriggerServiceServer::new(mission_rpc.clone()))
-        .add_service(UnitServiceServer::new(mission_rpc.clone()))
-        .add_service(WorldServiceServer::new(mission_rpc))
+        .add_service(DcsServices::new(mission_rpc, hook_rpc))
         .serve_with_shutdown(addr, after_shutdown.map(|_| ()))
         .await?;
 

@@ -6,6 +6,7 @@ mod chat;
 mod hot_reload;
 pub mod rpc;
 mod server;
+mod services;
 mod shutdown;
 mod stats;
 mod stream;

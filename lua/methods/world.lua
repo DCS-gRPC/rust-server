@@ -8,7 +8,7 @@ local coalition = coalition
 local GRPC = GRPC
 
 GRPC.methods.getAirbases = function(params)
-  local data = {}
+  local data
 
   if params.coalition == nil then
     data = world.getAirbases()
@@ -28,9 +28,8 @@ GRPC.methods.getAirbases = function(params)
   return GRPC.success({airbases = result})
 end
 
-GRPC.methods.getMarkPanels = function(params)
-  markPanels = world.getMarkPanels()
-
+GRPC.methods.getMarkPanels = function()
+  local markPanels = world.getMarkPanels()
   local result = {}
 
   for i, markPanel in ipairs(markPanels) do

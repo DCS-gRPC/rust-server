@@ -8,9 +8,7 @@ local coalition = coalition
 
 GRPC.methods.getPlayers = function(params)
   local units = coalition.getPlayers(params.coalition)
-
-  result = {}
-
+  local result = {}
   for i, unit in ipairs(units) do
     result[i] = GRPC.exporters.unit(unit)
   end

@@ -1,8 +1,3 @@
-local GRPC = GRPC
-local unit = unit
-local group = group
-local AI = AI
-
 local group_option_category = {}
 group_option_category[1] = "Air"
 group_option_category[2] = "Ground"

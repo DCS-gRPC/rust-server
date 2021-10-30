@@ -2,6 +2,7 @@
 !.gitignore
 !.github
 !.cargo
+!.luacheckrc
 /target
 scratchpad.txt
 grpcurl.exe

@@ -19,7 +19,10 @@ local function exporter(object)
   elseif category == Object.Category.Cargo then
     return GRPC.exporters.cargo(object)
   else
-    GRPC.logWarning("Could not determine object category of object with ID: " .. object:getID() .. ", Category: " .. category)
+    GRPC.logWarning(
+      "Could not determine object category of object with ID: " .. object:getID()
+        .. ", Category: " .. category
+    )
     return nil
   end
 end
@@ -45,7 +48,10 @@ local function typed_exporter(object)
   elseif category == Object.Category.Cargo then
     grpcTable["cargo"] = exporter(object)
   else
-    GRPC.logWarning("Could not determine object category of object with ID: " .. object:getID() .. ", Category: " .. category)
+    GRPC.logWarning(
+      "Could not determine object category of object with ID: " .. object:getID()
+        .. ", Category: " .. category
+    )
     grpcTable["unknown"] = GRPC.exporters.unknown(object)
   end
 
@@ -54,7 +60,7 @@ end
 
 GRPC.onDcsEvent = function(event)
   if event.id == world.event.S_EVENT_INVALID then
-    return null
+    return nil
 
   elseif event.id == world.event.S_EVENT_SHOT then
     return {

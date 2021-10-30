@@ -2,11 +2,11 @@
 -- APIs for functions that are not built-in to the DCS Mission Scripting Environment
 --
 
-GRPC.methods.requestMissionAssignment = function(params)
+GRPC.methods.requestMissionAssignment = function()
     return GRPC.errorUnimplemented("This method is not implemented")
 end
 
-GRPC.methods.joinMission = function(params)
+GRPC.methods.joinMission = function()
     return GRPC.errorUnimplemented("This method is not implemented")
 end
 

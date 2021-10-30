@@ -3,9 +3,6 @@
 -- https://wiki.hoggitworld.com/view/DCS_singleton_trigger
 --
 
-local world = world
-local land = land
-
 -- All MarkPanels must have a unique ID but there is no way of
 -- delegating the creationg of this ID to the game, so we have
 -- to have the following code to make sure we always get a new

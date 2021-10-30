@@ -264,8 +264,10 @@ if isMissionEnv then
   -- listen for events
   local eventHandler = {}
   function eventHandler:onEvent(event)
+    local _ = self -- make linter happy
+
     if not stopped then
-      local ok, result = xpcall(function() return GRPC.onDcsEvent(event) end, debug.traceback)
+      local ok, result, err = xpcall(function() return GRPC.onDcsEvent(event) end, debug.traceback)
       if ok then
         if result ~= nil then
           grpc.event(result)

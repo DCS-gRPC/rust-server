@@ -3,10 +3,6 @@
 -- https://wiki.hoggitworld.com/view/DCS_Class_Unit
 --
 
-local Unit = Unit
-local Object = Object
-local GRPC = GRPC
-
 GRPC.methods.getRadar = function(params)
   local unit = Unit.getByName(params.name)
   if unit == nil then
@@ -37,7 +33,10 @@ GRPC.methods.getRadar = function(params)
   elseif(category == Object.Category.Cargo) then
     grpcTable["cargo"] = GRPC.exporters.cargo(object)
   else
-    GRPC.logWarning("Could not determine object category of object with ID: " .. object:getID() .. ", Category: " .. category)
+    GRPC.logWarning(
+      "Could not determine object category of object with ID: " .. object:getID()
+        .. ", Category: " .. category
+    )
     grpcTable["object"] = GRPC.exporters.object(object)
   end
 
@@ -81,7 +80,7 @@ GRPC.methods.getUnitDescriptor = function(params)
 
   local desc = unit:getDesc()
   local attrs = {}
-  for i, v in pairs(desc.attributes) do
+  for i in pairs(desc.attributes) do
     table.insert(attrs, i)
   end
 

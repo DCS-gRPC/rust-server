@@ -5,20 +5,15 @@
 -- be kept in sync
 --
 
-local GRPC = GRPC
-local coord = coord
-local Unit = Unit
-
 GRPC.exporters.unit = function(unit)
-
   local vector = unit:getVelocity()
 
-  heading = math.deg(math.atan2(vector.z, vector.x)) 
+  local heading = math.deg(math.atan2(vector.z, vector.x))
   if heading < 0 then
     heading = heading + 360
   end
 
-  speed = math.sqrt((vector.x)^2+(vector.z)^2)
+  local speed = math.sqrt((vector.x)^2+(vector.z)^2)
 
   return {
     id = tonumber(unit:getID()),
@@ -32,7 +27,7 @@ GRPC.exporters.unit = function(unit)
     numberInGroup = unit:getNumber(),
     heading = heading,
     speed = speed
-    }
+  }
 end
 
 GRPC.exporters.group = function(group)
@@ -52,7 +47,7 @@ GRPC.exporters.weapon = function(weapon)
   }
 end
 
-GRPC.exporters.static = function(static)
+GRPC.exporters.static = function()
   return {}
 end
 
@@ -73,11 +68,11 @@ GRPC.exporters.airbase = function(airbase)
   return a
 end
 
-GRPC.exporters.scenery = function(scenery)
+GRPC.exporters.scenery = function()
   return {}
 end
 
-GRPC.exporters.cargo = function(cargo)
+GRPC.exporters.cargo = function()
   return {}
 end
 
@@ -100,11 +95,11 @@ GRPC.exporters.markPanel = function(markPanel)
   }
 
   if (markPanel.coalition >= 0 and markPanel.coalition <= 2) then
-  	mp["coalition"] = markPanel.coalition;
+    mp["coalition"] = markPanel.coalition;
   end
 
   if (markPanel.groupID > 0) then
-  	mp["groupId"] = markPanel.groupID;
+    mp["groupId"] = markPanel.groupID;
   end
 
   return mp

@@ -2,7 +2,7 @@ package.cpath = package.cpath..lfs.writedir()..[[Mods\tech\DCS-gRPC\?.dll;]]
 
 local function load()
   log.write("[GRPC-Hook]", log.INFO, "mission loaded, setting up gRPC listener ...")
-  
+
   -- Load config (written by `grpc-mission.lua`)
   _G.GRPC = {}
   setfenv(assert(loadfile(lfs.writedir() .. [[Data\dcs-grpc.lua]])), GRPC)()

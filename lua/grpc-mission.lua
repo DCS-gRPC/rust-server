@@ -1,6 +1,6 @@
 -- Allow manually setting GRPC and path settings.
 if not _G.GRPC then
-  _GGRPC = {}
+  _G.GRPC = {}
 end
 if not GRPC.luaPath then
   GRPC.luaPath = lfs.writedir() .. [[Scripts\DCS-gRPC\]]
@@ -13,7 +13,7 @@ end
 package.cpath = package.cpath .. GRPC.dllPath .. [[?.dll;]]
 
 -- Make paths available to gRPC hook
-file, err = io.open(lfs.writedir() .. [[Data\dcs-grpc.lua]], "w")
+local file, err = io.open(lfs.writedir() .. [[Data\dcs-grpc.lua]], "w")
 if err then
 	env.error("[GRPC] Error writing config")
 else

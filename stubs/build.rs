@@ -4,17 +4,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     tonic_build::configure()
         .type_attribute(".", "#[derive(::serde::Serialize, ::serde::Deserialize)]")
         .type_attribute(".", "#[serde(rename_all = \"camelCase\")]")
-        .type_attribute("dcs.mission.Event.event", "#[serde(tag = \"type\")]")
+        .type_attribute(
+            "dcs.mission.StreamEventsResponse.event",
+            "#[serde(tag = \"type\")]",
+        )
         .field_attribute(
-            "dcs.mission.Event.MarkAddEvent.visibility",
+            "dcs.mission.StreamEventsResponse.MarkAddEvent.visibility",
             "#[serde(flatten)]",
         )
         .field_attribute(
-            "dcs.mission.Event.MarkChangeEvent.visibility",
+            "dcs.mission.StreamEventsResponse.MarkChangeEvent.visibility",
             "#[serde(flatten)]",
         )
         .field_attribute(
-            "dcs.mission.Event.MarkRemoveEvent.visibility",
+            "dcs.mission.StreamEventsResponse.MarkRemoveEvent.visibility",
             "#[serde(flatten)]",
         )
         .build_server(cfg!(feature = "server"))

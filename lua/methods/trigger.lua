@@ -99,6 +99,8 @@ GRPC.methods.explosion = function(params)
   return GRPC.success(nil)
 end
 
+-- gRPC enums should avoid 0 so we increment it there and then subtract by 1
+-- here since this enum is zero indexed.
 GRPC.methods.smoke = function(params)
   local point = coord.LLtoLO(params.position.lat, params.position.lon, 0)
   local groundPoint = {
@@ -107,7 +109,7 @@ GRPC.methods.smoke = function(params)
     z = point.z
   }
 
-  trigger.action.smoke(groundPoint, params.color)
+  trigger.action.smoke(groundPoint, params.color - 1)
 
   return GRPC.success(nil)
 end

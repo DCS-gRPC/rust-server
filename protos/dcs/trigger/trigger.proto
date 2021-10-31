@@ -145,11 +145,12 @@ message SmokeRequest {
   // Putting this inside the request because we cannot
   // have the same enum value in the same package.
   enum SmokeColor {
-    SMOKE_COLOR_GREEN = 0;
-    SMOKE_COLOR_RED = 1;
-    SMOKE_COLOR_WHITE = 2;
-    SMOKE_COLOR_ORANGE = 3;
-    SMOKE_COLOR_BLUE = 4;
+    SMOKE_COLOR_UNSPECIFIED = 0;
+    SMOKE_COLOR_GREEN = 1;
+    SMOKE_COLOR_RED = 2;
+    SMOKE_COLOR_WHITE = 3;
+    SMOKE_COLOR_ORANGE = 4;
+    SMOKE_COLOR_BLUE = 5;
   }
 
   // Altitude parameter will be ignored. Smoke always eminates from ground

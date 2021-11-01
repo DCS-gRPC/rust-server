@@ -142,8 +142,6 @@ message ExplosionRequest {
 message ExplosionResponse {}
 
 message SmokeRequest {
-  // Putting this inside the request because we cannot
-  // have the same enum value in the same package.
   enum SmokeColor {
     SMOKE_COLOR_UNSPECIFIED = 0;
     SMOKE_COLOR_GREEN = 1;
@@ -171,13 +169,12 @@ message IlluminationBombRequest {
 message IlluminationBombResponse {}
 
 message SignalFlareRequest {
-  // Putting this inside the request because we cannot
-  // have the same enum value in the same package.
   enum FlareColor {
-    FLARE_COLOR_GREEN = 0;
-    FLARE_COLOR_RED = 1;
-    FLARE_COLOR_WHITE = 2;
-    FLARE_COLOR_YELLOW = 3;
+    FLARE_COLOR_UNSPECIFIED = 0;
+    FLARE_COLOR_GREEN = 1;
+    FLARE_COLOR_RED = 2;
+    FLARE_COLOR_WHITE = 3;
+    FLARE_COLOR_YELLOW = 4;
   }
 
   // Altitude parameter will be ignored. Signal flares always fire from

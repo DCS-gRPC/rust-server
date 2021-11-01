@@ -102,6 +102,9 @@ end
 -- gRPC enums should avoid 0 so we increment it there and then subtract by 1
 -- here since this enum is zero indexed.
 GRPC.methods.smoke = function(params)
+  if params.color == 0 then
+    return GRPC.errorInvalidArgument("color cannot be unspecified (0)")
+  end 
   local point = coord.LLtoLO(params.position.lat, params.position.lon, 0)
   local groundPoint = {
     x = point.x,
@@ -127,14 +130,19 @@ GRPC.methods.illuminationBomb = function(params)
   return GRPC.success(nil)
 end
 
+-- gRPC enums should avoid 0 so we increment it there and then subtract by 1
+-- here since this enum is zero indexed.
 GRPC.methods.signalFlare = function(params)
+  if params.color == 0 then
+    return GRPC.errorInvalidArgument("color cannot be unspecified (0)")
+  end 
   local point = coord.LLtoLO(params.position.lat, params.position.lon, 0)
   local groundPoint = {
     x = point.x,
     y = land.getHeight({x = point.x, y = point.z}),
     z= point.z}
 
-  trigger.action.signalFlare(groundPoint, params.color, params.azimuth)
+  trigger.action.signalFlare(groundPoint, params.color - 1, params.azimuth)
 
   return GRPC.success(nil)
 end

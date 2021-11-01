@@ -104,7 +104,7 @@ end
 GRPC.methods.smoke = function(params)
   if params.color == 0 then
     return GRPC.errorInvalidArgument("color cannot be unspecified (0)")
-  end 
+  end
   local point = coord.LLtoLO(params.position.lat, params.position.lon, 0)
   local groundPoint = {
     x = point.x,
@@ -135,7 +135,7 @@ end
 GRPC.methods.signalFlare = function(params)
   if params.color == 0 then
     return GRPC.errorInvalidArgument("color cannot be unspecified (0)")
-  end 
+  end
   local point = coord.LLtoLO(params.position.lat, params.position.lon, 0)
   local groundPoint = {
     x = point.x,

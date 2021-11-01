@@ -9,9 +9,10 @@ service ControllerService {
 
 message SetAlarmStateRequest {
   enum AlarmState {
-    ALARM_STATE_AUTO = 0;
-    ALARM_STATE_GREEN = 1;
-    ALARM_STATE_RED = 2;
+    ALARM_STATE_UNSPECIFIED = 0;
+    ALARM_STATE_AUTO = 1;
+    ALARM_STATE_GREEN = 2;
+    ALARM_STATE_RED = 3;
   }
 
   oneof name {

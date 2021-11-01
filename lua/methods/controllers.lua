@@ -4,8 +4,11 @@ group_option_category[2] = "Ground"
 group_option_category[3] = "Naval"
 
 GRPC.methods.setAlarmState = function(params)
-  local obj
+  if params.alarmState == 0 then
+    return GRPC.errorInvalidArgument("alarm_state cannot be unspecified (0)")
+  end
 
+  local obj
   if params.name.groupName then
     obj = Group.getByName(params.name.groupName)
   elseif  params.name.unitName then
@@ -23,7 +26,7 @@ GRPC.methods.setAlarmState = function(params)
 
   local state_id = AI['Option'][group_option_category[category_id]]['id']['ALARM_STATE']
 
-  controller:setOption(state_id, params.alarmState)
+  controller:setOption(state_id, params.alarmState - 1)
 
   return GRPC.success(nil)
 end

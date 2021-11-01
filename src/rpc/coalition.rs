@@ -5,6 +5,14 @@ use tonic::{Request, Response, Status};
 
 #[tonic::async_trait]
 impl CoalitionService for MissionRpc {
+    async fn add_group(
+        &self,
+        request: Request<coalition::v0::AddGroupRequest>,
+    ) -> Result<Response<coalition::v0::AddGroupResponse>, Status> {
+        let res: coalition::v0::AddGroupResponse = self.request("addGroup", request).await?;
+        Ok(Response::new(res))
+    }
+
     async fn get_groups(
         &self,
         request: Request<coalition::v0::GetGroupsRequest>,
@@ -13,12 +21,11 @@ impl CoalitionService for MissionRpc {
         Ok(Response::new(res))
     }
 
-    async fn get_main_reference_point(
+    async fn get_bullseye(
         &self,
-        request: Request<coalition::v0::GetMainReferencePointRequest>,
-    ) -> Result<Response<coalition::v0::GetMainReferencePointResponse>, Status> {
-        let res: coalition::v0::GetMainReferencePointResponse =
-            self.request("getMainReferencePoint", request).await?;
+        request: Request<coalition::v0::GetBullseyeRequest>,
+    ) -> Result<Response<coalition::v0::GetBullseyeResponse>, Status> {
+        let res: coalition::v0::GetBullseyeResponse = self.request("getBullseye", request).await?;
         Ok(Response::new(res))
     }
 

@@ -6,21 +6,6 @@
 local GRPC = GRPC
 local coalition = coalition
 
-GRPC.methods.getPlayers = function(params)
-  local result = {}
-  for _, c in pairs(coalition.side) do
-    if params.coalition == 0 or params.coalition - 1 == c then -- Decrement for non zero-indexed gRPC enum
-      -- https://wiki.hoggitworld.com/view/DCS_func_getPlayers
-      local units = coalition.getPlayers(c)
-
-      for _, unit in ipairs(units) do
-        table.insert(result, GRPC.exporters.unit(unit))
-      end
-    end
-  end
-  return GRPC.success({units = result})
-end
-
 GRPC.methods.getGroups = function(params)
   local result = {}
   for _, c in pairs(coalition.side) do
@@ -49,4 +34,13 @@ GRPC.methods.getMainReferencePoint = function(params)
   return GRPC.success({
     position = GRPC.toLatLonPosition(referencePoint)
   })
+end
+
+GRPC.methods.getPlayers = function(params)
+  local units = coalition.getPlayers(params.coalition)
+  local result = {}
+  for i, unit in ipairs(units) do
+    result[i] = GRPC.exporters.unit(unit)
+  end
+  return GRPC.success({units = result})
 end

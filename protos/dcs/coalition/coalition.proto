@@ -4,9 +4,6 @@ import "dcs/common/common.proto";
 
 // https://wiki.hoggitworld.com/view/DCS_singleton_coalition
 service CoalitionService {
-  // https://wiki.hoggitworld.com/view/DCS_func_getPlayers
-  rpc GetPlayers(GetPlayersRequest) returns (GetPlayersResponse) {}
-
   // https://wiki.hoggitworld.com/view/DCS_func_getGroups
   rpc GetGroups(GetGroupsRequest) returns (GetGroupsResponse) {}
 
@@ -21,6 +18,18 @@ service CoalitionService {
    */
   rpc GetMainReferencePoint(GetMainReferencePointRequest)
       returns (GetMainReferencePointResponse) {}
+
+  // https://wiki.hoggitworld.com/view/DCS_func_getPlayers
+  rpc GetPlayers(GetPlayersRequest) returns (GetPlayersResponse) {}
+}
+
+message GetGroupsRequest {
+	dcs.common.Coalition coalition = 1;
+	optional dcs.common.GroupCategory category = 2;
+}
+
+message GetGroupsResponse {
+	repeated dcs.common.Group groups = 1;
 }
 
 message GetMainReferencePointRequest {
@@ -39,13 +48,4 @@ message GetPlayersRequest {
 
 message GetPlayersResponse {
   repeated dcs.common.Unit units = 1;
-}
-
-message GetGroupsRequest {
-  dcs.common.Coalition coalition = 1;
-  optional dcs.common.GroupCategory category = 2;
-}
-
-message GetGroupsResponse {
-  repeated dcs.common.Group groups = 1;
 }

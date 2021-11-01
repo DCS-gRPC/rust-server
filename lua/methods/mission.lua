@@ -286,7 +286,7 @@ GRPC.onDcsEvent = function(event)
     if event.groupID > -1 and event.groupID then
       payload.groupId = event.groupId
     elseif event.coalition > -1 and event.coalition then
-      payload.coalition = event.coalition
+      payload.coalition = event.coalition + 1  -- Increment for non zero-indexed gRPC enum
     end
     return {
       time = event.time,
@@ -304,7 +304,7 @@ GRPC.onDcsEvent = function(event)
     if event.groupID > -1 and event.groupID then
       payload.groupId = event.groupId
     elseif event.coalition > -1 and event.coalition then
-      payload.coalition = event.coalition
+      payload.coalition = event.coalition + 1 -- Increment for non zero-indexed gRPC enum
     end
     return {
       time = event.time,
@@ -322,7 +322,7 @@ GRPC.onDcsEvent = function(event)
     if event.groupID > -1 and event.groupID then
       payload.groupId = event.groupId
     elseif event.coalition > -1 and event.coalition then
-      payload.coalition = event.coalition
+      payload.coalition = event.coalition + 1 -- Increment for non zero-indexed gRPC enum
     end
     return {
       time = event.time,

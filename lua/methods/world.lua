@@ -10,14 +10,14 @@ local GRPC = GRPC
 GRPC.methods.getAirbases = function(params)
   local data
 
-  if params.coalition == nil then
+  if params.coalition == 0 then
     data = world.getAirbases()
   else
     -- Yes, yes, this is in the world file but uses coalition. I plan
     -- to completely rejigger the organisation of these files when we
     -- have more APIs implemented and amore sane pattern presents
     -- itself. For the moment we are mostly following DCS organisation
-    data = coalition.getAirbases(params.coalition)
+    data = coalition.getAirbases(params.coalition - 1)  -- Decrement for non zero-indexed gRPC enum
   end
 
   local result = {}

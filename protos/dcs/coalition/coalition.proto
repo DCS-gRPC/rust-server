@@ -24,6 +24,8 @@ service CoalitionService {
 }
 
 message GetMainReferencePointRequest {
+  // A specific coalition must be used for this API call. Do not use
+  // `COALITION_ALL`
   dcs.common.Coalition coalition = 1;
 }
 

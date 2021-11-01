@@ -1,8 +1,6 @@
 syntax = "proto3";
-
-import "dcs/common/common.proto";
-
 package dcs.atmosphere;
+import "dcs/common/common.proto";
 
 // https://wiki.hoggitworld.com/view/DCS_singleton_atmosphere
 service AtmosphereService {

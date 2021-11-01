@@ -1,5 +1,4 @@
 syntax = "proto3";
-
 package dcs.controller;
 
 service ControllerService {
@@ -22,4 +21,5 @@ message SetAlarmStateRequest {
   AlarmState alarm_state = 3;
 }
 
-message SetAlarmStateResponse {}
+message SetAlarmStateResponse {
+}

@@ -1,5 +1,4 @@
 syntax = "proto3";
-
 package dcs.common;
 
 /**
@@ -188,32 +187,40 @@ message Unknown {
  * etc.
  */
 message Unit {
-  uint32 id = 1;    // The DCS generated ID
-  string name = 2;  // The name of the unit as assigned in the mission editor
-  string callsign =
-      3;  // The DCS assigned callsign if one exists. e.g. "Enfield 11"
-  Coalition coalition = 4;  // The coalition the unit belongs to
-  string type = 5;  // The DCS type-name of the unit. e.g "MiG-29A", "ZSU_57_2"
-                    // or "Hawk ln"
-  Position position = 6;  // The position of the unit
-  optional string player_name =
-      7;  // The name of the player if one is in control of the unit
-  string group_name = 8;       // The name of the group that the unit belongs to
-  uint32 number_in_group = 9;  // The number of this unit in the group. Does not
-                               // change as units are destroyed
-  double speed = 10;    // The horizontal speed of the unit. If it is doing mach
-                        // one straight up then the speed will be 0
-  double heading = 11;  // The heading of the unit
+  // The DCS generated ID
+  uint32 id = 1;
+  // The name of the unit as assigned in the mission editor
+  string name = 2;
+  // The DCS assigned callsign if one exists. e.g. "Enfield 11"
+  string callsign = 3; 
+  // The coalition the unit belongs to
+  Coalition coalition = 4;
+  // The DCS type-name of the unit. e.g "MiG-29A", "ZSU_57_2" or "Hawk ln"
+  string type = 5;
+  // The position of the unit
+  Position position = 6;
+  // The name of the player if one is in control of the unit
+  optional string player_name = 7;
+  // The name of the group that the unit belongs to
+  string group_name = 8;
+  // The number of this unit in the group. Does not change as units are
+  // destroyed
+  uint32 number_in_group = 9;
+  // The horizontal speed of the unit. If it is doing mach one straight up then
+  // the speed will be 0
+  double speed = 10;
+  // The heading of the unit
+  double heading = 11;
 }
 
 /**
  * An instance of a DCS group
  */
 message Group {
-  uint32 id = 1;    // The DCS generated ID
-  string name = 2;  // The name of the group as assigned in the mission editor
-  Coalition coalition = 3;     // The coalition of the group
-  GroupCategory category = 4;  // The group category.
+  uint32 id = 1; // The DCS generated ID
+  string name = 2; // The name of the group as assigned in the mission editor
+  Coalition coalition = 3; // The coalition of the group
+  GroupCategory category = 4; // The group category.
 }
 
 /**
@@ -234,10 +241,13 @@ enum GroupCategory {
  * ship-killer missiles
  */
 message Weapon {
-  uint32 id = 1;          // The DCS generated ID
-  string type = 2;        // The DCS type-name of the weapon. e.g "Matra_S530D",
-                          // "HAWK_RAKETA" or "weapons.shells.53-UOR-281U"
-  Position position = 3;  // The position of the Weapon
+  // The DCS generated ID
+  uint32 id = 1;
+  // The DCS type-name of the weapon. e.g "Matra_S530D", "HAWK_RAKETA" or
+  // "weapons.shells.53-UOR-281U"
+  string type = 2;
+  // The position of the Weapon
+  Position position = 3;
 }
 
 /**
@@ -246,33 +256,43 @@ message Weapon {
  * These objects are often buildings but can also be vehicles that have no AI or
  * other game behaviour aside from being destroyable
  */
-message Static {}
+message Static {
+}
 
 /**
  * An instance of a DCS scenery object
  */
-message Scenery {}
+message Scenery {
+}
 
 /**
  * An instance of a DCS Airfield
  *
  */
 message Airbase {
-  optional uint32 id = 1;   // The DCS generated ID. Only used when the airfield
-                            // is also a unit (e.g. an Aicraft Carrier)
-  string name = 2;          // TODO: Fill this in
-  string callsign = 3;      // TODO: Fill this in
-  Coalition coalition = 4;  // The coalition the unit belongs to. This can
-                            // change mid-mission if an airfield is captured
-  Position position = 6;    // The position of the center point of the airfield.
-  AirbaseCategory category = 7;  // What category the airfield belongs to.
-  string display_name = 8;       // TODO: Fill this in
+  // The DCS generated ID. Only used when the airfield is also a unit
+  // (e.g. an Aicraft Carrier)
+  optional uint32 id = 1;
+  // TODO: Fill this in
+  string name = 2;
+  // TODO: Fill this in
+  string callsign = 3;
+  // The coalition the unit belongs to. This can change mid-mission if an
+  // airfield is captured
+  Coalition coalition = 4;
+  // The position of the center point of the airfield.
+  Position position = 6;
+  // What category the airfield belongs to.
+  AirbaseCategory category = 7;
+  // TODO: Fill this in
+  string display_name = 8;
 }
 
 /**
  * An instance of a DCS Cargo object
  */
-message Cargo {}
+message Cargo {
+}
 
 /*
  * The initiator of an event
@@ -318,7 +338,8 @@ message Target {
  */
 message MarkPanel {
   uint32 id = 1;
-  double time = 2;  // I have no idea what this time value means
+  // I have no idea what this time value means
+  double time = 2;
   Unit initiator = 3;
   optional Coalition coalition = 4;
   optional uint32 group_id = 5;

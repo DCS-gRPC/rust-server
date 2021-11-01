@@ -1,8 +1,6 @@
 syntax = "proto3";
-
-import "dcs/common/common.proto";
-
 package dcs.coalition;
+import "dcs/common/common.proto";
 
 // https://wiki.hoggitworld.com/view/DCS_singleton_coalition
 service CoalitionService {

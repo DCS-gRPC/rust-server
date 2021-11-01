@@ -1,8 +1,6 @@
 syntax = "proto3";
-
-import "dcs/common/common.proto";
-
 package dcs.group;
+import "dcs/common/common.proto";
 
 // https://wiki.hoggitworld.com/view/DCS_Class_Group
 service GroupService {

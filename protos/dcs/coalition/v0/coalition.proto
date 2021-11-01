@@ -4,11 +4,14 @@ import "dcs/common/v0/common.proto";
 
 // https://wiki.hoggitworld.com/view/DCS_singleton_coalition
 service CoalitionService {
+  // https://wiki.hoggitworld.com/view/DCS_func_addGroup
+  rpc AddGroup(AddGroupRequest) returns (AddGroupResponse) {}
+
   // https://wiki.hoggitworld.com/view/DCS_func_getGroups
   rpc GetGroups(GetGroupsRequest) returns (GetGroupsResponse) {}
 
   /*
-   * Get the Main Reference Point ("Bullseye") for the coalition
+   * Get the Bullseye for the coalition
    *
    * This position is set at mission start and does not change for the duration
    * of the mission.
@@ -16,11 +19,96 @@ service CoalitionService {
    * See https://wiki.hoggitworld.com/view/DCS_func_getMainRefPoint for more
    * details
    */
-  rpc GetMainReferencePoint(GetMainReferencePointRequest)
-      returns (GetMainReferencePointResponse) {}
+  rpc GetBullseye(GetBullseyeRequest)
+      returns (GetBullseyeResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_getPlayers
   rpc GetPlayers(GetPlayersRequest) returns (GetPlayersResponse) {}
+}
+
+message AddGroupRequest {
+    // The coalition is determined by the provided Country
+	// and the coalition setup of the mission
+	dcs.common.v0.Country country = 2;
+	dcs.common.v0.GroupCategory group_category = 3;
+	oneof template {
+	  GroundGroupTemplate ground_template = 4;
+	  ShipGroupTemplate ship_template = 5;
+	  HelicopterGroupTemplate helicopter_template = 6;
+	  PlaneGroupTemplate plane_template = 7;
+	}
+
+	message GroundGroupTemplate {
+		optional uint32 group_id = 1;
+		bool hidden = 2;
+		bool late_activation = 3;
+		string name = 4;
+		dcs.common.v0.Position position = 5;
+		repeated Point route = 6;
+		uint32 start_time = 7;
+		string task = 8;
+		bool task_selected = 9;
+		repeated Task tasks = 10;
+		bool uncontrollable = 11;
+		repeated GroundUnitTemplate units = 12;
+		bool visible = 13;
+	}
+	message GroundUnitTemplate {
+		string name = 1;
+		string type = 2;
+		dcs.common.v0.Position position = 3;
+		optional uint32 unit_id = 4;
+		optional uint32 heading = 5;
+		Skill skill = 6;
+	}
+
+	message ShipGroupTemplate {}
+	message ShipUnitTemplate {}
+
+	message HelicopterGroupTemplate {}
+	message HelicopterUnitTemplate {}
+
+	message PlaneGroupTemplate {}
+	message PlaneUnitTemplate {}
+
+	message Point {
+		enum AltitudeType {
+			ALTITUDE_TYPE_UNSPECIFIED = 0;
+			ALTITUDE_TYPE_BAROMETRIC = 1;
+			ALTITUDE_TYPE_RADIO = 2;
+		}
+
+		enum Type {
+			TYPE_UNSPECIFIED = 0;
+			TAKEOFF = 1;
+			TAKEOFF_PARKING = 2;
+			TURNING_POINT = 3;
+			TAKEOFF_PARKING_HOT = 4;
+			LAND = 5;
+		}
+
+		dcs.common.v0.Position position = 1;
+		AltitudeType altitude_type = 2;
+		Type type = 3;
+		string action = 4;
+		string form = 5;
+		double speed = 6;
+	}
+
+	enum Skill {
+		SKILL_RANDOM = 0;
+		SKILL_AVERAGE = 1;
+		SKILL_GOOD = 2;
+		SKILL_HIGH = 3;
+		SKILL_EXCELLENT = 4;
+		SKILL_PLAYER = 5;
+	}
+
+	message Task{}
+}
+
+message AddGroupResponse {
+	dcs.common.v0.Group group = 1;
 }
 
 message GetGroupsRequest {
@@ -32,13 +120,13 @@ message GetGroupsResponse {
 	repeated dcs.common.v0.Group groups = 1;
 }
 
-message GetMainReferencePointRequest {
+message GetBullseyeRequest {
   // A specific coalition must be used for this API call. Do not use
   // `COALITION_ALL`
   dcs.common.v0.Coalition coalition = 1;
 }
 
-message GetMainReferencePointResponse {
+message GetBullseyeResponse {
   dcs.common.v0.Position position = 1;
 }
 

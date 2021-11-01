@@ -123,7 +123,7 @@ message StreamEventsResponse {
   // Occurs when an aircraft is finished taking fuel.
   message RefuelingStopEvent {
     // he unit that was receiving fuel.
-    dcs.common.Initiator intiator = 1;
+    dcs.common.Initiator initiator = 1;
   }
 
   // Occurs when any object is spawned into the mission.

@@ -40,9 +40,11 @@ enum AirbaseCategory {
  * one and may not be as supported as the belligerant ones.
  */
 enum Coalition {
-  COALITION_NEUTRAL = 0;
-  COALITION_RED = 1;
-  COALITION_BLUE = 2;
+  // protolint:disable:next ENUM_FIELD_NAMES_ZERO_VALUE_END_WITH
+  COALITION_ALL = 0;
+  COALITION_NEUTRAL = 1;
+  COALITION_RED = 2;
+  COALITION_BLUE = 3;
 }
 
 /**

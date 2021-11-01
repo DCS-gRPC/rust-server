@@ -19,7 +19,7 @@ GRPC.exporters.unit = function(unit)
     id = tonumber(unit:getID()),
     name = unit:getName(),
     callsign = unit:getCallsign(),
-    coalition = unit:getCoalition(),
+    coalition = unit:getCoalition() + 1, -- Increment for non zero-indexed gRPC enum
     type = unit:getTypeName(),
     position = GRPC.toLatLonPosition(unit:getPoint()),
     playerName = Unit.getPlayerName(unit),
@@ -34,7 +34,7 @@ GRPC.exporters.group = function(group)
   return {
     id = tonumber(group:getID()),
     name = group:getName(),
-    coalition = group:getCoalition(),
+    coalition = group:getCoalition() + 1, -- Increment for non zero-indexed gRPC enum
     category = group:getCategory(),
   }
 end
@@ -55,7 +55,7 @@ GRPC.exporters.airbase = function(airbase)
   local a = {
     name = airbase:getName(),
     callsign = airbase:getCallsign(),
-    coalition = airbase:getCoalition(),
+    coalition = airbase:getCoalition() + 1, -- Increment for non zero-indexed gRPC enum
     category = airbase:getDesc()['category'],
     displayName = airbase:getDesc()['displayName'],
     position = GRPC.toLatLonPosition(airbase:getPoint())
@@ -95,7 +95,7 @@ GRPC.exporters.markPanel = function(markPanel)
   }
 
   if (markPanel.coalition >= 0 and markPanel.coalition <= 2) then
-    mp["coalition"] = markPanel.coalition;
+    mp["coalition"] = markPanel.coalition + 1; -- Increment for non zero-indexed gRPC enum
   end
 
   if (markPanel.groupID > 0) then

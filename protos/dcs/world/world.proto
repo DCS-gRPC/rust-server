@@ -12,7 +12,7 @@ service WorldService {
 }
 
 message GetAirbasesRequest {
-  optional dcs.common.Coalition coalition = 1;
+  dcs.common.Coalition coalition = 1;
 }
 
 message GetAirbasesResponse {

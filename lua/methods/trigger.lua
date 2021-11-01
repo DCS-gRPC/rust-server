@@ -30,7 +30,12 @@ GRPC.methods.outText = function(params)
 end
 
 GRPC.methods.outTextForCoalition = function(params)
-  trigger.action.outTextForCoalition(params.coalition, params.text, params.displayTime, params.clearView)
+  if params.coalition == 0 then
+    return GRPC.errorInvalidArgument("a specific coalition must be chosen")
+  end
+
+  -- Decrement for non zero-indexed gRPC enum
+  trigger.action.outTextForCoalition(params.coalition - 1, params.text, params.displayTime, params.clearView)
 
   return GRPC.success(nil)
 end

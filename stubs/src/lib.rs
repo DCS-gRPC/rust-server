@@ -67,6 +67,9 @@ mod tests {
         );
     }
 
+    // Note that this string sumulates the response from Lua. This is important as it is
+    // _after_ increment changes to enums to cater to gRPC enum indexing where 0 is not allowed
+    // for responses.
     #[test]
     fn test_enum_deserialization() {
         let event: StreamEventsResponse = serde_json::from_str(
@@ -81,7 +84,7 @@ mod tests {
                                     "id": 1,
                                     "name": "Aerial-1-1",
                                     "callsign": "Enfield11",
-                                    "coalition": 2,
+                                    "coalition": 3,
                                     "type": "FA-18C_hornet",
                                     "position": {
                                         "lat": 3,
@@ -97,7 +100,7 @@ mod tests {
                                 }
                             }
 		                },
-		                "coalition": 2,
+		                "coalition": 3,
 		                "id": 42,
 		                "position": {
 			                "lat": 1,
@@ -152,6 +155,9 @@ mod tests {
         );
     }
 
+    // Note that this string sumulates the response from Lua. This is important as it is
+    // _after_ increment changes to enums to cater to gRPC enum indexing where 0 is not allowed
+    // for responses.
     #[test]
     fn test_optional_field_deserialization() {
         let resp: GetAirbasesResponse = serde_json::from_str(
@@ -160,7 +166,7 @@ mod tests {
                 {
                     "airbases": [
                         {
-                            "coalition": 0,
+                            "coalition": 1,
                             "name": "Anapa-Vityazevo",
                             "callsign": "Anapa-Vityazevo",
                             "position": {

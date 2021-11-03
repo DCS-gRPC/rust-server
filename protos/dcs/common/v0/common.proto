@@ -168,8 +168,6 @@ message Position {
   double lon = 2;
   // Altitude in Meters above Mean Sea Level (MSL)
   double alt = 3;
-  // Time in seconds since the scenario started.
-  double time = 4;
 }
 
 /**

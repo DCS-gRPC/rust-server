@@ -154,7 +154,6 @@ mod tests {
                                 lat: 3.0,
                                 lon: 2.0,
                                 alt: 1.0,
-                                time: 0.0
                             }),
                             player_name: Some("New callsign".to_string()),
                             group_name: "Group 1".to_string(),
@@ -171,7 +170,6 @@ mod tests {
                         lat: 1.0,
                         lon: 2.0,
                         alt: 3.0,
-                        time: 4.0
                     }),
                     text: "Test".to_string(),
                 })),
@@ -219,7 +217,6 @@ mod tests {
                         lon: 37.35978347755592,
                         lat: 45.01317473377168,
                         alt: 43.00004196166992,
-                        time: 0.0
                     }),
                     category: AirbaseCategory::Airdrome.into(),
                     display_name: "Anapa-Vityazevo".to_string(),

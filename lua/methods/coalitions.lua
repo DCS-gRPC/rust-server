@@ -32,7 +32,7 @@ GRPC.methods.getMainReferencePoint = function(params)
   local referencePoint = coalition.getMainRefPoint(params.coalition - 1) -- Decrement for non zero-indexed gRPC enum
 
   return GRPC.success({
-    position = GRPC.toLatLonPosition(referencePoint)
+    position = GRPC.exporters.position(referencePoint)
   })
 end
 

@@ -164,19 +164,6 @@ GRPC.errorPermissionDenied = function(msg)
 end
 
 --
--- Helper methods
---
-
-GRPC.toLatLonPosition = function(pos)
-  local lat, lon, alt = coord.LOtoLL(pos)
-  return {
-    lat = lat,
-    lon = lon,
-    alt = alt,
-  }
-end
-
---
 -- RPC methods
 --
 

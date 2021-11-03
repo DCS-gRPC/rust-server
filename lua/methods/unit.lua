@@ -55,7 +55,36 @@ GRPC.methods.getUnitPosition = function(params)
 
   return GRPC.success({
     -- https://wiki.hoggitworld.com/view/DCS_func_getPoint
-    position = GRPC.toLatLonPosition(unit:getPoint()),
+    position = GRPC.exporters.position(unit:getPoint()),
+  })
+end
+
+GRPC.methods.getUnitTransform = function(params)
+  -- https://wiki.hoggitworld.com/view/DCS_func_getByName
+  local unit = Unit.getByName(params.name)
+  if unit == nil then
+    return GRPC.errorNotFound("unit does not exist")
+  end
+
+    -- https://wiki.hoggitworld.com/view/DCS_func_getPosition
+  local position = unit:getPosition()
+  local coords = GRPC.exporters.position(position.p)
+  local coordsNorth = coord.LLtoLO(coords.lat + 1, coords.lon)
+
+  -- Response does not exactly match what the gRPC server will return since the gRPC response
+  -- will be calculated based on the information returned here.
+  return GRPC.success({
+    position = coords,
+    u = position.p.z,
+    v = position.p.x,
+    positionNorth = GRPC.exporters.vector(coordsNorth),
+    orientation = {
+      forward = GRPC.exporters.vector(position.x),
+      right = GRPC.exporters.vector(position.z),
+      up = GRPC.exporters.vector(position.y),
+    },
+    velocity = GRPC.exporters.vector(unit:getVelocity()),
+    time = timer.getTime(),
   })
 end
 

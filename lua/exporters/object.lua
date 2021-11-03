@@ -15,6 +15,15 @@ GRPC.exporters.vector = function(v)
   }
 end
 
+GRPC.exporters.position = function(pos)
+  local lat, lon, alt = coord.LOtoLL(pos)
+  return {
+    lat = lat,
+    lon = lon,
+    alt = alt,
+  }
+end
+
 GRPC.exporters.unit = function(unit)
   local vector = unit:getVelocity()
 
@@ -31,7 +40,7 @@ GRPC.exporters.unit = function(unit)
     callsign = unit:getCallsign(),
     coalition = unit:getCoalition() + 1, -- Increment for non zero-indexed gRPC enum
     type = unit:getTypeName(),
-    position = GRPC.toLatLonPosition(unit:getPoint()),
+    position = GRPC.exporters.position(unit:getPoint()),
     playerName = Unit.getPlayerName(unit),
     groupName = Unit.getGroup(unit):getName(),
     numberInGroup = unit:getNumber(),
@@ -53,7 +62,7 @@ GRPC.exporters.weapon = function(weapon)
   return {
     id = tonumber(weapon:getName()),
     type = weapon:getTypeName(),
-    position = GRPC.toLatLonPosition(weapon:getPoint()),
+    position = GRPC.exporters.position(weapon:getPoint()),
   }
 end
 
@@ -68,7 +77,7 @@ GRPC.exporters.airbase = function(airbase)
     coalition = airbase:getCoalition() + 1, -- Increment for non zero-indexed gRPC enum
     category = airbase:getDesc()['category'] + 1, -- Increment for non zero-indexed gRPC enum
     displayName = airbase:getDesc()['displayName'],
-    position = GRPC.toLatLonPosition(airbase:getPoint())
+    position = GRPC.exporters.position(airbase:getPoint())
   }
 
   if airbase:getUnit() then
@@ -101,7 +110,7 @@ GRPC.exporters.markPanel = function(markPanel)
     time = markPanel.time,
     initiator = GRPC.exporters.unit(markPanel.initiator),
     text = markPanel.text,
-    position = GRPC.toLatLonPosition(markPanel.pos)
+    position = GRPC.exporters.position(markPanel.pos)
   }
 
   if (markPanel.coalition >= 0 and markPanel.coalition <= 2) then

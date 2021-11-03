@@ -175,7 +175,7 @@ mod tests {
                                 "alt": 43.00004196166992,
                                 "time": 0.0
                             },
-                            "category": 0,
+                            "category": 1,
                             "displayName": "Anapa-Vityazevo"
                         }
                     ]

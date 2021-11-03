@@ -5,6 +5,16 @@
 -- be kept in sync
 --
 
+-- Convert DCS's unusual right-hand coordinate system where +x points north to a more common
+-- left-hand coordinate system where +z points north (and +x points east).
+GRPC.exporters.vector = function(v)
+  return {
+    x = v.z,
+    y = v.y,
+    z = v.x
+  }
+end
+
 GRPC.exporters.unit = function(unit)
   local vector = unit:getVelocity()
 

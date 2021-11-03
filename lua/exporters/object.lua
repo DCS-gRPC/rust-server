@@ -56,7 +56,7 @@ GRPC.exporters.airbase = function(airbase)
     name = airbase:getName(),
     callsign = airbase:getCallsign(),
     coalition = airbase:getCoalition() + 1, -- Increment for non zero-indexed gRPC enum
-    category = airbase:getDesc()['category'],
+    category = airbase:getDesc()['category'] + 1, -- Increment for non zero-indexed gRPC enum
     displayName = airbase:getDesc()['displayName'],
     position = GRPC.toLatLonPosition(airbase:getPoint())
   }

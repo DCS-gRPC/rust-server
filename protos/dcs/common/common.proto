@@ -353,7 +353,8 @@ message MarkPanel {
 /**
  * A vector in a left-handed coordinate system with +z being north, -z south, +x east, -x west,
  * +y up and -y down (as opposed to DCS' unusual right-handed coordinate system where x is north/
- * south and z is west/east).
+ * south and z is west/east; the underlying conversion is basically swapping `x` and `z` as in `x=z`
+ * and `z=x`).
  */
  message Vector {
   double x = 1;

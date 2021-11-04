@@ -10,11 +10,10 @@ impl AtmosphereService for MissionRpc {
         request: Request<atmosphere::GetWindRequest>,
     ) -> Result<Response<atmosphere::GetWindResponse>, Status> {
         let velocity: common::Vector = self.request("getWind", request).await?;
-        let (heading, strength) = wind2d(&velocity);
+        let (heading, strength) = get_wind_heading_and_strength(&velocity);
         Ok(Response::new(atmosphere::GetWindResponse {
             heading,
             strength,
-            velocity: Some(velocity),
         }))
     }
 
@@ -23,11 +22,10 @@ impl AtmosphereService for MissionRpc {
         request: Request<atmosphere::GetWindWithTurbulenceRequest>,
     ) -> Result<Response<atmosphere::GetWindWithTurbulenceResponse>, Status> {
         let velocity: common::Vector = self.request("getWindWithTurbulence", request).await?;
-        let (heading, strength) = wind2d(&velocity);
+        let (heading, strength) = get_wind_heading_and_strength(&velocity);
         Ok(Response::new(atmosphere::GetWindWithTurbulenceResponse {
             heading,
             strength,
-            velocity: Some(velocity),
         }))
     }
 
@@ -41,7 +39,7 @@ impl AtmosphereService for MissionRpc {
     }
 }
 
-fn wind2d(v: &common::Vector) -> (f32, f32) {
+fn get_wind_heading_and_strength(v: &common::Vector) -> (f32, f32) {
     let mut heading = v.x.atan2(v.z).to_degrees();
     if heading < 0.0 {
         heading += 360.0;

@@ -28,8 +28,6 @@ message GetWindResponse {
   float heading = 1;
   // The strength of the wind in meters per second
   float strength = 2;
-  // The direction (it is blowing to) and speed (magnitude of the vector) of the wind.
-  dcs.common.Vector velocity = 3;
 }
 
 message GetWindWithTurbulenceRequest {
@@ -44,8 +42,6 @@ message GetWindWithTurbulenceResponse {
   float heading = 1;
   // The strength of the wind in meters per second.
   float strength = 2;
-  // The direction (it is blowing to) and speed (magnitude of the vector) of the wind.
-  dcs.common.Vector velocity = 3;
 }
 
 message GetTemperatureAndPressureRequest {

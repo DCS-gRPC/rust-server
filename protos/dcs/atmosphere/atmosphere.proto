@@ -40,7 +40,7 @@ message GetWindWithTurbulenceRequest {
 message GetWindWithTurbulenceResponse {
   // The heading the wind is coming from.
   float heading = 1;
-  // The strength of the wind in meters per second
+  // The strength of the wind in meters per second.
   float strength = 2;
 }
 

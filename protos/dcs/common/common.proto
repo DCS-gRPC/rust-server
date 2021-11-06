@@ -195,7 +195,7 @@ message Unit {
   // The name of the unit as assigned in the mission editor
   string name = 2;
   // The DCS assigned callsign if one exists. e.g. "Enfield 11"
-  string callsign = 3; 
+  string callsign = 3;
   // The coalition the unit belongs to
   Coalition coalition = 4;
   // The DCS type-name of the unit. e.g "MiG-29A", "ZSU_57_2" or "Hawk ln"
@@ -348,4 +348,16 @@ message MarkPanel {
   optional uint32 group_id = 5;
   optional string text = 6;
   Position position = 7;
+}
+
+/**
+ * A vector in a left-handed coordinate system with +z being north, -z south, +x east, -x west,
+ * +y up and -y down (as opposed to DCS' unusual right-handed coordinate system where x is north/
+ * south and z is west/east; the underlying conversion is basically swapping `x` and `z` as in `x=z`
+ * and `z=x`).
+ */
+ message Vector {
+  double x = 1;
+  double y = 2;
+  double z = 3;
 }

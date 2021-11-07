@@ -1,26 +1,26 @@
 syntax = "proto3";
-package dcs.atmosphere;
-import "dcs/common/common.proto";
+package dcs.atmosphere.v0;
+import "dcs/common/v0/common.proto";
 
 // https://wiki.hoggitworld.com/view/DCS_singleton_atmosphere
 service AtmosphereService {
   // https://wiki.hoggitworld.com/view/DCS_func_getWind
-  rpc GetWind(atmosphere.GetWindRequest) returns (atmosphere.GetWindResponse) {}
+  rpc GetWind(GetWindRequest) returns (GetWindResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_getWindWithTurbulence
-  rpc GetWindWithTurbulence(atmosphere.GetWindWithTurbulenceRequest)
-      returns (atmosphere.GetWindWithTurbulenceResponse) {}
+  rpc GetWindWithTurbulence(GetWindWithTurbulenceRequest)
+      returns (GetWindWithTurbulenceResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_getWindWithTurbulence
-  rpc GetTemperatureAndPressure(atmosphere.GetTemperatureAndPressureRequest)
-      returns (atmosphere.GetTemperatureAndPressureResponse) {}
+  rpc GetTemperatureAndPressure(GetTemperatureAndPressureRequest)
+      returns (GetTemperatureAndPressureResponse) {}
 }
 
 message GetWindRequest {
   // The position on the map we want the wind information for.
   // Requires lat/lon/alt fields to be populated, there are
   // no default values
-  dcs.common.Position position = 1;
+  dcs.common.v0.Position position = 1;
 }
 
 message GetWindResponse {
@@ -34,7 +34,7 @@ message GetWindWithTurbulenceRequest {
   // The position on the map we want the wind information for.
   // Requires lat/lon/alt fields to be populated, there are
   // no default values
-  dcs.common.Position position = 1;
+  dcs.common.v0.Position position = 1;
 }
 
 message GetWindWithTurbulenceResponse {
@@ -48,7 +48,7 @@ message GetTemperatureAndPressureRequest {
   // The position on the map we want the wind information for.
   // Requires lat/lon/alt fields to be populated, there are
   // no default values
-  dcs.common.Position position = 1;
+  dcs.common.v0.Position position = 1;
 }
 
 message GetTemperatureAndPressureResponse {

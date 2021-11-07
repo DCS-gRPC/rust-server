@@ -1,49 +1,49 @@
 pub mod atmosphere {
-    tonic::include_proto!("dcs.atmosphere");
+    tonic::include_proto!("dcs.atmosphere.v0");
 }
 
 pub mod coalition {
-    tonic::include_proto!("dcs.coalition");
+    tonic::include_proto!("dcs.coalition.v0");
 }
 
 pub mod common {
-    tonic::include_proto!("dcs.common");
+    tonic::include_proto!("dcs.common.v0");
 }
 
 pub mod controller {
-    tonic::include_proto!("dcs.controller");
+    tonic::include_proto!("dcs.controller.v0");
 }
 
 pub mod custom {
-    tonic::include_proto!("dcs.custom");
+    tonic::include_proto!("dcs.custom.v0");
 }
 
 pub mod group {
-    tonic::include_proto!("dcs.group");
+    tonic::include_proto!("dcs.group.v0");
 }
 
 pub mod hook {
-    tonic::include_proto!("dcs.hook");
+    tonic::include_proto!("dcs.hook.v0");
 }
 
 pub mod mission {
-    tonic::include_proto!("dcs.mission");
+    tonic::include_proto!("dcs.mission.v0");
 }
 
 pub mod timer {
-    tonic::include_proto!("dcs.timer");
+    tonic::include_proto!("dcs.timer.v0");
 }
 
 pub mod trigger {
-    tonic::include_proto!("dcs.trigger");
+    tonic::include_proto!("dcs.trigger.v0");
 }
 
 pub mod unit {
-    tonic::include_proto!("dcs.unit");
+    tonic::include_proto!("dcs.unit.v0");
 }
 
 pub mod world {
-    tonic::include_proto!("dcs.world");
+    tonic::include_proto!("dcs.world.v0");
 }
 
 #[cfg(test)]

@@ -1,5 +1,5 @@
 syntax = "proto3";
-package dcs.custom;
+package dcs.custom.v0;
 
 // The Custom service is for APIs that do not map to the "standard library" of
 // DCS APIs provided by Eagle Dynamics.

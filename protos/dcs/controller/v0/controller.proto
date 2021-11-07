@@ -1,5 +1,5 @@
 syntax = "proto3";
-package dcs.controller;
+package dcs.controller.v0;
 
 service ControllerService {
   // https://wiki.hoggitworld.com/view/DCS_option_alarmState

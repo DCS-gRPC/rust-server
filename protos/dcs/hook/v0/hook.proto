@@ -1,5 +1,5 @@
 syntax = "proto3";
-package dcs.hook;
+package dcs.hook.v0;
 
 // APis that are part of the hook environment
 service HookService {

@@ -146,13 +146,13 @@ For development, update the preivously added line in `DCS World\Scripts\MissionS
 Test the running server via [grpcurl](https://github.com/fullstorydev/grpcurl): (Remove the `.exe` when running on Linux)
 
 ```bash
-grpcurl.exe -plaintext -import-path ./protos -proto ./protos/dcs/dcs.proto -d '{\"text\": \"Works!\", \"display_time\": 10, \"clear_view\": false}' 127.0.0.1:50051 dcs.trigger.TriggerService/OutText
+grpcurl.exe -plaintext -import-path ./protos -proto ./protos/dcs/dcs.proto -d '{\"text\": \"Works!\", \"display_time\": 10, \"clear_view\": false}' 127.0.0.1:50051 dcs.trigger.v0.TriggerService/OutText
 ```
 
 or watch the mission event stream via:
 
 ```bash
-grpcurl.exe -plaintext -import-path ./protos -proto ./protos/dcs/dcs.proto -d '{}' 127.0.0.1:50051 dcs.mission.MissionService/StreamEvents
+grpcurl.exe -plaintext -import-path ./protos -proto ./protos/dcs/dcs.proto -d '{}' 127.0.0.1:50051 dcs.mission.v0.MissionService/StreamEvents
 ```
 
 #### REPL

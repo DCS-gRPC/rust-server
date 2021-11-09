@@ -1,6 +1,6 @@
 syntax = "proto3";
-package dcs.coalition;
-import "dcs/common/common.proto";
+package dcs.coalition.v0;
+import "dcs/common/v0/common.proto";
 
 // https://wiki.hoggitworld.com/view/DCS_singleton_coalition
 service CoalitionService {
@@ -24,28 +24,28 @@ service CoalitionService {
 }
 
 message GetGroupsRequest {
-	dcs.common.Coalition coalition = 1;
-	optional dcs.common.GroupCategory category = 2;
+	dcs.common.v0.Coalition coalition = 1;
+	optional dcs.common.v0.GroupCategory category = 2;
 }
 
 message GetGroupsResponse {
-	repeated dcs.common.Group groups = 1;
+	repeated dcs.common.v0.Group groups = 1;
 }
 
 message GetMainReferencePointRequest {
   // A specific coalition must be used for this API call. Do not use
   // `COALITION_ALL`
-  dcs.common.Coalition coalition = 1;
+  dcs.common.v0.Coalition coalition = 1;
 }
 
 message GetMainReferencePointResponse {
-  dcs.common.Position position = 1;
+  dcs.common.v0.Position position = 1;
 }
 
 message GetPlayersRequest {
-  dcs.common.Coalition coalition = 1;
+  dcs.common.v0.Coalition coalition = 1;
 }
 
 message GetPlayersResponse {
-  repeated dcs.common.Unit units = 1;
+  repeated dcs.common.v0.Unit units = 1;
 }

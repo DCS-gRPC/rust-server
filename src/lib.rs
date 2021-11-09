@@ -20,7 +20,7 @@ use mlua::{prelude::*, LuaSerdeExt};
 use mlua::{Function, Value};
 use once_cell::sync::Lazy;
 use server::{Config, Server};
-use stubs::mission::StreamEventsResponse;
+use stubs::mission::v0::StreamEventsResponse;
 use thiserror::Error;
 
 static INITIALIZED: Lazy<AtomicBool> = Lazy::new(|| AtomicBool::new(false));

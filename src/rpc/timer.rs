@@ -1,5 +1,5 @@
 use super::MissionRpc;
-use stubs::timer::timer_service_server::TimerService;
+use stubs::timer::v0::timer_service_server::TimerService;
 use stubs::*;
 use tonic::{Request, Response, Status};
 
@@ -7,25 +7,26 @@ use tonic::{Request, Response, Status};
 impl TimerService for MissionRpc {
     async fn get_time(
         &self,
-        request: Request<timer::GetTimeRequest>,
-    ) -> Result<Response<timer::GetTimeResponse>, Status> {
-        let res: timer::GetTimeResponse = self.request("getTime", request).await?;
+        request: Request<timer::v0::GetTimeRequest>,
+    ) -> Result<Response<timer::v0::GetTimeResponse>, Status> {
+        let res: timer::v0::GetTimeResponse = self.request("getTime", request).await?;
         Ok(Response::new(res))
     }
 
     async fn get_absolute_time(
         &self,
-        request: Request<timer::GetAbsoluteTimeRequest>,
-    ) -> Result<Response<timer::GetAbsoluteTimeResponse>, Status> {
-        let res: timer::GetAbsoluteTimeResponse = self.request("getAbsoluteTime", request).await?;
+        request: Request<timer::v0::GetAbsoluteTimeRequest>,
+    ) -> Result<Response<timer::v0::GetAbsoluteTimeResponse>, Status> {
+        let res: timer::v0::GetAbsoluteTimeResponse =
+            self.request("getAbsoluteTime", request).await?;
         Ok(Response::new(res))
     }
 
     async fn get_time_zero(
         &self,
-        request: Request<timer::GetTimeZeroRequest>,
-    ) -> Result<Response<timer::GetTimeZeroResponse>, Status> {
-        let res: timer::GetTimeZeroResponse = self.request("getTimeZero", request).await?;
+        request: Request<timer::v0::GetTimeZeroRequest>,
+    ) -> Result<Response<timer::v0::GetTimeZeroResponse>, Status> {
+        let res: timer::v0::GetTimeZeroResponse = self.request("getTimeZero", request).await?;
         Ok(Response::new(res))
     }
 }

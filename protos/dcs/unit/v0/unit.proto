@@ -1,6 +1,6 @@
 syntax = "proto3";
-package dcs.unit;
-import "dcs/common/common.proto";
+package dcs.unit.v0;
+import "dcs/common/v0/common.proto";
 
 // https://wiki.hoggitworld.com/view/DCS_Class_Unit
 service UnitService {
@@ -28,7 +28,7 @@ message GetRadarRequest {
 
 message GetRadarResponse {
   bool active = 1;
-  dcs.common.Target target = 2;
+  dcs.common.v0.Target target = 2;
 }
 
 message GetPositionRequest {
@@ -36,7 +36,7 @@ message GetPositionRequest {
 }
 
 message GetPositionResponse {
-  dcs.common.Position position = 1;
+  dcs.common.v0.Position position = 1;
 }
 
 message GetPlayerNameRequest {
@@ -69,5 +69,5 @@ message GetRequest {
 }
 
 message GetResponse {
-  dcs.common.Unit unit = 1;
+  dcs.common.v0.Unit unit = 1;
 }

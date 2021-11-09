@@ -2,8 +2,8 @@ use std::io::{self, BufRead};
 
 use clap::Parser;
 use serde_json::Value;
-use stubs::custom::custom_service_client::CustomServiceClient;
-use stubs::hook::hook_service_client::HookServiceClient;
+use stubs::custom::v0::custom_service_client::CustomServiceClient;
+use stubs::hook::v0::hook_service_client::HookServiceClient;
 use stubs::{custom, hook};
 use tonic::{transport, Code, Status};
 
@@ -37,11 +37,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let lua = line?;
             let result = match &mut client {
                 Client::Mission(client) => client
-                    .eval(custom::EvalRequest { lua })
+                    .eval(custom::v0::EvalRequest { lua })
                     .await
                     .map(|res| res.into_inner().json),
                 Client::Hook(client) => client
-                    .eval(hook::EvalRequest { lua })
+                    .eval(hook::v0::EvalRequest { lua })
                     .await
                     .map(|res| res.into_inner().json),
             };

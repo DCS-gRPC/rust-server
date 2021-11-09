@@ -1,5 +1,5 @@
 use super::MissionRpc;
-use stubs::atmosphere::atmosphere_service_server::AtmosphereService;
+use stubs::atmosphere::v0::atmosphere_service_server::AtmosphereService;
 use stubs::*;
 use tonic::{Request, Response, Status};
 
@@ -7,11 +7,11 @@ use tonic::{Request, Response, Status};
 impl AtmosphereService for MissionRpc {
     async fn get_wind(
         &self,
-        request: Request<atmosphere::GetWindRequest>,
-    ) -> Result<Response<atmosphere::GetWindResponse>, Status> {
-        let velocity: common::Vector = self.request("getWind", request).await?;
+        request: Request<atmosphere::v0::GetWindRequest>,
+    ) -> Result<Response<atmosphere::v0::GetWindResponse>, Status> {
+        let velocity: common::v0::Vector = self.request("getWind", request).await?;
         let (heading, strength) = get_wind_heading_and_strength(&velocity);
-        Ok(Response::new(atmosphere::GetWindResponse {
+        Ok(Response::new(atmosphere::v0::GetWindResponse {
             heading,
             strength,
         }))
@@ -19,27 +19,26 @@ impl AtmosphereService for MissionRpc {
 
     async fn get_wind_with_turbulence(
         &self,
-        request: Request<atmosphere::GetWindWithTurbulenceRequest>,
-    ) -> Result<Response<atmosphere::GetWindWithTurbulenceResponse>, Status> {
-        let velocity: common::Vector = self.request("getWindWithTurbulence", request).await?;
+        request: Request<atmosphere::v0::GetWindWithTurbulenceRequest>,
+    ) -> Result<Response<atmosphere::v0::GetWindWithTurbulenceResponse>, Status> {
+        let velocity: common::v0::Vector = self.request("getWindWithTurbulence", request).await?;
         let (heading, strength) = get_wind_heading_and_strength(&velocity);
-        Ok(Response::new(atmosphere::GetWindWithTurbulenceResponse {
-            heading,
-            strength,
-        }))
+        Ok(Response::new(
+            atmosphere::v0::GetWindWithTurbulenceResponse { heading, strength },
+        ))
     }
 
     async fn get_temperature_and_pressure(
         &self,
-        request: Request<atmosphere::GetTemperatureAndPressureRequest>,
-    ) -> Result<Response<atmosphere::GetTemperatureAndPressureResponse>, Status> {
-        let res: atmosphere::GetTemperatureAndPressureResponse =
+        request: Request<atmosphere::v0::GetTemperatureAndPressureRequest>,
+    ) -> Result<Response<atmosphere::v0::GetTemperatureAndPressureResponse>, Status> {
+        let res: atmosphere::v0::GetTemperatureAndPressureResponse =
             self.request("getTemperatureAndPressure", request).await?;
         Ok(Response::new(res))
     }
 }
 
-fn get_wind_heading_and_strength(v: &common::Vector) -> (f32, f32) {
+fn get_wind_heading_and_strength(v: &common::v0::Vector) -> (f32, f32) {
     let mut heading = v.x.atan2(v.z).to_degrees();
     if heading < 0.0 {
         heading += 360.0;

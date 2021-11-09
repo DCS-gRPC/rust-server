@@ -10,7 +10,7 @@ use crate::stats::Stats;
 use dcs_module_ipc::IPC;
 use futures_util::FutureExt;
 use serde::{Deserialize, Serialize};
-use stubs::mission::StreamEventsResponse;
+use stubs::mission::v0::StreamEventsResponse;
 use tokio::runtime::Runtime;
 use tokio::sync::oneshot::{self, Receiver};
 use tokio::time::sleep;

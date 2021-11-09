@@ -4,18 +4,19 @@ use std::time::{Duration, Instant};
 use crate::rpc::MissionRpc;
 use futures_util::stream::StreamExt;
 use futures_util::TryFutureExt;
-use stubs::coalition::coalition_service_server::CoalitionService;
-use stubs::coalition::GetGroupsRequest;
-use stubs::common::{self, Coalition, Position, Unit};
-use stubs::group::group_service_server::GroupService;
-use stubs::group::GetUnitsRequest;
-use stubs::mission::stream_events_response::Event;
-use stubs::mission::stream_events_response::{BirthEvent, DeadEvent};
-use stubs::mission::stream_units_response::UnitGone;
-use stubs::mission::stream_units_response::Update;
-use stubs::mission::StreamUnitsRequest;
+use stubs::coalition::v0::coalition_service_server::CoalitionService;
+use stubs::coalition::v0::GetGroupsRequest;
+use stubs::common;
+use stubs::common::v0::{Coalition, Position, Unit};
+use stubs::group::v0::group_service_server::GroupService;
+use stubs::group::v0::GetUnitsRequest;
+use stubs::mission::v0::stream_events_response::Event;
+use stubs::mission::v0::stream_events_response::{BirthEvent, DeadEvent};
+use stubs::mission::v0::stream_units_response::UnitGone;
+use stubs::mission::v0::stream_units_response::Update;
+use stubs::mission::v0::StreamUnitsRequest;
 use stubs::unit;
-use stubs::unit::unit_service_server::UnitService;
+use stubs::unit::v0::unit_service_server::UnitService;
 use tokio::sync::mpsc::error::SendError;
 use tokio::sync::mpsc::Sender;
 use tokio::time::MissedTickBehavior;
@@ -98,7 +99,7 @@ pub async fn stream_units(
         // wait for either the next event or the next tick, whatever happens first
         tokio::select! {
             // listen to events that update the current state
-            Some(stubs::mission::StreamEventsResponse { event: Some(event), .. }) = events.next() => {
+            Some(stubs::mission::v0::StreamEventsResponse { event: Some(event), .. }) = events.next() => {
                 handle_event(&mut state, event).await?;
             }
 
@@ -130,8 +131,8 @@ async fn handle_event(state: &mut State, event: Event) -> Result<(), Error> {
     match event {
         Event::Birth(BirthEvent {
             initiator:
-                Some(common::Initiator {
-                    initiator: Some(common::initiator::Initiator::Unit(unit)),
+                Some(common::v0::Initiator {
+                    initiator: Some(common::v0::initiator::Initiator::Unit(unit)),
                 }),
             ..
         }) => {
@@ -144,8 +145,8 @@ async fn handle_event(state: &mut State, event: Event) -> Result<(), Error> {
         // attempted updates.
         Event::Dead(DeadEvent {
             initiator:
-                Some(common::Initiator {
-                    initiator: Some(common::initiator::Initiator::Unit(Unit { name, .. })),
+                Some(common::v0::Initiator {
+                    initiator: Some(common::v0::initiator::Initiator::Unit(Unit { name, .. })),
                 }),
         }) => {
             if let Some(unit_state) = state.units.remove(&name) {
@@ -255,7 +256,7 @@ impl UnitState {
         // update position
         let position = UnitService::get_position(
             &ctx.rpc,
-            Request::new(unit::GetPositionRequest {
+            Request::new(unit::v0::GetPositionRequest {
                 name: self.unit.name.clone(),
             }),
         )
@@ -272,7 +273,7 @@ impl UnitState {
         // update player name
         let player_name = UnitService::get_player_name(
             &ctx.rpc,
-            Request::new(unit::GetPlayerNameRequest {
+            Request::new(unit::v0::GetPlayerNameRequest {
                 name: self.unit.name.clone(),
             }),
         )

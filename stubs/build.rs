@@ -5,19 +5,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .type_attribute(".", "#[derive(::serde::Serialize, ::serde::Deserialize)]")
         .type_attribute(".", "#[serde(rename_all = \"camelCase\")]")
         .type_attribute(
-            "dcs.mission.StreamEventsResponse.event",
+            "dcs.mission.v0.StreamEventsResponse.event",
             "#[serde(tag = \"type\")]",
         )
         .field_attribute(
-            "dcs.mission.StreamEventsResponse.MarkAddEvent.visibility",
+            "dcs.mission.v0.StreamEventsResponse.MarkAddEvent.visibility",
             "#[serde(flatten)]",
         )
         .field_attribute(
-            "dcs.mission.StreamEventsResponse.MarkChangeEvent.visibility",
+            "dcs.mission.v0.StreamEventsResponse.MarkChangeEvent.visibility",
             "#[serde(flatten)]",
         )
         .field_attribute(
-            "dcs.mission.StreamEventsResponse.MarkRemoveEvent.visibility",
+            "dcs.mission.v0.StreamEventsResponse.MarkRemoveEvent.visibility",
             "#[serde(flatten)]",
         )
         .build_server(cfg!(feature = "server"))

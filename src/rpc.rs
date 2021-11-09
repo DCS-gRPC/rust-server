@@ -5,7 +5,7 @@ use crate::shutdown::ShutdownHandle;
 use crate::stats::Stats;
 use dcs_module_ipc::IPC;
 use futures_util::Stream;
-use stubs::mission::StreamEventsResponse;
+use stubs::mission::v0::StreamEventsResponse;
 use tokio::sync::RwLock;
 use tonic::{Request, Status};
 

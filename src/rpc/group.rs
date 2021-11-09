@@ -1,5 +1,5 @@
 use super::MissionRpc;
-use stubs::group::group_service_server::GroupService;
+use stubs::group::v0::group_service_server::GroupService;
 use stubs::*;
 use tonic::{Request, Response, Status};
 
@@ -7,9 +7,9 @@ use tonic::{Request, Response, Status};
 impl GroupService for MissionRpc {
     async fn get_units(
         &self,
-        request: Request<group::GetUnitsRequest>,
-    ) -> Result<Response<group::GetUnitsResponse>, Status> {
-        let res: group::GetUnitsResponse = self.request("getUnits", request).await?;
+        request: Request<group::v0::GetUnitsRequest>,
+    ) -> Result<Response<group::v0::GetUnitsResponse>, Status> {
+        let res: group::v0::GetUnitsResponse = self.request("getUnits", request).await?;
         Ok(Response::new(res))
     }
 }

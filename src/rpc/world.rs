@@ -1,5 +1,5 @@
 use super::MissionRpc;
-use stubs::world::world_service_server::WorldService;
+use stubs::world::v0::world_service_server::WorldService;
 use stubs::*;
 use tonic::{Request, Response, Status};
 
@@ -7,17 +7,17 @@ use tonic::{Request, Response, Status};
 impl WorldService for MissionRpc {
     async fn get_airbases(
         &self,
-        request: Request<world::GetAirbasesRequest>,
-    ) -> Result<Response<world::GetAirbasesResponse>, Status> {
-        let res: world::GetAirbasesResponse = self.request("getAirbases", request).await?;
+        request: Request<world::v0::GetAirbasesRequest>,
+    ) -> Result<Response<world::v0::GetAirbasesResponse>, Status> {
+        let res: world::v0::GetAirbasesResponse = self.request("getAirbases", request).await?;
         Ok(Response::new(res))
     }
 
     async fn get_mark_panels(
         &self,
-        request: Request<world::GetMarkPanelsRequest>,
-    ) -> Result<Response<world::GetMarkPanelsResponse>, Status> {
-        let res: world::GetMarkPanelsResponse = self.request("getMarkPanels", request).await?;
+        request: Request<world::v0::GetMarkPanelsRequest>,
+    ) -> Result<Response<world::v0::GetMarkPanelsResponse>, Status> {
+        let res: world::v0::GetMarkPanelsResponse = self.request("getMarkPanels", request).await?;
         Ok(Response::new(res))
     }
 }

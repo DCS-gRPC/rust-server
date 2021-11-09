@@ -3,7 +3,7 @@ use std::pin::Pin;
 use super::HookRpc;
 use crate::shutdown::AbortableStream;
 use futures_util::{Stream, TryStreamExt};
-use stubs::hook::hook_service_server::HookService;
+use stubs::hook::v0::hook_service_server::HookService;
 use stubs::*;
 use tokio_stream::wrappers::BroadcastStream;
 use tonic::{Request, Response, Status};
@@ -12,7 +12,7 @@ use tonic::{Request, Response, Status};
 impl HookService for HookRpc {
     type StreamChatMessagesStream = Pin<
         Box<
-            dyn Stream<Item = Result<hook::StreamChatMessagesResponse, tonic::Status>>
+            dyn Stream<Item = Result<hook::v0::StreamChatMessagesResponse, tonic::Status>>
                 + Send
                 + Sync
                 + 'static,
@@ -21,15 +21,15 @@ impl HookService for HookRpc {
 
     async fn get_mission_name(
         &self,
-        request: Request<hook::GetMissionNameRequest>,
-    ) -> Result<Response<hook::GetMissionNameResponse>, Status> {
-        let res: hook::GetMissionNameResponse = self.request("getMissionName", request).await?;
+        request: Request<hook::v0::GetMissionNameRequest>,
+    ) -> Result<Response<hook::v0::GetMissionNameResponse>, Status> {
+        let res: hook::v0::GetMissionNameResponse = self.request("getMissionName", request).await?;
         Ok(Response::new(res))
     }
 
     async fn stream_chat_messages(
         &self,
-        _request: Request<hook::StreamChatMessagesRequest>,
+        _request: Request<hook::v0::StreamChatMessagesRequest>,
     ) -> Result<Response<Self::StreamChatMessagesStream>, Status> {
         let rx = BroadcastStream::new(self.chat.subscribe());
         let stream = AbortableStream::new(
@@ -41,8 +41,8 @@ impl HookService for HookRpc {
 
     async fn eval(
         &self,
-        request: Request<hook::EvalRequest>,
-    ) -> Result<Response<hook::EvalResponse>, Status> {
+        request: Request<hook::v0::EvalRequest>,
+    ) -> Result<Response<hook::v0::EvalResponse>, Status> {
         if !self.eval_enabled {
             return Err(Status::permission_denied("eval operation is disabled"));
         }
@@ -51,6 +51,6 @@ impl HookService for HookRpc {
         let json = serde_json::to_string(&json).map_err(|err| {
             Status::internal(format!("failed to deserialize eval result: {}", err))
         })?;
-        Ok(Response::new(hook::EvalResponse { json }))
+        Ok(Response::new(hook::v0::EvalResponse { json }))
     }
 }

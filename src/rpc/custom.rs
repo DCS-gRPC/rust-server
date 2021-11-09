@@ -1,7 +1,7 @@
 use std::ops::Neg;
 
 use super::MissionRpc;
-use stubs::custom::custom_service_server::CustomService;
+use stubs::custom::v0::custom_service_server::CustomService;
 use stubs::*;
 use tonic::{Request, Response, Status};
 
@@ -9,25 +9,27 @@ use tonic::{Request, Response, Status};
 impl CustomService for MissionRpc {
     async fn request_mission_assignment(
         &self,
-        request: Request<custom::RequestMissionAssignmentRequest>,
-    ) -> Result<Response<custom::RequestMissionAssignmentResponse>, Status> {
+        request: Request<custom::v0::RequestMissionAssignmentRequest>,
+    ) -> Result<Response<custom::v0::RequestMissionAssignmentResponse>, Status> {
         self.notification("requestMissionAssignment", request)
             .await?;
-        Ok(Response::new(custom::RequestMissionAssignmentResponse {}))
+        Ok(Response::new(
+            custom::v0::RequestMissionAssignmentResponse {},
+        ))
     }
 
     async fn join_mission(
         &self,
-        request: Request<custom::JoinMissionRequest>,
-    ) -> Result<Response<custom::JoinMissionResponse>, Status> {
+        request: Request<custom::v0::JoinMissionRequest>,
+    ) -> Result<Response<custom::v0::JoinMissionResponse>, Status> {
         self.notification("joinMission", request).await?;
-        Ok(Response::new(custom::JoinMissionResponse {}))
+        Ok(Response::new(custom::v0::JoinMissionResponse {}))
     }
 
     async fn eval(
         &self,
-        request: Request<custom::EvalRequest>,
-    ) -> Result<Response<custom::EvalResponse>, Status> {
+        request: Request<custom::v0::EvalRequest>,
+    ) -> Result<Response<custom::v0::EvalResponse>, Status> {
         if !self.eval_enabled {
             return Err(Status::permission_denied("eval operation is disabled"));
         }
@@ -36,13 +38,13 @@ impl CustomService for MissionRpc {
         let json = serde_json::to_string(&json).map_err(|err| {
             Status::internal(format!("failed to deserialize eval result: {}", err))
         })?;
-        Ok(Response::new(custom::EvalResponse { json }))
+        Ok(Response::new(custom::v0::EvalResponse { json }))
     }
 
     async fn get_magnetic_declination(
         &self,
-        request: Request<custom::GetMagneticDeclinationRequest>,
-    ) -> Result<Response<custom::GetMagneticDeclinationResponse>, Status> {
+        request: Request<custom::v0::GetMagneticDeclinationRequest>,
+    ) -> Result<Response<custom::v0::GetMagneticDeclinationResponse>, Status> {
         let position = request.into_inner();
 
         // As only the date is relevant, and a difference of some days don't really matter, it is
@@ -62,7 +64,7 @@ impl CustomService for MissionRpc {
         // reduce precision to two decimal places
         let declination = ((declination * 100.0).round() / 100.0).neg();
 
-        Ok(Response::new(custom::GetMagneticDeclinationResponse {
+        Ok(Response::new(custom::v0::GetMagneticDeclinationResponse {
             declination,
         }))
     }

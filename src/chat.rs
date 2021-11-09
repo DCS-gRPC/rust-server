@@ -1,4 +1,4 @@
-use stubs::hook::StreamChatMessagesResponse;
+use stubs::hook::v0::StreamChatMessagesResponse;
 use tokio::sync::broadcast;
 
 #[derive(Clone)]

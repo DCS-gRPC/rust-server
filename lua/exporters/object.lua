@@ -45,7 +45,8 @@ GRPC.exporters.unit = function(unit)
     groupName = Unit.getGroup(unit):getName(),
     numberInGroup = unit:getNumber(),
     heading = heading,
-    speed = speed
+    speed = speed,
+    category = unit:getGroup():getCategory(),
   }
 end
 

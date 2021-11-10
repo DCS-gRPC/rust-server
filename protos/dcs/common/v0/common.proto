@@ -212,6 +212,8 @@ message Unit {
   double speed = 10;
   // The heading of the unit
   double heading = 11;
+  // The group category.
+  GroupCategory category = 12;
 }
 
 /**

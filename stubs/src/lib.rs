@@ -120,7 +120,8 @@ mod tests {
                                     "groupName": "Group 1",
                                     "numberInGroup": 1,
                                     "heading": 0.5,
-                                    "speed": 0.8
+                                    "speed": 0.8,
+                                    "category": 0
                                 }
                             }
 		                },
@@ -159,7 +160,8 @@ mod tests {
                             group_name: "Group 1".to_string(),
                             number_in_group: 1,
                             heading: 0.5,
-                            speed: 0.8
+                            speed: 0.8,
+                            category: 0,
                         }))
                     }),
                     visibility: Some(event::mark_add_event::Visibility::Coalition(

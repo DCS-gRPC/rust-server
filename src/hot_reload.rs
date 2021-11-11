@@ -12,16 +12,8 @@ use once_cell::sync::Lazy;
 
 static LIBRARY: Lazy<RwLock<Option<Library>>> = Lazy::new(|| RwLock::new(None));
 
-pub fn start(lua: &Lua, config: Value) -> LuaResult<()> {
+pub fn start(lua: &Lua, config: Config) -> LuaResult<()> {
     let lib_path = {
-        let config: Config = match lua.from_value(config.clone()) {
-            Ok(event) => event,
-            Err(err) => {
-                log::error!("failed to deserialize config: {}", err);
-                return Ok(());
-            }
-        };
-
         let mut lib_path = PathBuf::from(&config.dll_path);
         lib_path.push("dcs_grpc.dll");
         lib_path
@@ -34,7 +26,7 @@ pub fn start(lua: &Lua, config: Value) -> LuaResult<()> {
     let mut lib = LIBRARY.write().unwrap();
     let lib = lib.get_or_insert(new_lib);
 
-    let f: Symbol<fn(lua: &Lua, config: Value) -> LuaResult<()>> = unsafe {
+    let f: Symbol<fn(lua: &Lua, config: Config) -> LuaResult<()>> = unsafe {
         lib.get(b"start")
             .map_err(|err| mlua::Error::ExternalError(Arc::new(err)))?
     };

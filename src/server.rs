@@ -26,26 +26,30 @@ pub struct Server {
 #[derive(Clone)]
 struct ServerState {
     addr: SocketAddr,
-    config: Config,
+    eval_enabled: bool,
     ipc_mission: IPC<StreamEventsResponse>,
     ipc_hook: IPC<()>,
     chat: Chat,
     stats: Stats,
 }
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Config {
     pub write_dir: String,
     pub dll_path: String,
+    #[serde(default = "default_host")]
     pub host: String,
+    #[serde(default = "default_port")]
     pub port: u16,
+    #[serde(default)]
     pub debug: bool,
+    #[serde(default)]
     pub eval_enabled: bool,
 }
 
 impl Server {
-    pub fn new(config: Config) -> Result<Self, StartError> {
+    pub fn new(config: &Config) -> Result<Self, StartError> {
         let ipc_mission = IPC::new();
         let ipc_hook = IPC::new();
         let runtime = Runtime::new()?;
@@ -55,7 +59,7 @@ impl Server {
             after_shutdown: None,
             state: ServerState {
                 addr: format!("{}:{}", config.host, config.port).parse()?,
-                config,
+                eval_enabled: config.eval_enabled,
                 ipc_mission,
                 ipc_hook,
                 chat: Chat::default(),
@@ -143,7 +147,7 @@ async fn try_run(
 
     let ServerState {
         addr,
-        config,
+        eval_enabled,
         ipc_mission,
         ipc_hook,
         chat,
@@ -153,7 +157,7 @@ async fn try_run(
     let mut mission_rpc = MissionRpc::new(ipc_mission, stats.clone(), shutdown_signal.clone());
     let mut hook_rpc = HookRpc::new(ipc_hook, chat, stats, shutdown_signal.clone());
 
-    if config.eval_enabled {
+    if eval_enabled {
         mission_rpc.enable_eval();
         hook_rpc.enable_eval();
     }
@@ -174,4 +178,20 @@ pub enum StartError {
     Io(#[from] std::io::Error),
     #[error(transparent)]
     AddrParse(#[from] std::net::AddrParseError),
+}
+
+fn default_host() -> String {
+    String::from("127.0.0.1")
+}
+
+fn default_port() -> u16 {
+    50051
+}
+
+impl<'lua> mlua::FromLua<'lua> for Config {
+    fn from_lua(lua_value: mlua::Value<'lua>, lua: &'lua mlua::Lua) -> mlua::Result<Self> {
+        use mlua::LuaSerdeExt;
+        let config: Config = lua.from_value(lua_value)?;
+        Ok(config)
+    }
 }

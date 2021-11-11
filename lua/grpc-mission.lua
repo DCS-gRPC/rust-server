@@ -1,4 +1,4 @@
--- Allow manually setting GRPC and path settings.
+-- Set default settings.
 if not _G.GRPC then
   _G.GRPC = {}
 end
@@ -8,16 +8,23 @@ end
 if not GRPC.dllPath then
   GRPC.dllPath = lfs.writedir() .. [[Mods\tech\DCS-gRPC\]]
 end
+if GRPC.throughputLimit == nil or GRPC.throughputLimit == 0 or not type(GRPC.throughputLimit) == "number" then
+  GRPC.throughputLimit = 600
+end
 
 -- Let DCS know where to find the DLLs
 package.cpath = package.cpath .. GRPC.dllPath .. [[?.dll;]]
 
--- Make paths available to gRPC hook
+-- Make settings available to gRPC hook
 local file, err = io.open(lfs.writedir() .. [[Data\dcs-grpc.lua]], "w")
 if err then
 	env.error("[GRPC] Error writing config")
 else
-	file:write("luaPath = [[" .. GRPC.luaPath .. "]]\ndllPath = [[" .. GRPC.dllPath .. "]]\n")
+	file:write(
+    "luaPath = [[" .. GRPC.luaPath .. "]]\n"
+    .. "dllPath = [[" .. GRPC.dllPath .. "]]\n"
+    .. "throughputLimit = [[" .. GRPC.throughputLimit .. "]]\n"
+  )
 	file:flush()
 	file:close()
 end

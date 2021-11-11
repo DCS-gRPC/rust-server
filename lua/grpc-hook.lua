@@ -13,6 +13,9 @@ local function load()
   if not GRPC.dllPath then
     GRPC.dllPath = lfs.writedir() .. [[Mods\tech\DCS-gRPC\]]
   end
+  if GRPC.throughputLimit == nil or GRPC.throughputLimit == 0 or not type(GRPC.throughputLimit) == "number" then
+    GRPC.throughputLimit = 600
+  end
 
   -- Let DCS know where to find the DLLs
   if not string.find(package.cpath, "DCS-gRPC") then

@@ -68,27 +68,19 @@ pub fn init(config: &Config) {
 }
 
 #[no_mangle]
-pub fn start(lua: &Lua, config: Value) -> LuaResult<()> {
+pub fn start(_: &Lua, config: Config) -> LuaResult<()> {
     {
         if SERVER.read().unwrap().is_some() {
             return Ok(());
         }
     }
 
-    let config: Config = match lua.from_value(config) {
-        Ok(event) => event,
-        Err(err) => {
-            log::error!("failed to deserialize config: {}", err);
-            return Ok(());
-        }
-    };
-
     init(&config);
 
     log::info!("Starting ...");
 
     let mut server =
-        Server::new(config).map_err(|err| mlua::Error::ExternalError(Arc::new(err)))?;
+        Server::new(&config).map_err(|err| mlua::Error::ExternalError(Arc::new(err)))?;
     server.run_in_background();
     *(SERVER.write().unwrap()) = Some(server);
 

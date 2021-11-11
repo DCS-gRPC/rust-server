@@ -63,20 +63,40 @@ GRPC.load()
 The behaviour of the gRPC server can be fine-tuned using various settings that can be set on the `GRPC` global (before the `grpc.lua` is executed). The available settings and their defaults are:
 
 ```lua
--- whether the `Eval` method is enabled or not
+-- Whether the `Eval` method is enabled or not.
 GRPC.evalEnabled = false
 
--- the host the gRPC listens on (use "0.0.0.0" to listen on all IP addresses of the host)
+-- The host the gRPC listens on (use "0.0.0.0" to listen on all IP addresses of the host).
 GRPC.host = '127.0.0.1'
 
--- the port to listen on
+-- The port to listen on.
 GRPC.port = 50051
 
--- whether debug logging is enabled or not
+-- Whether debug logging is enabled or not.
 GRPC.debug = false
 
--- limit of calls per second that are executed inside of the mission scripting environment
+-- Limit of calls per second that are executed inside of the mission scripting environment.
 GRPC.throughputLimit = 600
+
+-- Whether the gRPC server should be automatically started for each mission on the DCS instance
+-- When `true`, it is not necessary to run `GRPC.load()` inside of a mission anymore.
+GRPC.autostart = false
+```
+
+Settings can either be set above `GRPC.load()` inside of a mission, or globally inside of the `MissionScripting.lua`, e.g.:
+
+```diff
+  --Initialization script for the Mission lua Environment (SSE)
+
+  dofile('Scripts/ScriptingSystem.lua')
++
++ GRPC = {
++   throughputLimit = 200,
++   autostart = true
++ }
++ dofile(lfs.writedir()..[[Scripts\DCS-gRPC\grpc-mission.lua]])
+
+  ...
 ```
 
 ### Confirmation
@@ -127,7 +147,7 @@ copy target/debug/dcs_grpc.dll target/debug/dcs_grpc_hot_reload.dll
 
 ### Prepare Mission
 
-For development, update the preivously added line in `DCS World\Scripts\MissionScripting.lua` to point to your checked out repository of the gRPC server:
+For development, update the previously added line in `DCS World\Scripts\MissionScripting.lua` to point to your checked out repository of the gRPC server:
 
 ```diff
 - dofile(lfs.writedir()..[[Scripts\DCS-gRPC\grpc-mission.lua]])
@@ -140,7 +160,7 @@ For development, update the preivously added line in `DCS World\Scripts\MissionS
 
 ### Debugging
 
-- Seach for `[GRPC]` in the DCS logs
+- Search for `[GRPC]` in the DCS logs
 - Consult the gRPC Server logs at `Saved Games\DCS.openbeta\Logs\gRPC.log`
 
 Test the running server via [grpcurl](https://github.com/fullstorydev/grpcurl): (Remove the `.exe` when running on Linux)

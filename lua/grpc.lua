@@ -5,34 +5,6 @@ if isMissionEnv then
 end
 
 --
--- set default settings
---
-
-if _G.GRPC == nil then
-  GRPC = {}
-end
-
-if GRPC.luaPath == nil then
-  GRPC.luaPath = lfs.writedir()..[[Scripts\DCS-gRPC\]]
-end
-if GRPC.dllPath == nil then
-  GRPC.dllPath = lfs.writedir()..[[Mods\Tech\DCS-gRPC\]]
-end
-if GRPC.evalEnabled == nil then
-  GRPC.evalEnabled = false
-end
-if GRPC.host == nil then
-  GRPC.host = "127.0.0.1"
-end
-if GRPC.port == nil then
-  GRPC.port = 50051
-end
-GRPC.debug = GRPC.debug == true
-if GRPC.throughputLimit == nil or GRPC.throughputLimit == 0 or not type(GRPC.throughputLimit) == "number" then
-  GRPC.throughputLimit = 600
-end
-
---
 -- load and start RPC
 --
 
@@ -288,7 +260,7 @@ else -- hook env
       frame = 0
       local ok, err = pcall(next)
       if not ok then
-        log.write("[GRPC]", log.ERROR, "Error retrieving next command: "..tostring(err))
+        GRPC.logError("Error retrieving next command: "..tostring(err))
       end
     end
   end

@@ -40,8 +40,21 @@ end
 -- Keep a reference to `lfs` before it gets sanitized
 local lfs = _G.lfs
 
+local loaded = false
 function GRPC.load()
+  if loaded then
+    env.info("[GRPC] already loaded")
+    return
+  end
+
   local env = setmetatable({grpc = grpc, lfs = lfs}, {__index = _G})
   local f = setfenv(assert(loadfile(GRPC.luaPath .. [[grpc.lua]])), env)
   f()
+
+  loaded = true
+end
+
+if GRPC.autostart == true then
+  env.info("[GRPC] auto starting")
+  GRPC.load()
 end

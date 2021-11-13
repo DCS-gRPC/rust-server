@@ -256,7 +256,7 @@ GRPC.methods.addGroup = function(params)
   end
   local template
   if params.template.type == "Airplane" then
-    template = createPlaneGroupTemplate(params.template.groupTemplate)
+    template = createPlaneGroupTemplate(params.template.airplaneTemplate)
   elseif params.template.type == "Ground" then
     template = createGroundGroupTemplate(params.template.groundTemplate)
   end

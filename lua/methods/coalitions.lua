@@ -258,7 +258,7 @@ GRPC.methods.addGroup = function(params)
   if params.template.type == "Airplane" then
     template = createPlaneGroupTemplate(params.template.groupTemplate)
   elseif params.template.type == "Ground" then
-    template = createGroundGroupTemplate(params.template.groundTemplate) -- this should maybe hold the type o
+    template = createGroundGroupTemplate(params.template.groundTemplate)
   end
   coalition.addGroup(params.country - 1, params.groupCategory, template) -- Decrement for non zero-indexed gRPC enum
 

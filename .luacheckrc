@@ -20,5 +20,4 @@ read_globals = {
   "Unit",
   "world",
   "Airbase",
-  "country"
 }

@@ -35,10 +35,8 @@ local buildAirplanePoints = function(points)
     if type(pointData.place) == "string" then
       if Airbase.getByName(pointData.place) then
         pointVec3 = Airbase.getByName(pointData.place):getPoint()
-        env.info("ab point type")
       elseif trigger.misc.getZone(pointData.place) then
         pointVec3 = trigger.misc.getZone(pointData.place).point
-        env.info("zone point type")
       end
     elseif type(pointData.place) == "table" then
       pointVec3 = coord.LLtoLO(pointData.place.lat, pointData.place.lon)
@@ -86,10 +84,8 @@ local createPlaneGroupUnitsTemplate = function(unitListTemplate)
       if type(unitListTemplate.place) == "string" then
         if Airbase.getByName(unitListTemplate.place) then
           pointVec3 = Airbase.getByName(unitListTemplate.place):getPoint()
-          env.info("ab point type")
         elseif trigger.misc.getZone(unitListTemplate.place) then
           pointVec3 = trigger.misc.getZone(unitListTemplate.place).point
-          env.info("zone point type")
         end
       elseif type(unitListTemplate.place) == "table" then
         pointVec3 = coord.LLtoLO(unitListTemplate.place.lat, unitListTemplate.place.lon)

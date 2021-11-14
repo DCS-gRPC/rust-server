@@ -21,36 +21,12 @@ local skill = {
   Player = 5
 }
 
--- types for aircraft taking off
-local takeoffTypes = {
-  [1] = "TakeOff",
-  [2] = "TakeOffParking",
-  [3] = "TakeOffParkingHot",
-  [4] = "Turning Point",
-  runway = "TakeOff",
-  cold = "TakeOffParking",
-  hot = "TakeOffParkingHot",
-  air = "Turning Point"
+local altitudeType = {
+  [1] = "BARO",
+  [2] = "RADIO",
+  BARO = 1,
+  RADIO = 2
 }
-
--- actiions for aircraft taking off
-local takeoffActions = {
-  [1] = "From Runway",
-  [2] = "From Parking Area",
-  [3] = "From Parking Area Hot",
-  [4] = "Turning Point",
-  runway = "From Runway",
-  cold = "From Parking Area",
-  hot = "From Parking Area Hot",
-  air = "Turning Point",
-}
-
---local altitudeType = {
---  [1] = "BARO",
---  [2] = "RADIO",
---  BARO = 1,
---  RADIO = 2
---}
 
 local buildAirplanePoints = function(points)
   local builtPoints = {}
@@ -71,13 +47,13 @@ local buildAirplanePoints = function(points)
       alt = pointData.alt,
       x = pointVec3.x,
       y = pointVec3.z,
-      type = pointData.type or takeoffTypes.air,
+      type = pointData.type,
       eta = 0,
       eta_locked = true,
-      alt_type = pointData.alt_type or "BARO",
+      alt_type = altitudeType[altitudeType.alt_type],
       formation_template = "",
       speed = pointData.speed,
-      action = pointData.action or takeoffActions.air,
+      action = pointData.action,
       task = {
         id = "ComboTask",
         params = {
@@ -119,29 +95,27 @@ local createPlaneGroupUnitsTemplate = function(unitListTemplate)
         pointVec3 = coord.LLtoLO(unitListTemplate.place.lat, unitListTemplate.place.lon)
       end
       local fuel = Unit.getDescByName(unitListTemplate.type).fuelMassMax -- needed incase no payload table is applied
-      if type(unitTemplate) == "table" then
-        units[i] = {
-          name = unitTemplate.unitName, -- or unitTemplate.name.."-"..i
-          type = unitListTemplate.type,
-          x = pointVec3.x,
-          y = pointVec3.z,
-          alt = unitListTemplate.alt,
-          alt_type = unitListTemplate.alt_type or "BARO",
-          speed = unitListTemplate.speed,
-          payload = unitTemplate.payload or {
-          ["pylons"] = {},
-          ["fuel"] = fuel,
-          ["flare"] = 0,
-          ["chaff"] = 0,
-          ["gun"] = 0,
-          },
-          parking = unitTemplate.parking or nil,
-          parking_id = unitTemplate.parking_id or nil,
-          callsign = unitTemplate.callsign or nil,
-          skill = unitTemplate.skill or skill.Random,
-          livery_id = unitTemplate.livery_id or nil,
-        }
-      end
+      units[i] = {
+        name = unitTemplate.unitName, -- or unitTemplate.name.."-"..i
+        type = unitListTemplate.type,
+        x = pointVec3.x,
+        y = pointVec3.z,
+        alt = unitListTemplate.alt,
+        alt_type = altitudeType[unitTemplate.alt_type],
+        speed = unitListTemplate.speed,
+        payload = unitTemplate.payload or {
+        ["pylons"] = {},
+        ["fuel"] = fuel,
+        ["flare"] = 0,
+        ["chaff"] = 0,
+        ["gun"] = 0,
+        },
+        parking = unitTemplate.parking or nil,
+        parking_id = unitTemplate.parking_id or nil,
+        callsign = unitTemplate.callsign or nil,
+        skill = skill[unitListTemplate.skill],
+        livery_id = unitTemplate.livery_id or nil,
+      }
     end
     return units
   end

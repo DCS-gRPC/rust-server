@@ -54,8 +54,7 @@ message OutTextRequest {
   bool clear_view = 3;
 }
 
-message OutTextResponse {
-}
+message OutTextResponse {}
 
 message OutTextForCoalitionRequest {
   string text = 1;
@@ -64,8 +63,7 @@ message OutTextForCoalitionRequest {
   dcs.common.v0.Coalition coalition = 4;
 }
 
-message OutTextForCoalitionResponse {
-}
+message OutTextForCoalitionResponse {}
 
 message OutTextForGroupRequest {
   string text = 1;
@@ -74,8 +72,7 @@ message OutTextForGroupRequest {
   uint32 group_id = 4;
 }
 
-message OutTextForGroupResponse {
-}
+message OutTextForGroupResponse {}
 
 message GetUserFlagRequest {
   string flag = 1;
@@ -90,8 +87,7 @@ message SetUserFlagRequest {
   uint32 value = 2;
 }
 
-message SetUserFlagResponse {
-}
+message SetUserFlagResponse {}
 
 message MarkToAllRequest {
   string text = 2;
@@ -134,16 +130,14 @@ message RemoveMarkRequest {
   uint32 id = 1;
 }
 
-message RemoveMarkResponse {
-}
+message RemoveMarkResponse {}
 
 message ExplosionRequest {
   dcs.common.v0.Position position = 1;
   uint32 power = 2;
 }
 
-message ExplosionResponse {
-}
+message ExplosionResponse {}
 
 message SmokeRequest {
   enum SmokeColor {
@@ -161,8 +155,7 @@ message SmokeRequest {
   SmokeColor color = 2;
 }
 
-message SmokeResponse {
-}
+message SmokeResponse {}
 
 message IlluminationBombRequest {
   // The altitude of Illumination Bombs is meters above ground. Ground level
@@ -171,8 +164,7 @@ message IlluminationBombRequest {
   uint32 power = 2;
 }
 
-message IlluminationBombResponse {
-}
+message IlluminationBombResponse {}
 
 message SignalFlareRequest {
   enum FlareColor {
@@ -190,5 +182,4 @@ message SignalFlareRequest {
   uint32 azimuth = 3;
 }
 
-message SignalFlareResponse {
-}
+message SignalFlareResponse {}

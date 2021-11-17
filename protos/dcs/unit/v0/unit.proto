@@ -22,7 +22,8 @@ service UnitService {
   rpc Get(GetRequest) returns (GetResponse) {}
 
   /**
-   * Get information about the unit in 3D space, including its position, orientation and velocity.
+   * Get information about the unit in 3D space, including its position,
+   * orientation and velocity.
    */
   rpc GetTransform(GetTransformRequest) returns (GetTransformResponse) {}
 }
@@ -72,14 +73,15 @@ message GetTransformResponse {
   double u = 2;
   // Distance between DCS' map origin to object in meters on north-south axis.
   double v = 3;
-  // The heading of the object on a flat world. To get the heading corrected by the projection error
-  // when going from a flat to a spherical world, use `orientation.yaw` instead.
+  // The heading of the object on a flat world. To get the heading corrected by
+  // the projection error when going from a flat to a spherical world, use
+  // `orientation.yaw` instead.
   double heading = 4;
   Orientation orientation = 5;
-  // The direction the object is traveling to, and speed (magnitude of the vector) the object is
-  // traveling with.
+  // The direction the object is traveling to, and speed (magnitude of the
+  // vector) the object is traveling with.
   dcs.common.v0.Vector velocity = 6;
-  double time = 7; // Time in seconds since the scenario started.
+  double time = 7;  // Time in seconds since the scenario started.
 }
 
 message GetPlayerNameRequest {
@@ -104,8 +106,7 @@ message SetEmissionRequest {
   bool emitting = 2;
 }
 
-message SetEmissionResponse {
-}
+message SetEmissionResponse {}
 
 message GetRequest {
   string name = 1;

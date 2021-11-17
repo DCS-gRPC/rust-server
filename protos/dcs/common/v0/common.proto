@@ -221,10 +221,10 @@ message Unit {
  * An instance of a DCS group
  */
 message Group {
-  uint32 id = 1; // The DCS generated ID
-  string name = 2; // The name of the group as assigned in the mission editor
-  Coalition coalition = 3; // The coalition of the group
-  GroupCategory category = 4; // The group category.
+  uint32 id = 1;    // The DCS generated ID
+  string name = 2;  // The name of the group as assigned in the mission editor
+  Coalition coalition = 3;     // The coalition of the group
+  GroupCategory category = 4;  // The group category.
 }
 
 /**
@@ -260,14 +260,12 @@ message Weapon {
  * These objects are often buildings but can also be vehicles that have no AI or
  * other game behaviour aside from being destroyable
  */
-message Static {
-}
+message Static {}
 
 /**
  * An instance of a DCS scenery object
  */
-message Scenery {
-}
+message Scenery {}
 
 /**
  * An instance of a DCS Airfield
@@ -295,8 +293,7 @@ message Airbase {
 /**
  * An instance of a DCS Cargo object
  */
-message Cargo {
-}
+message Cargo {}
 
 /*
  * The initiator of an event
@@ -352,12 +349,12 @@ message MarkPanel {
 }
 
 /**
- * A vector in a left-handed coordinate system with +z being north, -z south, +x east, -x west,
- * +y up and -y down (as opposed to DCS' unusual right-handed coordinate system where x is north/
- * south and z is west/east; the underlying conversion is basically swapping `x` and `z` as in `x=z`
- * and `z=x`).
+ * A vector in a left-handed coordinate system with +z being north, -z south, +x
+ * east, -x west, +y up and -y down (as opposed to DCS' unusual right-handed
+ * coordinate system where x is north/ south and z is west/east; the underlying
+ * conversion is basically swapping `x` and `z` as in `x=z` and `z=x`).
  */
- message Vector {
+message Vector {
   double x = 1;
   double y = 2;
   double z = 3;

@@ -25,8 +25,7 @@ service MissionService {
       returns (GetScenarioCurrentTimeResponse) {}
 }
 
-message StreamEventsRequest {
-}
+message StreamEventsRequest {}
 
 // The DCS Event information. Contains event information and a timestamp.
 message StreamEventsResponse {
@@ -114,12 +113,10 @@ message StreamEventsResponse {
   }
 
   // Occurs when the mission starts.
-  message MissionStartEvent {
-  }
+  message MissionStartEvent {}
 
   // Occurs when the mission stops.
-  message MissionEndEvent {
-  }
+  message MissionEndEvent {}
 
   // Occurs when an aircraft is finished taking fuel.
   message RefuelingStopEvent {
@@ -263,8 +260,7 @@ message StreamEventsResponse {
   }
 
   // A score change (doesn't contain any useful information)
-  message ScoreEvent {
-  }
+  message ScoreEvent {}
 
   // A unit got destroyed.
   message UnitLostEvent {
@@ -376,15 +372,13 @@ message StreamUnitsResponse {
   }
 }
 
-message GetScenarioStartTimeRequest {
-}
+message GetScenarioStartTimeRequest {}
 
 message GetScenarioStartTimeResponse {
   string datetime = 1;
 }
 
-message GetScenarioCurrentTimeRequest {
-}
+message GetScenarioCurrentTimeRequest {}
 
 message GetScenarioCurrentTimeResponse {
   string datetime = 1;

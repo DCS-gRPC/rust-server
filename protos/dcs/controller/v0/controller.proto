@@ -21,5 +21,4 @@ message SetAlarmStateRequest {
   AlarmState alarm_state = 3;
 }
 
-message SetAlarmStateResponse {
-}
+message SetAlarmStateResponse {}

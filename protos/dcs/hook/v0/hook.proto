@@ -15,15 +15,13 @@ service HookService {
   rpc Eval(EvalRequest) returns (EvalResponse) {}
 }
 
-message GetMissionNameRequest {
-}
+message GetMissionNameRequest {}
 
 message GetMissionNameResponse {
   string name = 1;
 }
 
-message StreamChatMessagesRequest {
-}
+message StreamChatMessagesRequest {}
 
 message StreamChatMessagesResponse {
   // The ID of the player sending the chat messaage.

@@ -50,8 +50,8 @@ pub struct Config {
 
 impl Server {
     pub fn new(config: &Config) -> Result<Self, StartError> {
-        let ipc_mission = IPC::new();
-        let ipc_hook = IPC::new();
+        let ipc_mission = IPC::default();
+        let ipc_hook = IPC::default();
         let runtime = Runtime::new()?;
         let shutdown = Shutdown::new();
         Ok(Self {

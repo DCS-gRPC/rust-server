@@ -299,6 +299,8 @@ message StreamEventsResponse {
     dcs.common.v0.Initiator initiator = 1;
     // The rating.
     string comment = 2;
+    // The ship the unit landed at.
+    dcs.common.v0.Airbase place = 3;
   }
 
   // The event's mission time.

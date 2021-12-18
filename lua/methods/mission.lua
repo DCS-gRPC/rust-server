@@ -398,6 +398,7 @@ GRPC.onDcsEvent = function(event)
       event = {
         type = "landingQualityMark",
         initiator = {initiator = typed_exporter(event.initiator)},
+        place = exporter(event.place),
         comment = event.comment
       },
     }

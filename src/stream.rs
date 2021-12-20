@@ -15,8 +15,6 @@ use stubs::mission::v0::stream_events_response::{BirthEvent, DeadEvent};
 use stubs::mission::v0::stream_units_response::UnitGone;
 use stubs::mission::v0::stream_units_response::Update;
 use stubs::mission::v0::StreamUnitsRequest;
-use stubs::unit;
-use stubs::unit::v0::unit_service_server::UnitService;
 use tokio::sync::mpsc::error::SendError;
 use tokio::sync::mpsc::Sender;
 use tokio::time::MissedTickBehavior;
@@ -253,36 +251,60 @@ impl UnitState {
     async fn update(&mut self, ctx: &Context) -> Result<bool, Status> {
         let mut changed = false;
 
-        // update position
-        let position = UnitService::get_position(
-            &ctx.rpc,
-            Request::new(unit::v0::GetPositionRequest {
-                name: self.unit.name.clone(),
-            }),
-        )
-        .await?
-        .into_inner()
-        .position;
-        if let (Some(a), Some(b)) = (position.as_ref(), self.unit.position.as_ref()) {
-            if !eq(a, b) {
-                changed = true;
-                self.unit.position = position;
-            }
+        #[derive(serde::Serialize)]
+        struct GetUpdateRequest {
+            name: String,
         }
 
-        // update player name
-        let player_name = UnitService::get_player_name(
-            &ctx.rpc,
-            Request::new(unit::v0::GetPlayerNameRequest {
-                name: self.unit.name.clone(),
-            }),
-        )
-        .await?
-        .into_inner()
-        .player_name;
-        if player_name != self.unit.player_name {
+        #[derive(Debug, serde::Deserialize)]
+        struct Velocity {
+            x: f64,
+            y: f64,
+            z: f64,
+        }
+
+        #[derive(Debug, serde::Deserialize)]
+        struct Update {
+            position: Position,
+            velocity: Velocity,
+        }
+
+        let res: Update = ctx
+            .rpc
+            .request(
+                "getUnitUpdate",
+                Request::new(GetUpdateRequest {
+                    name: self.unit.name.clone(),
+                }),
+            )
+            .await?;
+
+        // update position
+        if let Some(position) = &self.unit.position {
+            if !eq(&res.position, position) {
+                changed = true;
+                self.unit.position = Some(res.position);
+            }
+        } else {
             changed = true;
-            self.unit.player_name = player_name;
+            self.unit.position = Some(res.position);
+        }
+
+        // update heading
+        let mut heading = res.velocity.x.atan2(res.velocity.z).to_degrees().round();
+        if heading < 0.0 {
+            heading += 360.0;
+        }
+        if self.unit.heading != heading {
+            changed = true;
+            self.unit.heading = heading;
+        }
+
+        // update speed
+        let speed = (res.velocity.z.powi(2) + res.velocity.x.powi(2)).sqrt();
+        if (self.unit.speed - speed).abs() >= 0.01 {
+            changed = true;
+            self.unit.speed = speed;
         }
 
         // keep track of when it was last checked and changed and determine a corresponding backoff

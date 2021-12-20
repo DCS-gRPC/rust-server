@@ -134,3 +134,17 @@ GRPC.methods.getUnit = function(params)
 
   return GRPC.success({unit = GRPC.exporters.unit(unit)})
 end
+
+-- This method is only used by the unit stream. It returns the subset of `getUnit` that can
+-- change (like position, velocity, ...). It is not exposed to the gRPC service for now.
+GRPC.methods.getUnitUpdate = function(params)
+  local unit = Unit.getByName(params.name)
+  if unit == nil then
+    return GRPC.errorNotFound("unit `" .. tostring(params.name) .. "` does not exist")
+  end
+
+  return GRPC.success({
+    position = GRPC.exporters.position(unit:getPoint()),
+    velocity = GRPC.exporters.vector(unit:getVelocity()),
+  })
+end

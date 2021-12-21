@@ -26,6 +26,22 @@ impl CustomService for MissionRpc {
         Ok(Response::new(custom::v0::JoinMissionResponse {}))
     }
 
+    async fn abort_mission(
+        &self,
+        request: Request<custom::v0::AbortMissionRequest>,
+    ) -> Result<Response<custom::v0::AbortMissionResponse>, Status> {
+        self.notification("abortMission", request).await?;
+        Ok(Response::new(custom::v0::AbortMissionResponse {}))
+    }
+
+    async fn get_mission_status(
+        &self,
+        request: Request<custom::v0::GetMissionStatusRequest>,
+    ) -> Result<Response<custom::v0::GetMissionStatusResponse>, Status> {
+        self.notification("getMissionStatus", request).await?;
+        Ok(Response::new(custom::v0::GetMissionStatusResponse {}))
+    }
+
     async fn eval(
         &self,
         request: Request<custom::v0::EvalRequest>,

@@ -15,18 +15,19 @@ end
 -- Let DCS know where to find the DLLs
 package.cpath = package.cpath .. GRPC.dllPath .. [[?.dll;]]
 
+env.info("[GRPC] Writing " .. lfs.writedir() .. [[Data\dcs-grpc.lua]] )
 -- Make settings available to gRPC hook
-local file, err = io.open(lfs.writedir() .. [[Data\dcs-grpc.lua]], "w")
-if err then
-	env.error("[GRPC] Error writing config")
-else
-	file:write(
+local f, err = io.open(lfs.writedir() .. [[Data\dcs-grpc.lua]], "w")
+if f then
+  file:write(
     "luaPath = [[" .. GRPC.luaPath .. "]]\n"
     .. "dllPath = [[" .. GRPC.dllPath .. "]]\n"
     .. "throughputLimit = [[" .. GRPC.throughputLimit .. "]]\n"
   )
-	file:flush()
-	file:close()
+  file:flush()
+  file:close()
+else
+  env.error("[GRPC] Error writing config: " .. err)
 end
 
 -- Load DLL before `require` gets sanitized.

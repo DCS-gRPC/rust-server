@@ -17,8 +17,8 @@ package.cpath = package.cpath .. GRPC.dllPath .. [[?.dll;]]
 
 env.info("[GRPC] Writing " .. lfs.writedir() .. [[Data\dcs-grpc.lua]] )
 -- Make settings available to gRPC hook
-local f, err = io.open(lfs.writedir() .. [[Data\dcs-grpc.lua]], "w")
-if f then
+local file, err = io.open(lfs.writedir() .. [[Data\dcs-grpc.lua]], "w")
+if file then
   file:write(
     "luaPath = [[" .. GRPC.luaPath .. "]]\n"
     .. "dllPath = [[" .. GRPC.dllPath .. "]]\n"

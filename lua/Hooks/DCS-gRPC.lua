@@ -65,6 +65,31 @@ local function init()
     return msg
   end
 
+  function handler.onPlayerTryConnect(addr, name, ucid, id)
+    grpc.event({
+      time = DCS.getModelTime(),
+      event = {
+        type = "connect",
+        addr = addr,
+        name = name,
+        ucid = ucid,
+        id = id,
+      },
+    })
+    -- not returning `true` here to allow other scripts to handle this hook
+  end
+
+  function handler.onPlayerDisconnect(id, reason)
+    grpc.event({
+      time = DCS.getModelTime(),
+      event = {
+        type = "disconnect",
+        id = id,
+        reason = reason,
+      },
+    })
+  end
+
   DCS.setUserCallbacks(handler)
 
   log.write("[GRPC-Hook]", log.INFO, "Initialized ...")

@@ -78,6 +78,7 @@ pub fn start(_: &Lua, config: Config) -> LuaResult<()> {
 
     init(&config);
 
+    log::debug!("Config: {:#?}", config);
     log::info!("Starting ...");
 
     let mut server =

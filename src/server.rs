@@ -143,7 +143,7 @@ async fn try_run(
     shutdown_signal: ShutdownHandle,
     after_shutdown: &mut Receiver<()>,
 ) -> Result<(), transport::Error> {
-    log::info!("Staring gRPC Server ...");
+    log::info!("Staring gRPC Server (on {}) ...", state.addr);
 
     let ServerState {
         addr,

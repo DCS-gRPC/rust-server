@@ -12,7 +12,7 @@ do
     f()
     env.info("[GRPC] Optional config at `Config/dcs-grpc.lua` successfully read")
   else
-	  env.info("[GRPC] Optional config at `Config/dcs-grpc.lua` not found")
+	  env.info("[GRPC] Optional config at `Config/dcs-grpc.lua` not found (" .. tostring(err) .. ")")
   end
 end
 

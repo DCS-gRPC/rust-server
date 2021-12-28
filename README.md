@@ -83,21 +83,36 @@ GRPC.throughputLimit = 600
 GRPC.autostart = false
 ```
 
-Settings can either be set above `GRPC.load()` inside of a mission, or globally inside of the `MissionScripting.lua`, e.g.:
+Settings can either be set:
+- above `GRPC.load()` inside of a mission,
+  ```lua
+  GRPC.debug = true
+  GRPC.autostart = true
+  GRPC.load()
+  ```
 
-```diff
-  --Initialization script for the Mission lua Environment (SSE)
+- inside a `Saved Games\DCS\Config\dcs-grpc.lua` file (useful if run multiple servers in parallel), or
 
-  dofile('Scripts/ScriptingSystem.lua')
-+
-+ GRPC = {
-+   throughputLimit = 200,
-+   autostart = true
-+ }
-+ dofile(lfs.writedir()..[[Scripts\DCS-gRPC\grpc-mission.lua]])
+  `Saved Games\DCS\Config\dcs-grpc.lua`:
+  ```lua
+  GRPC.debug = true
+  GRPC.autostart = true
+  ```
 
-  ...
-```
+- globally inside of the `MissionScripting.lua`
+  ```diff
+    --Initialization script for the Mission lua Environment (SSE)
+
+    dofile('Scripts/ScriptingSystem.lua')
+  +
+  + GRPC = {
+  +   throughputLimit = 200,
+  +   autostart = true
+  + }
+  + dofile(lfs.writedir()..[[Scripts\DCS-gRPC\grpc-mission.lua]])
+
+    ...
+  ```
 
 ### Confirmation
 

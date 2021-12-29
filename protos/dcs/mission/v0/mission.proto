@@ -303,6 +303,20 @@ message StreamEventsResponse {
     dcs.common.v0.Airbase place = 3;
   }
 
+  // Occurs when a chat message is sent on the server
+  message PlayerSentChatEvent {
+    // The player's id in the current server session.
+    uint32 playerId = 1;
+    // what was typed
+    string message = 2;
+    // to whom?
+    MessageTarget target = 3;
+    enum MessageTarget {
+      COALITION = 0;
+      ALL = 1;
+    }
+  }
+
   // The event's mission time.
   double time = 1;
   oneof event {
@@ -343,6 +357,9 @@ message StreamEventsResponse {
     // @exclude 38 reserved for S_EVENT_TRIGGER_ZONE
     LandingQualityMarkEvent landing_quality_mark = 39;
     // @exclude 40 reserved for S_EVENT_BDA
+
+    // start of capturing the server hook based events
+    PlayerSentChatEvent player_sent_chat = 9001;
   }
 }
 

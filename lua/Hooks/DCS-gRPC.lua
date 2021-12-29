@@ -1,5 +1,5 @@
-package.cpath = package.cpath..lfs.writedir()..[[Mods\tech\DCS-gRPC\?.dll;]]
-
+-- note: the hook's load will only fire after the mission loaded. Therefore, all setup
+-- will be passed into the config file (via the file system)
 local function load()
   log.write("[GRPC-Hook]", log.INFO, "mission loaded, setting up gRPC listener ...")
 
@@ -18,7 +18,7 @@ local function load()
   end
 
   -- Let DCS know where to find the DLLs
-  if not string.find(package.cpath, "DCS-gRPC") then
+  if not string.find(package.cpath, GRPC.dllPath) then
     package.cpath = package.cpath .. GRPC.dllPath .. [[?.dll;]]
   end
 

@@ -158,6 +158,22 @@ For development, update the previously added line in `DCS World\Scripts\MissionS
 + dofile(GRPC.luaPath .. [[grpc-mission.lua]])
 ```
 
+In addition, you will need to replace the hook script at `Scripts\Hooks\DCS-gRPC.lua` to load up your current in development hook script:
+
+```lua
+function init()
+    log.write("[GRPC-Hook-DEV]", log.INFO, "Initializing ...")
+    dofile(GRPC.luaPath .. [[grpc-hook.lua]])
+    log.write("[GRPC-Hook-DEV]", log.INFO, "Initialized ...")
+end
+
+
+local ok, err = pcall(init)
+if not ok then
+  log.write("[GRPC-Hook-DEV]", log.ERROR, "Failed to Initialize: "..tostring(err))
+end
+```
+
 ### Debugging
 
 - Search for `[GRPC]` in the DCS logs

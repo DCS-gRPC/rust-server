@@ -387,8 +387,11 @@ message StreamEventsResponse {
     // @exclude 38 reserved for S_EVENT_TRIGGER_ZONE
     LandingQualityMarkEvent landing_quality_mark = 39;
     // @exclude 40 reserved for S_EVENT_BDA
-    ConnectEvent connect = 41;
-    DisconnectEvent disconnect = 42;
+
+    // The following events are additions on top of DCS's own event enum, which is why they start at
+    // 8192 to give DCS plenty of space for new built-in events.
+    ConnectEvent connect = 8192;
+    DisconnectEvent disconnect = 8193;
   }
 }
 

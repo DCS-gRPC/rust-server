@@ -85,7 +85,7 @@ local function init()
       event = {
         type = "disconnect",
         id = id,
-        reason = reason,
+        reason = reason + 1, -- Increment for non zero-indexed gRPC enum
       },
     })
   end

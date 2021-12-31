@@ -19,4 +19,5 @@ read_globals = {
   "trigger",
   "Unit",
   "world",
+  "Airbase",
 }

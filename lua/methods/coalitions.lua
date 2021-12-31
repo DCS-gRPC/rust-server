@@ -21,12 +21,127 @@ local skill = {
   Player = 5
 }
 
---local altitudeType = {
---  [1] = "BARO",
---  [2] = "RADIO",
---  BARO = 1,
---  RADIO = 2
---}
+local altitudeType = {
+  [1] = "BARO",
+  [2] = "RADIO",
+  BARO = 1,
+  RADIO = 2
+}
+
+local buildAirplanePoints = function(points)
+  local builtPoints = {}
+  for _, pointData in pairs(points) do
+    local pointVec3
+    if type(pointData.place) == "string" then
+      if Airbase.getByName(pointData.place) then
+        pointVec3 = Airbase.getByName(pointData.place):getPoint()
+      elseif trigger.misc.getZone(pointData.place) then
+        pointVec3 = trigger.misc.getZone(pointData.place).point
+      end
+    elseif type(pointData.place) == "table" then
+      pointVec3 = coord.LLtoLO(pointData.place.lat, pointData.place.lon)
+    end
+    builtPoints[#builtPoints+1] = {
+      alt = pointData.alt,
+      x = pointVec3.x,
+      y = pointVec3.z,
+      type = pointData.type,
+      eta = 0,
+      eta_locked = true,
+      alt_type = altitudeType[altitudeType.alt_type],
+      formation_template = "",
+      speed = pointData.speed,
+      action = pointData.action,
+      task = {
+        id = "ComboTask",
+        params = {
+          tasks = {}
+        }
+      }
+    }
+  end
+  -- here we ammend the first point to allow for spawns from airbases if it isn't an airspawn
+  if Airbase.getByName(points[1].place) then
+    if points[1].type ~= "Turning Point" and points[1].action ~= "Turning Point" then
+      local ab = Airbase.getByName(points[1].place)
+      local abId = Airbase.getID(ab)
+      local abCat = Airbase.getDesc(ab).category
+      if abCat == 0 then -- Airbase.Category.AIRDROME
+        builtPoints[1].airdromeId = abId
+      elseif abCat == 2 then -- Airbase.Category.HELIPAD
+        builtPoints[1].linkUnit = abId
+        builtPoints[1].helipadId = abId -- why its named helipad i dont know
+      end
+    end
+  end
+  return builtPoints
+end
+
+local createPlaneGroupUnitsTemplate = function(unitListTemplate)
+    local units = {}
+    for i, unitTemplate in pairs(unitListTemplate) do
+      local pointVec3
+      if type(unitListTemplate.place) == "string" then
+        if Airbase.getByName(unitListTemplate.place) then
+          pointVec3 = Airbase.getByName(unitListTemplate.place):getPoint()
+        elseif trigger.misc.getZone(unitListTemplate.place) then
+          pointVec3 = trigger.misc.getZone(unitListTemplate.place).point
+        end
+      elseif type(unitListTemplate.place) == "table" then
+        pointVec3 = coord.LLtoLO(unitListTemplate.place.lat, unitListTemplate.place.lon)
+      end
+      local fuel = Unit.getDescByName(unitListTemplate.type).fuelMassMax -- needed incase no payload table is applied
+      units[i] = {
+        name = unitTemplate.unitName, -- or unitTemplate.name.."-"..i
+        type = unitListTemplate.type,
+        x = pointVec3.x,
+        y = pointVec3.z,
+        alt = unitListTemplate.alt,
+        alt_type = altitudeType[unitTemplate.alt_type],
+        speed = unitListTemplate.speed,
+        payload = unitTemplate.payload or {
+        ["pylons"] = {},
+        ["fuel"] = fuel,
+        ["flare"] = 0,
+        ["chaff"] = 0,
+        ["gun"] = 0,
+        },
+        parking = unitTemplate.parking or nil,
+        parking_id = unitTemplate.parking_id or nil,
+        callsign = unitTemplate.callsign or nil,
+        skill = skill[unitListTemplate.skill],
+        livery_id = unitTemplate.livery_id or nil,
+      }
+    end
+    return units
+  end
+
+local createPlaneGroupTemplate = function(planeGroupTemplate)
+  local groupTable = {
+    name = planeGroupTemplate.groupName,
+    task = planeGroupTemplate.task,
+    route = {
+      points = buildAirplanePoints(planeGroupTemplate.points)
+    }
+  }
+  groupTable.units = createPlaneGroupUnitsTemplate(planeGroupTemplate.units)
+  if planeGroupTemplate.group_id ~= nil then
+    groupTable['groupId'] = planeGroupTemplate.group_id
+  end
+  if planeGroupTemplate.hidden ~= nil then
+    groupTable['hidden'] = planeGroupTemplate.hidden
+  end
+  if planeGroupTemplate.late_activation ~= nil then
+    groupTable['lateActivation'] = planeGroupTemplate.late_activation
+  end
+  if planeGroupTemplate.start_time ~= nil and planeGroupTemplate.start_time > 0 then
+    groupTable['start_time'] = planeGroupTemplate.start_time
+  end
+  if planeGroupTemplate.visible ~= nil then
+    groupTable['visible'] = planeGroupTemplate.visible
+  end
+  return groupTable
+end
 
 local createGroundUnitsTemplate = function(unitListTemplate)
   local units = {}
@@ -109,9 +224,12 @@ GRPC.methods.addGroup = function(params)
   if params.country_id == 0 or params.country_id == 15 then
     return GRPC.errorInvalidArgument("invalid country code")
   end
-
-  local template = createGroundGroupTemplate(params.template.groundTemplate)
-
+  local template
+  if params.template.type == "Airplane" then
+    template = createPlaneGroupTemplate(params.template.airplaneTemplate)
+  elseif params.template.type == "Ground" then
+    template = createGroundGroupTemplate(params.template.groundTemplate)
+  end
   coalition.addGroup(params.country - 1, params.groupCategory, template) -- Decrement for non zero-indexed gRPC enum
 
   return GRPC.success({group = GRPC.exporters.group(Group.getByName(template.name))})

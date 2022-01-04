@@ -316,6 +316,50 @@ message StreamEventsResponse {
       ALL = 1;
     }
   }
+  
+  /**
+   * Fired when a player connected to the server.
+   */
+  message ConnectEvent {
+    // The player's IP and port.
+    string addr = 1;
+    // The name of the player.
+    string name = 2;
+    // The player's unique client identifier (used to ban a player).
+    string ucid = 3;
+    // The player's id in the current server session (used to for name/slot/... changes).
+    uint32 id = 4;
+  }
+
+  /**
+   * The reason a player disconnected for.
+   */
+  enum DisconnectReason {
+    DISCONNECT_REASON_UNSPECIFIED = 0;
+    DISCONNECT_REASON_THATS_OKAY = 1;
+    DISCONNECT_REASON_INVALID_ADDRESS = 2;
+    DISCONNECT_REASON_CONNECT_FAILED = 3;
+    DISCONNECT_REASON_WRONG_VERSION = 4;
+    DISCONNECT_REASON_PROTOCOL_ERROR = 5;
+    DISCONNECT_REASON_TIMEOUT = 6;
+    DISCONNECT_REASON_INVALID_PASSWORD = 101;
+    DISCONNECT_REASON_BANNED = 102;
+    DISCONNECT_REASON_BAD_CALLSIGN = 103;
+    DISCONNECT_REASON_TAINTED_CLIENT = 104;
+    DISCONNECT_REASON_KICKED = 105;
+    DISCONNECT_REASON_REFUSED = 106;
+    DISCONNECT_REASON_DENIED_TRIAL_ONLY = 107;
+  }
+
+  /**
+   * Fired when a player disconnected from the server (not fired for the server's player).
+   */
+  message DisconnectEvent {
+    // The player's id in the current server session.
+    uint32 id = 1;
+    // The reason a player disconnected for.
+    DisconnectReason reason = 2;
+  }
 
   // The event's mission time.
   double time = 1;
@@ -358,8 +402,11 @@ message StreamEventsResponse {
     LandingQualityMarkEvent landing_quality_mark = 39;
     // @exclude 40 reserved for S_EVENT_BDA
 
-    // start of capturing the server hook based events
-    PlayerSentChatEvent player_sent_chat = 9001;
+    // The following events are additions on top of DCS's own event enum, which is why they start at
+    // 8192 to give DCS plenty of space for new built-in events.
+    ConnectEvent connect = 8192;
+    DisconnectEvent disconnect = 8193;
+    PlayerSentChatEvent player_sent_chat = 8194;
   }
 }
 

@@ -1,5 +1,5 @@
-if not _G.GRPC then
-  _G.GRPC = {}
+if not GRPC then
+  GRPC = {}
 end
 
 -- load settings from `Saved Games/DCS/Config/dcs-grpc.lua`
@@ -7,8 +7,8 @@ do
 	env.error("[GRPC] Checking optional config at `Config/dcs-grpc.lua` ...")
   local file, err = io.open(lfs.writedir() .. [[Config\dcs-grpc.lua]], "r")
   if file then
-    local e = setmetatable({}, {__index = GRPC})
-    local f = setfenv(assert(loadstring(file:read("*all"))), e)
+    local f = assert(loadstring(file:read("*all")))
+    setfenv(f, GRPC)
     f()
     env.info("[GRPC] Optional config at `Config/dcs-grpc.lua` successfully read")
   else

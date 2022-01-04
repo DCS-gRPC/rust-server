@@ -168,7 +168,7 @@ For development, update the previously added line in `DCS World\Scripts\MissionS
 - dofile(lfs.writedir()..[[Scripts\DCS-gRPC\grpc-mission.lua]])
 + GRPC = {
 + 	dllPath = [[C:\Development\DCS-gRPC\rust-server\target\debug\]],
-+ 	luaPath = [[C:\Development\DCS-gRPC\rust-server\lua\]]
++ 	luaPath = [[C:\Development\DCS-gRPC\rust-server\lua\DCS-gRPC]]
 + }
 + dofile(GRPC.luaPath .. [[grpc-mission.lua]])
 ```

@@ -70,8 +70,8 @@ local function init()
     grpc.event({
       time = DCS.getModelTime(),
       event = {
-        type = "playerSentChat",
-        playerSessionId = playerID,
+        type = "playerSendChat",
+        playerId = playerID,
         message = msg,
         target = target
       },

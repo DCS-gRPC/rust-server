@@ -304,7 +304,7 @@ message StreamEventsResponse {
   }
 
   // Occurs when a chat message is sent on the server
-  message PlayerSentChatEvent {
+  message PlayerSendChatEvent {
     // The player's id in the current server session.
     uint32 playerId = 1;
     // what was typed
@@ -406,7 +406,7 @@ message StreamEventsResponse {
     // 8192 to give DCS plenty of space for new built-in events.
     ConnectEvent connect = 8192;
     DisconnectEvent disconnect = 8193;
-    PlayerSentChatEvent player_sent_chat = 8194;
+    PlayerSendChatEvent player_send_chat = 8194;
   }
 }
 

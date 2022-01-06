@@ -312,8 +312,9 @@ message StreamEventsResponse {
     // to whom?
     MessageTarget target = 3;
     enum MessageTarget {
-      COALITION = 0;
-      ALL = 1;
+      MESSAGE_TARGET_UNSPECIFIED = 0;
+      MESSAGE_TARGET_COALITION = 1;
+      MESSAGE_TARGET_ALL = 2;
     }
   }
   

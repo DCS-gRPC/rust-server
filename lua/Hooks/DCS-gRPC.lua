@@ -61,12 +61,11 @@ local function init()
   end
 
   function handler.onPlayerTrySendChat(playerID, msg, all)
-    _G.GRPC.onChatMessage(playerID, msg, all)
-
     local target = 1
     if all then
       target = 2
     end
+
     grpc.event({
       time = DCS.getModelTime(),
       event = {
@@ -76,6 +75,7 @@ local function init()
         target = target
       },
     })
+
     return msg
   end
 

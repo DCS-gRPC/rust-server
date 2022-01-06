@@ -1,6 +1,5 @@
 use std::sync::Arc;
 
-use crate::chat::Chat;
 use crate::shutdown::ShutdownHandle;
 use crate::stats::Stats;
 use dcs_module_ipc::IPC;
@@ -38,7 +37,6 @@ struct Cache {
 #[derive(Clone)]
 pub struct HookRpc {
     ipc: IPC<()>,
-    chat: Chat,
     stats: Stats,
     eval_enabled: bool,
     shutdown_signal: ShutdownHandle,
@@ -92,10 +90,9 @@ impl MissionRpc {
 }
 
 impl HookRpc {
-    pub fn new(ipc: IPC<()>, chat: Chat, stats: Stats, shutdown_signal: ShutdownHandle) -> Self {
+    pub fn new(ipc: IPC<()>, stats: Stats, shutdown_signal: ShutdownHandle) -> Self {
         HookRpc {
             ipc,
-            chat,
             stats,
             eval_enabled: false,
             shutdown_signal,

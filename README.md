@@ -178,7 +178,7 @@ In addition, you will need to replace the hook script at `Scripts\Hooks\DCS-gRPC
 ```lua
 function init()
     log.write("[GRPC-Hook-DEV]", log.INFO, "Initializing ...")
-    dofile(GRPC.luaPath .. [[grpc-hook.lua]])
+    dofile([[C:\Development\DCS-gRPC\rust-server\lua\Hooks\grpc-hook.lua]])
     log.write("[GRPC-Hook-DEV]", log.INFO, "Initialized ...")
 end
 

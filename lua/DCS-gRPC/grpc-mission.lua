@@ -1,7 +1,22 @@
--- Set default settings.
-if not _G.GRPC then
-  _G.GRPC = {}
+if not GRPC then
+  GRPC = {}
 end
+
+-- load settings from `Saved Games/DCS/Config/dcs-grpc.lua`
+do
+	env.error("[GRPC] Checking optional config at `Config/dcs-grpc.lua` ...")
+  local file, err = io.open(lfs.writedir() .. [[Config\dcs-grpc.lua]], "r")
+  if file then
+    local f = assert(loadstring(file:read("*all")))
+    setfenv(f, GRPC)
+    f()
+    env.info("[GRPC] Optional config at `Config/dcs-grpc.lua` successfully read")
+  else
+	  env.info("[GRPC] Optional config at `Config/dcs-grpc.lua` not found (" .. tostring(err) .. ")")
+  end
+end
+
+-- Set default settings.
 if not GRPC.luaPath then
   GRPC.luaPath = lfs.writedir() .. [[Scripts\DCS-gRPC\]]
 end

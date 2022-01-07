@@ -60,19 +60,16 @@ local function init()
     _G.GRPC = nil
   end
 
-  function handler.onPlayerTrySendChat(playerID, msg, all)
-    local target = 1
-    if all then
-      target = 2
-    end
+  function handler.onPlayerTrySendChat(playerID, msg)
+    -- note: currently `all` (third parameter) will always `=true` regardless if the target is to the coalition/team
+    --        or to everybody. When ED fixes this, implementation should determine the dcs.common.v0.Coalition
 
     grpc.event({
       time = DCS.getModelTime(),
       event = {
         type = "playerSendChat",
         playerId = playerID,
-        message = msg,
-        target = target
+        message = msg
       },
     })
 

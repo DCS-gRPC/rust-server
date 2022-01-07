@@ -309,13 +309,6 @@ message StreamEventsResponse {
     uint32 playerId = 1;
     // what was typed
     string message = 2;
-    // to whom?
-    MessageTarget target = 3;
-    enum MessageTarget {
-      MESSAGE_TARGET_UNSPECIFIED = 0;
-      MESSAGE_TARGET_COALITION = 1;
-      MESSAGE_TARGET_ALL = 2;
-    }
   }
   
   /**

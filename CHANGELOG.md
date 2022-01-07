@@ -15,11 +15,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Eval` API executable in the DCS hook environment along with command-line tool
 - Ability to include DCS-gRPC on all server missions without needing to edit the mission
 - Updated Rust version and many Rust dependencies
+- Stream `PlayerSendChatEvent` to the `MissionService.StreamEvents` for clients to observe the chat as part of the event stream
 
 ### Changed
 - Split and reorganised APIs into versioned namespaces
 - Switched to a different way of initialising the server that does not require sanitisation
 - Changed Enum numbering to allow more idiomatic gRPC usage
+
+### Removed
+- `HookService.StreamChatMessages` has been removed in favor for `PlayerSendChatEvent`
 
 ## [0.1.0] - 2021-1-23
 ### Added

@@ -44,10 +44,6 @@ GRPC.error = function(msg)
   }
 end
 
-GRPC.onChatMessage = function(playerID, msg, all)
-  return grpc.onChatMessage(playerID, msg, all)
-end
-
 --
 -- Logging methods
 --

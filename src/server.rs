@@ -2,7 +2,6 @@ use std::future::Future;
 use std::net::SocketAddr;
 use std::time::Duration;
 
-use crate::chat::Chat;
 use crate::rpc::{HookRpc, MissionRpc};
 use crate::services::DcsServices;
 use crate::shutdown::{Shutdown, ShutdownHandle};
@@ -29,7 +28,6 @@ struct ServerState {
     eval_enabled: bool,
     ipc_mission: IPC<StreamEventsResponse>,
     ipc_hook: IPC<()>,
-    chat: Chat,
     stats: Stats,
 }
 
@@ -62,7 +60,6 @@ impl Server {
                 eval_enabled: config.eval_enabled,
                 ipc_mission,
                 ipc_hook,
-                chat: Chat::default(),
                 stats: Stats::new(shutdown.handle()),
             },
             shutdown,
@@ -98,10 +95,6 @@ impl Server {
         // shutdown the async runtime, again give everything another 5 secs before forecefully
         // killing everything
         self.runtime.shutdown_timeout(Duration::from_secs(5));
-    }
-
-    pub fn handle_chat_message(&self, player_id: u32, message: String, all: bool) {
-        self.state.chat.handle_message(player_id, message, all);
     }
 
     pub fn ipc_mission(&self) -> &IPC<StreamEventsResponse> {
@@ -150,12 +143,11 @@ async fn try_run(
         eval_enabled,
         ipc_mission,
         ipc_hook,
-        chat,
         stats,
     } = state;
 
     let mut mission_rpc = MissionRpc::new(ipc_mission, stats.clone(), shutdown_signal.clone());
-    let mut hook_rpc = HookRpc::new(ipc_hook, chat, stats, shutdown_signal.clone());
+    let mut hook_rpc = HookRpc::new(ipc_hook, stats, shutdown_signal.clone());
 
     if eval_enabled {
         mission_rpc.enable_eval();

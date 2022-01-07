@@ -221,6 +221,11 @@ return Group.getByName('Aerial-1'):getName()
 
 The REPL is also available in the release and can be run by running `Tools/DCS-gRPC/repl.exe`
 
+### Contributions
+
+This repository is powered by GitHub Actions for the Continuous Integration (CI) services. The same CI checks would be triggered and executed as you push code to your forked repository, and providing early feedback before a maintainer executes a manual execution on the pull request.
+
+
 ### Troublshooting
 
 #### Linker Error 1104

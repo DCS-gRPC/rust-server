@@ -1,12 +1,28 @@
--- note: the hook's load will only fire after the mission loaded. Therefore, all setup
--- will be passed into the config file (via the file system)
-local function load()
-  log.write("[GRPC-Hook]", log.INFO, "mission loaded, setting up gRPC listener ...")
+-- This file is only responsible for loading the config and executing `lua\DCS-gRPC\grpc-hook.lua`,
+-- where the main logic of the hook is implemented.
 
-  -- Load config (written by `grpc-mission.lua`)
-  _G.GRPC = {}
-  setfenv(assert(loadfile(lfs.writedir() .. [[Data\dcs-grpc.lua]])), GRPC)()
+local function init()
+  log.write("[GRPC-Hook]", log.INFO, "Initializing ...")
 
+  if not GRPC then
+    _G.GRPC = {}
+  end
+
+  -- load settings from `Saved Games/DCS/Config/dcs-grpc.lua`
+  do
+    log.write("[GRPC-Hook]", log.INFO, "Checking optional config at `Config/dcs-grpc.lua` ...")
+    local file, err = io.open(lfs.writedir() .. [[Config\dcs-grpc.lua]], "r")
+    if file then
+      local f = assert(loadstring(file:read("*all")))
+      setfenv(f, GRPC)
+      f()
+      log.write("[GRPC-Hook]", log.INFO, "`Config/dcs-grpc.lua` successfully read")
+    else
+      log.write("[GRPC-Hook]", log.INFO, "`Config/dcs-grpc.lua` not found (" .. tostring(err) .. ")")
+    end
+  end
+
+  -- Set default settings.
   if not GRPC.luaPath then
     GRPC.luaPath = lfs.writedir() .. [[Scripts\DCS-gRPC\]]
   end
@@ -17,91 +33,7 @@ local function load()
     GRPC.throughputLimit = 600
   end
 
-  -- Let DCS know where to find the DLLs
-  if not string.find(package.cpath, GRPC.dllPath) then
-    package.cpath = package.cpath .. GRPC.dllPath .. [[?.dll;]]
-  end
-
-  local ok, grpc = pcall(require, "dcs_grpc_hot_reload")
-  if ok then
-    log.write("[GRPC-Hook]", log.INFO, "loaded hot reload version")
-  else
-    grpc = require("dcs_grpc")
-  end
-
-  _G.grpc = grpc
-  assert(pcall(assert(loadfile(_G.GRPC.luaPath .. [[grpc.lua]]))))
-
-  log.write("[GRPC-Hook]", log.INFO, "gRPC listener set up.")
-end
-
-local function init()
-  log.write("[GRPC-Hook]", log.INFO, "Initializing ...")
-
-  local handler = {}
-
-  function handler.onMissionLoadEnd()
-    local ok, err = pcall(load)
-    if not ok then
-      log.write("[GRPC-Hook]", log.ERROR, "Failed to set up gRPC listener: "..tostring(err))
-    end
-  end
-
-  function handler.onSimulationFrame()
-    if GRPC.onSimulationFrame then
-      GRPC.onSimulationFrame()
-    end
-  end
-
-  function handler.onSimulationStop()
-    log.write("[GRPC-Hook]", log.INFO, "simulation stopped, shutting down gRPC listener ...")
-
-    _G.GRPC.stop()
-    _G.GRPC = nil
-  end
-
-  function handler.onPlayerTrySendChat(playerID, msg)
-    -- note: currently `all` (third parameter) will always `=true` regardless if the target is to the coalition/team
-    --        or to everybody. When ED fixes this, implementation should determine the dcs.common.v0.Coalition
-
-    grpc.event({
-      time = DCS.getModelTime(),
-      event = {
-        type = "playerSendChat",
-        playerId = playerID,
-        message = msg
-      },
-    })
-
-    return msg
-  end
-
-  function handler.onPlayerTryConnect(addr, name, ucid, id)
-    grpc.event({
-      time = DCS.getModelTime(),
-      event = {
-        type = "connect",
-        addr = addr,
-        name = name,
-        ucid = ucid,
-        id = id,
-      },
-    })
-    -- not returning `true` here to allow other scripts to handle this hook
-  end
-
-  function handler.onPlayerDisconnect(id, reason)
-    grpc.event({
-      time = DCS.getModelTime(),
-      event = {
-        type = "disconnect",
-        id = id,
-        reason = reason + 1, -- Increment for non zero-indexed gRPC enum
-      },
-    })
-  end
-
-  DCS.setUserCallbacks(handler)
+  dofile(GRPC.luaPath .. [[grpc-hook.lua]])
 
   log.write("[GRPC-Hook]", log.INFO, "Initialized ...")
 end

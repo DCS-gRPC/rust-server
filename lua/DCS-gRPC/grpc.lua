@@ -1,4 +1,4 @@
-local isMissionEnv = _G.DCS == nil
+local isMissionEnv = DCS == nil
 
 if isMissionEnv then
   env.info("[GRPC] mission loading ...")

@@ -4,15 +4,15 @@ end
 
 -- load settings from `Saved Games/DCS/Config/dcs-grpc.lua`
 do
-	env.error("[GRPC] Checking optional config at `Config/dcs-grpc.lua` ...")
+  env.info("[GRPC] Checking optional config at `Config/dcs-grpc.lua` ...")
   local file, err = io.open(lfs.writedir() .. [[Config\dcs-grpc.lua]], "r")
   if file then
     local f = assert(loadstring(file:read("*all")))
     setfenv(f, GRPC)
     f()
-    env.info("[GRPC] Optional config at `Config/dcs-grpc.lua` successfully read")
+    env.info("[GRPC] `Config/dcs-grpc.lua` successfully read")
   else
-	  env.info("[GRPC] Optional config at `Config/dcs-grpc.lua` not found (" .. tostring(err) .. ")")
+    env.info("[GRPC] `Config/dcs-grpc.lua` not found (" .. tostring(err) .. ")")
   end
 end
 
@@ -28,21 +28,8 @@ if GRPC.throughputLimit == nil or GRPC.throughputLimit == 0 or not type(GRPC.thr
 end
 
 -- Let DCS know where to find the DLLs
-package.cpath = package.cpath .. GRPC.dllPath .. [[?.dll;]]
-
-env.info("[GRPC] Writing " .. lfs.writedir() .. [[Data\dcs-grpc.lua]] )
--- Make settings available to gRPC hook
-local file, err = io.open(lfs.writedir() .. [[Data\dcs-grpc.lua]], "w")
-if file then
-  file:write(
-    "luaPath = [[" .. GRPC.luaPath .. "]]\n"
-    .. "dllPath = [[" .. GRPC.dllPath .. "]]\n"
-    .. "throughputLimit = [[" .. GRPC.throughputLimit .. "]]\n"
-  )
-  file:flush()
-  file:close()
-else
-  env.error("[GRPC] Error writing config: " .. err)
+if not string.find(package.cpath, GRPC.dllPath) then
+  package.cpath = package.cpath .. GRPC.dllPath .. [[?.dll;]]
 end
 
 -- Load DLL before `require` gets sanitized.

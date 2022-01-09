@@ -51,68 +51,42 @@ Add the following code to your mission. This will start the DCS-gRPC server. You
 trigger in your .miz file or you can add this code to an existing lua file that your mission may be running.
 
 ```lua
--- Optional: Change settings if desired, e.g.:
-GRPC.debug = true
-
--- Required: Load the gRPC server into the mission
+-- Load the gRPC server into the mission
 GRPC.load()
 ```
 
 ### Settings
 
-The behaviour of the gRPC server can be fine-tuned using various settings that can be set on the `GRPC` global (before the `grpc.lua` is executed). The available settings and their defaults are:
+The behaviour of the gRPC server can be fine-tuned using various settings that can be set inside of `Saved Games\DCS\Config\dcs-grpc.lua` (must be created if it doesn't exist). The available settings and their defaults are:
 
 ```lua
 -- Whether the `Eval` method is enabled or not.
-GRPC.evalEnabled = false
+evalEnabled = false
 
 -- The host the gRPC listens on (use "0.0.0.0" to listen on all IP addresses of the host).
-GRPC.host = '127.0.0.1'
+host = '127.0.0.1'
 
 -- The port to listen on.
-GRPC.port = 50051
+port = 50051
 
 -- Whether debug logging is enabled or not.
-GRPC.debug = false
+debug = false
 
 -- Limit of calls per second that are executed inside of the mission scripting environment.
-GRPC.throughputLimit = 600
+throughputLimit = 600
 
 -- Whether the gRPC server should be automatically started for each mission on the DCS instance
 -- When `true`, it is not necessary to run `GRPC.load()` inside of a mission anymore.
-GRPC.autostart = false
+autostart = false
 ```
 
-Settings can either be set:
-- above `GRPC.load()` inside of a mission,
-  ```lua
-  GRPC.debug = true
-  GRPC.autostart = true
-  GRPC.load()
-  ```
+The settings `evalEnabled` and `debug` can also be set on the `GRPC` global before `GRPC.load()` is called (unless `autostart` is `true`):
 
-- inside a `Saved Games\DCS\Config\dcs-grpc.lua` file (useful if run multiple servers in parallel), or
-
-  `Saved Games\DCS\Config\dcs-grpc.lua`:
-  ```lua
-  GRPC.debug = true
-  GRPC.autostart = true
-  ```
-
-- globally inside of the `MissionScripting.lua`
-  ```diff
-    --Initialization script for the Mission lua Environment (SSE)
-
-    dofile('Scripts/ScriptingSystem.lua')
-  +
-  + GRPC = {
-  +   throughputLimit = 200,
-  +   autostart = true
-  + }
-  + dofile(lfs.writedir()..[[Scripts\DCS-gRPC\grpc-mission.lua]])
-
-    ...
-  ```
+```lua
+GRPC.evalEnabled = true
+GRPC.debug = true
+GRPC.load()
+```
 
 ### Confirmation
 
@@ -160,18 +134,21 @@ cargo build --features hot-reload
 copy target/debug/dcs_grpc.dll target/debug/dcs_grpc_hot_reload.dll
 ```
 
-### Prepare Mission
+### Prepare DCS
 
-For development, update the previously added line in `DCS World\Scripts\MissionScripting.lua` to point to your checked out repository of the gRPC server:
+For development:
 
-```diff
-- dofile(lfs.writedir()..[[Scripts\DCS-gRPC\grpc-mission.lua]])
-+ GRPC = {
-+ 	dllPath = [[C:\Development\DCS-gRPC\rust-server\target\debug\]],
-+ 	luaPath = [[C:\Development\DCS-gRPC\rust-server\lua\DCS-gRPC]]
-+ }
-+ dofile(GRPC.luaPath .. [[grpc-mission.lua]])
-```
+- update your `MissionScripting.lua` to load `grpc-mission.lua` from your local clone, e.g.:
+  ```diff
+  - dofile(lfs.writedir()..[[Scripts\DCS-gRPC\grpc-mission.lua]])
+  + dofile([[C:\Development\DCS-gRPC\rust-server\lua\DCS-gRPC\grpc-mission.lua]])
+  ```
+- add custom `dllPath` and `luaPath` settings to your `Saved Games\DCS\Config\dcs-grpc.lua`:
+  ```lua
+  dllPath = [[C:\Development\DCS-gRPC\rust-server\target\debug\]]
+  luaPath = [[C:\Development\DCS-gRPC\rust-server\lua\DCS-gRPC\]]
+  ```
+- copy the hook script from `lua\Hooks\DCS-gRPC.lua` to `Scripts\Hooks\DCS-gRPC.lua`
 
 ### Debugging
 

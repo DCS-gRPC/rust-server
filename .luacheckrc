@@ -1,6 +1,7 @@
 std = "lua51"
 globals = {
   "GRPC",
+  "grpc",
 }
 read_globals = {
   "AI",
@@ -10,7 +11,6 @@ read_globals = {
   "DCS",
   "env",
   "Group",
-  "grpc",
   "land",
   "lfs",
   "log",

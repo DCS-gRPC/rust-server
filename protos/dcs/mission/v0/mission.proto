@@ -24,15 +24,20 @@ service MissionService {
   rpc GetScenarioCurrentTime(GetScenarioCurrentTimeRequest)
       returns (GetScenarioCurrentTimeResponse) {}
 
-  // Registers a mission command.
-  // https://wiki.hoggitworld.com/view/DCS_func_addCommand
+  // Adds a new mission command
+  // See https://wiki.hoggitworld.com/view/DCS_singleton_missionCommands
   rpc AddMissionCommand(AddMissionCommandRequest)
       returns (AddMissionCommandResponse) {}
 
+  // Adds a new command sub menu
+  // See https://wiki.hoggitworld.com/view/DCS_singleton_missionCommands
+  rpc AddMissionCommandSubMenu(AddMissionCommandSubMenuRequest)
+      returns (AddMissionCommandSubMenuResponse) {}
+
   // Removes a registered mission command.
-  // https://wiki.hoggitworld.com/view/DCS_func_removeItem
-  rpc RemoveMissionCommand(RemoveMissionCommandRequest)
-      returns (RemoveMissionCommandResponse) {}
+  // See https://wiki.hoggitworld.com/view/DCS_singleton_missionCommands
+  rpc RemoveMissionCommandItem(RemoveMissionCommandItemRequest)
+      returns (RemoveMissionCommandItemResponse) {}
 }
 
 message StreamEventsRequest {}
@@ -457,15 +462,38 @@ message GetScenarioCurrentTimeRequest {}
 message GetScenarioCurrentTimeResponse { string datetime = 1; }
 
 message AddMissionCommandRequest {
-  // A unique identifier for this command. This will be passed within the
-  // corresponding MissionCommandEvent.
   string id = 1;
   string name = 2;
   repeated string path = 3;
+
+  oneof target {
+    bool global = 4;
+    dcs.common.v0.Coalition coalition = 5;
+    string group = 6;
+  }
 }
 
 message AddMissionCommandResponse {}
 
-message RemoveMissionCommandRequest { string path = 1; }
+message RemoveMissionCommandItemRequest {
+  repeated string path = 1;
+  oneof target {
+    bool global = 2;
+    dcs.common.v0.Coalition coalition = 3;
+    string group = 4;
+  }
+}
 
-message RemoveMissionCommandResponse {}
+message RemoveMissionCommandItemResponse {}
+
+message AddMissionCommandSubMenuRequest {
+  string name = 1;
+  repeated string path = 2;
+  oneof target {
+    bool global = 3;
+    dcs.common.v0.Coalition coalition = 4;
+    string group = 5;
+  }
+}
+
+message AddMissionCommandSubMenuResponse {}

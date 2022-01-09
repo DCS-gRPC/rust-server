@@ -102,12 +102,24 @@ impl MissionService for MissionRpc {
         Ok(Response::new(mission::v0::AddMissionCommandResponse {}))
     }
 
-    async fn remove_mission_command(
+    async fn add_mission_command_sub_menu(
         &self,
-        request: Request<mission::v0::RemoveMissionCommandRequest>,
-    ) -> Result<Response<mission::v0::RemoveMissionCommandResponse>, Status> {
-        self.request("removeMissionCommand", request).await?;
-        Ok(Response::new(mission::v0::RemoveMissionCommandResponse {}))
+        request: Request<mission::v0::AddMissionCommandSubMenuRequest>,
+    ) -> Result<Response<mission::v0::AddMissionCommandSubMenuResponse>, Status> {
+        self.request("addMissionCommandSubMenu", request).await?;
+        Ok(Response::new(
+            mission::v0::AddMissionCommandSubMenuResponse {},
+        ))
+    }
+
+    async fn remove_mission_command_item(
+        &self,
+        request: Request<mission::v0::RemoveMissionCommandItemRequest>,
+    ) -> Result<Response<mission::v0::RemoveMissionCommandItemResponse>, Status> {
+        self.request("removeMissionItem", request).await?;
+        Ok(Response::new(
+            mission::v0::RemoveMissionCommandItemResponse {},
+        ))
     }
 }
 

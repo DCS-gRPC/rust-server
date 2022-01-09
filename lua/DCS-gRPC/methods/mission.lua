@@ -426,11 +426,46 @@ function missionCommandCallback(callbackId)
 end
 
 GRPC.methods.addMissionCommand = function(params)
-  missionCommands.addCommand(params.name, params.path, missionCommandCallback, params.id)
+  if params.target.coalition ~= nil then
+    missionCommands.addCommandForCoalition(params.target.coalition, params.name, params.path, missionCommandCallback, params.id)
+  elseif params.target.group ~= nil then
+    local group = Group.getByName(params.target.group)
+    if group == nil then
+      return GRPC.errorNotFound("group does not exist")
+    end
+    missionCommands.addCommandForGroup(group:getID(), params.name, params.path, missionCommandCallback, params.id)
+  else
+    missionCommands.addCommand(params.name, params.path, missionCommandCallback, params.id)
+  end
   return GRPC.success(nil)
 end
 
-GRPC.methods.removeMissionCommand = function(params)
-  missionCommands.removeItem(params.path)
+GRPC.methods.addMissionCommandSubMenu = function(params)
+  if params.target.coalition ~= nil then
+    missionCommands.addSubMenuForCoalition(params.target.coalition, params.name, params.path)
+  elseif params.target.group ~= nil then
+    local group = Group.getByName(params.target.group)
+    if group == nil then
+      return GRPC.errorNotFound("group does not exist")
+    end
+    missionCommands.addSubMenuForGroup(group:getID(), params.name, params.path)
+  else
+    missionCommands.addSubMenu(params.name, params.path)
+  end
+  return GRPC.success(nil)
+end
+
+GRPC.methods.removeMissionItem = function(params)
+  if params.target.coalition ~= nil then
+    missionCommands.removeItemForCoalition(params.target.coalition, params.path)
+  elseif params.target.group ~= nil then
+    local group = Group.getByName(params.target.group)
+    if group == nil then
+      return GRPC.errorNotFound("group does not exist")
+    end
+    missionCommands.removeItemForGroup(group:getID(), params.path)
+  else
+    missionCommands.removeItem(params.path)
+  end
   return GRPC.success(nil)
 end

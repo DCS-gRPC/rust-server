@@ -458,8 +458,7 @@ message GetScenarioCurrentTimeResponse { string datetime = 1; }
 
 message AddMissionCommandRequest {
   // A unique identifier for this command. This will be passed within the
-  // corresponding
-  //  MissionCommandEvent.
+  // corresponding MissionCommandEvent.
   string id = 1;
   string name = 2;
   repeated string path = 3;

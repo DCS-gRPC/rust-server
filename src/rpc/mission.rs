@@ -93,6 +93,22 @@ impl MissionService for MissionRpc {
             })?,
         }))
     }
+
+    async fn add_mission_command(
+        &self,
+        request: Request<mission::v0::AddMissionCommandRequest>,
+    ) -> Result<Response<mission::v0::AddMissionCommandResponse>, Status> {
+        self.request("addMissionCommand", request).await?;
+        Ok(Response::new(mission::v0::AddMissionCommandResponse {}))
+    }
+
+    async fn remove_mission_command(
+        &self,
+        request: Request<mission::v0::RemoveMissionCommandRequest>,
+    ) -> Result<Response<mission::v0::RemoveMissionCommandResponse>, Status> {
+        self.request("removeMissionCommand", request).await?;
+        Ok(Response::new(mission::v0::RemoveMissionCommandResponse {}))
+    }
 }
 
 impl MissionRpc {

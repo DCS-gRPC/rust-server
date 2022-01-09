@@ -1,3 +1,5 @@
+local missionCommands = missionCommands
+
 local function exporter(object)
   if object == nil then
     return nil
@@ -410,4 +412,25 @@ GRPC.onDcsEvent = function(event)
     GRPC.logWarning("Skipping unimplemented event id "..tostring(event.id))
     return nil
   end
+end
+
+function missionCommandCallback(callbackId)
+  GRPC.event({
+    time = timer.getTime(),
+    event = {
+      type = "missionCommand",
+      id = callbackId,
+    }
+  })
+  return GRPC.success(nil)
+end
+
+GRPC.methods.addMissionCommand = function(params)
+  missionCommands.addCommand(params.name, params.path, missionCommandCallback, params.id)
+  return GRPC.success(nil)
+end
+
+GRPC.methods.removeMissionCommand = function(params)
+  missionCommands.removeItem(params.path)
+  return GRPC.success(nil)
 end

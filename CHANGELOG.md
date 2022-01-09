@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ForcePlayerSlot` API
 - `PlayerChangeSlotEvent` emitted when player changes slot
 - `StreamUnits` can optionally specify the `category` of the units which may be monitored.
+- APIs for creating the F10 radio menus and letting players run them. These will emit events to DCS-gRPC clients when run.
 
 ### Fixed
 - `MarkToCoalition` was sending the mark to the incorrect coalition.

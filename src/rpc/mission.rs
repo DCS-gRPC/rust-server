@@ -93,6 +93,92 @@ impl MissionService for MissionRpc {
             })?,
         }))
     }
+
+    async fn add_mission_command(
+        &self,
+        request: Request<mission::v0::AddMissionCommandRequest>,
+    ) -> Result<Response<mission::v0::AddMissionCommandResponse>, Status> {
+        let res: mission::v0::AddMissionCommandResponse =
+            self.request("addMissionCommand", request).await?;
+        Ok(Response::new(res))
+    }
+
+    async fn add_mission_command_sub_menu(
+        &self,
+        request: Request<mission::v0::AddMissionCommandSubMenuRequest>,
+    ) -> Result<Response<mission::v0::AddMissionCommandSubMenuResponse>, Status> {
+        let res: mission::v0::AddMissionCommandSubMenuResponse =
+            self.request("addMissionCommandSubMenu", request).await?;
+        Ok(Response::new(res))
+    }
+
+    async fn remove_mission_command_item(
+        &self,
+        request: Request<mission::v0::RemoveMissionCommandItemRequest>,
+    ) -> Result<Response<mission::v0::RemoveMissionCommandItemResponse>, Status> {
+        self.notification("removeMissionCommandItem", request)
+            .await?;
+        Ok(Response::new(
+            mission::v0::RemoveMissionCommandItemResponse {},
+        ))
+    }
+
+    async fn add_coalition_command(
+        &self,
+        request: Request<mission::v0::AddCoalitionCommandRequest>,
+    ) -> Result<Response<mission::v0::AddCoalitionCommandResponse>, Status> {
+        let res: mission::v0::AddCoalitionCommandResponse =
+            self.request("addCoalitionCommand", request).await?;
+        Ok(Response::new(res))
+    }
+
+    async fn add_coalition_command_sub_menu(
+        &self,
+        request: Request<mission::v0::AddCoalitionCommandSubMenuRequest>,
+    ) -> Result<Response<mission::v0::AddCoalitionCommandSubMenuResponse>, Status> {
+        let res: mission::v0::AddCoalitionCommandSubMenuResponse =
+            self.request("addCoalitionCommandSubMenu", request).await?;
+        Ok(Response::new(res))
+    }
+
+    async fn remove_coalition_command_item(
+        &self,
+        request: Request<mission::v0::RemoveCoalitionCommandItemRequest>,
+    ) -> Result<Response<mission::v0::RemoveCoalitionCommandItemResponse>, Status> {
+        self.notification("removeCoalitionCommandItem", request)
+            .await?;
+        Ok(Response::new(
+            mission::v0::RemoveCoalitionCommandItemResponse {},
+        ))
+    }
+
+    async fn add_group_command(
+        &self,
+        request: Request<mission::v0::AddGroupCommandRequest>,
+    ) -> Result<Response<mission::v0::AddGroupCommandResponse>, Status> {
+        let res: mission::v0::AddGroupCommandResponse =
+            self.request("addGroupCommand", request).await?;
+        Ok(Response::new(res))
+    }
+
+    async fn add_group_command_sub_menu(
+        &self,
+        request: Request<mission::v0::AddGroupCommandSubMenuRequest>,
+    ) -> Result<Response<mission::v0::AddGroupCommandSubMenuResponse>, Status> {
+        let res: mission::v0::AddGroupCommandSubMenuResponse =
+            self.request("addGroupCommandSubMenu", request).await?;
+        Ok(Response::new(res))
+    }
+
+    async fn remove_group_command_item(
+        &self,
+        request: Request<mission::v0::RemoveGroupCommandItemRequest>,
+    ) -> Result<Response<mission::v0::RemoveGroupCommandItemResponse>, Status> {
+        self.notification("removeGroupCommandItem", request).await?;
+        Ok(Response::new(
+            mission::v0::RemoveGroupCommandItemResponse {},
+        ))
+    }
 }
 
 impl MissionRpc {

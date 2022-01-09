@@ -131,6 +131,7 @@ GRPC.errorPermissionDenied = function(msg)
   }
 end
 
+GRPC.event = grpc.event
 --
 -- RPC methods
 --

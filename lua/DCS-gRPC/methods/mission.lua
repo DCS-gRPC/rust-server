@@ -428,8 +428,8 @@ end
 GRPC.methods.addMissionCommand = function(params)
   if params.target.coalition ~= nil then
     missionCommands.addCommandForCoalition(params.target.coalition, params.name, params.path, missionCommandCallback, params.id)
-  elseif params.target.group ~= nil then
-    local group = Group.getByName(params.target.group)
+  elseif params.target.groupName ~= nil then
+    local group = Group.getByName(params.target.groupName)
     if group == nil then
       return GRPC.errorNotFound("group does not exist")
     end
@@ -443,8 +443,8 @@ end
 GRPC.methods.addMissionCommandSubMenu = function(params)
   if params.target.coalition ~= nil then
     missionCommands.addSubMenuForCoalition(params.target.coalition, params.name, params.path)
-  elseif params.target.group ~= nil then
-    local group = Group.getByName(params.target.group)
+  elseif params.target.groupName ~= nil then
+    local group = Group.getByName(params.target.groupName)
     if group == nil then
       return GRPC.errorNotFound("group does not exist")
     end
@@ -458,8 +458,8 @@ end
 GRPC.methods.removeMissionItem = function(params)
   if params.target.coalition ~= nil then
     missionCommands.removeItemForCoalition(params.target.coalition, params.path)
-  elseif params.target.group ~= nil then
-    local group = Group.getByName(params.target.group)
+  elseif params.target.groupName ~= nil then
+    local group = Group.getByName(params.target.groupName)
     if group == nil then
       return GRPC.errorNotFound("group does not exist")
     end

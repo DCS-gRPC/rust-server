@@ -469,7 +469,7 @@ message AddMissionCommandRequest {
   oneof target {
     bool global = 4;
     dcs.common.v0.Coalition coalition = 5;
-    string group = 6;
+    string group_name = 6;
   }
 }
 
@@ -477,10 +477,11 @@ message AddMissionCommandResponse {}
 
 message RemoveMissionCommandItemRequest {
   repeated string path = 1;
+
   oneof target {
     bool global = 2;
     dcs.common.v0.Coalition coalition = 3;
-    string group = 4;
+    string group_name = 4;
   }
 }
 
@@ -489,10 +490,11 @@ message RemoveMissionCommandItemResponse {}
 message AddMissionCommandSubMenuRequest {
   string name = 1;
   repeated string path = 2;
+
   oneof target {
     bool global = 3;
     dcs.common.v0.Coalition coalition = 4;
-    string group = 5;
+    string group_name = 5;
   }
 }
 

@@ -1,8 +1,14 @@
 syntax = "proto3";
 package dcs.mission.v0;
 import "dcs/common/v0/common.proto";
+import "google/protobuf/struct.proto";
 option csharp_namespace = "RurouniJones.Dcs.Grpc.V0.Mission";
 option go_package = "github.com/DCS-gRPC/go-bindings/dcs/v0/mission";
+
+// the "path" field in mission command requests and responses is a repeated
+// string however "paths" doesn't make sense. therefore we will disable
+// the linter pluralization checks for this file.
+// protolint:disable REPEATED_FIELD_NAMES_PLURALIZED
 
 // Contains the streaming APIs that streaming information out of the DCS server.
 service MissionService {
@@ -25,6 +31,51 @@ service MissionService {
   // datetime string.
   rpc GetScenarioCurrentTime(GetScenarioCurrentTimeRequest)
       returns (GetScenarioCurrentTimeResponse) {}
+
+  // Adds a new mission command
+  // See https://wiki.hoggitworld.com/view/DCS_func_addCommand
+  rpc AddMissionCommand(AddMissionCommandRequest)
+      returns (AddMissionCommandResponse) {}
+
+  // Adds a new command sub menu
+  // See https://wiki.hoggitworld.com/view/DCS_func_addSubMenu
+  rpc AddMissionCommandSubMenu(AddMissionCommandSubMenuRequest)
+      returns (AddMissionCommandSubMenuResponse) {}
+
+  // Removes a registered mission command.
+  // See https://wiki.hoggitworld.com/view/DCS_func_removeItem
+  rpc RemoveMissionCommandItem(RemoveMissionCommandItemRequest)
+      returns (RemoveMissionCommandItemResponse) {}
+
+  // Adds a new coalition command
+  // See https://wiki.hoggitworld.com/view/DCS_func_addCommandForCoalition
+  rpc AddCoalitionCommand(AddCoalitionCommandRequest)
+      returns (AddCoalitionCommandResponse) {}
+
+  // Adds a new coalition command sub menu
+  // See https://wiki.hoggitworld.com/view/DCS_func_addSubMenuForCoalition
+  rpc AddCoalitionCommandSubMenu(AddCoalitionCommandSubMenuRequest)
+      returns (AddCoalitionCommandSubMenuResponse) {}
+
+  // Removes a registered coalition command.
+  // See https://wiki.hoggitworld.com/view/DCS_func_removeItemForCoalition
+  rpc RemoveCoalitionCommandItem(RemoveCoalitionCommandItemRequest)
+      returns (RemoveCoalitionCommandItemResponse) {}
+
+  // Adds a new group command
+  // See https://wiki.hoggitworld.com/view/DCS_func_addCommandForGroup
+  rpc AddGroupCommand(AddGroupCommandRequest)
+      returns (AddGroupCommandResponse) {}
+
+  // Adds a new group command sub menu
+  // See https://wiki.hoggitworld.com/view/DCS_func_addSubMenuForGroup
+  rpc AddGroupCommandSubMenu(AddGroupCommandSubMenuRequest)
+      returns (AddGroupCommandSubMenuResponse) {}
+
+  // Removes a group coalition command.
+  // See https://wiki.hoggitworld.com/view/DCS_func_removeItemForGroup
+  rpc RemoveGroupCommandItem(RemoveGroupCommandItemRequest)
+      returns (RemoveGroupCommandItemResponse) {}
 }
 
 message StreamEventsRequest {
@@ -373,6 +424,25 @@ message StreamEventsResponse {
     DisconnectReason reason = 2;
   }
 
+  message MissionCommandEvent {
+    // A struct containing details of the command that was run by a player
+    google.protobuf.Struct details = 1;
+  }
+
+  message CoalitionCommandEvent {
+    // The coalition of the player who ran the command
+    dcs.common.v0.Coalition coalition = 1;
+    // A struct containing details of the command that was run by a player
+    google.protobuf.Struct details = 2;
+  }
+
+  message GroupCommandEvent {
+    // The name of the group of the player who ran the command
+    string group_name = 1;
+    // A struct containing details of the command that was run by a player
+    google.protobuf.Struct details = 2;
+  }
+
   // The event's mission time.
   double time = 1;
   oneof event {
@@ -421,6 +491,9 @@ message StreamEventsResponse {
     DisconnectEvent disconnect = 8193;
     PlayerSendChatEvent player_send_chat = 8194;
     PlayerChangeSlotEvent player_change_slot = 8195;
+    MissionCommandEvent mission_command = 8196;
+    CoalitionCommandEvent coalition_command = 8197;
+    GroupCommandEvent group_command = 8198;
   }
 }
 
@@ -470,4 +543,170 @@ message GetScenarioCurrentTimeRequest {
 
 message GetScenarioCurrentTimeResponse {
   string datetime = 1;
+}
+
+// MISSION COMMANDS
+// GLOBAL
+
+// Adds an F10 radio command visible to all players in all coalitions.
+// When the player activates the command then a `missionCommand` event will be
+// emitted to all connected DCS-gRPC clients for processing as they see fit.
+message AddMissionCommandRequest {
+  // The name of the command that is displayed to the player.
+  // It will form the last entry in the returned path.
+  string name = 1;
+  // The menu path the command will appear under. This can be empty if you want
+  // the command to be on the first level under the F10 menu. This path must
+  // already have been created.
+  repeated string path = 2;
+  // A struct containing data that will be included in the emitted event to the
+  // DCS-gRPC clients
+  google.protobuf.Struct details = 3;
+}
+
+message AddMissionCommandResponse {
+  // The full path to the command, including the command name. Use this path to
+  // delete the command.
+  repeated string path = 1;
+}
+
+message AddMissionCommandSubMenuRequest {
+  // The name of the submenu that is displayed to the player.
+  // It will form the last entry in the returned path.
+  string name = 1;
+  // The menu path the submenu will appear under. This can be empty if you want
+  // the submenu to be on the first level under the F10 menu. This path must
+  // already have been created using this command. you cannot create a nested
+  // submenu tree in one command.
+  repeated string path = 2;
+}
+
+message AddMissionCommandSubMenuResponse {
+  // The full path to the submenu, including the submenu name. Use this path to
+  // add another submenu or command underneath it or delete the submenu.
+  repeated string path = 1;
+}
+
+message RemoveMissionCommandItemRequest {
+  // The full path to the menu item, which can be a submenu or a command, to be
+  // removed. Deleting a menu item will delete all children it may have.
+  repeated string path = 1;
+}
+
+message RemoveMissionCommandItemResponse {
+}
+
+// COALITION
+
+// Adds an F10 radio command visible to all players in the specified coalition.
+// When the player activates the command then a `coalitionCommand` event will
+// be emitted to all connected DCS-gRPC clients for processing as they see fit.
+// The emitted event will include the coalition.
+message AddCoalitionCommandRequest {
+  // The coalition whose players will be able to see and run the command
+  dcs.common.v0.Coalition coalition = 1; 
+  // The name of the command that is displayed to the player.
+  // It will form the last entry in the returned path.
+  string name = 2;
+  // The menu path the command will appear under. This can be empty if you want
+  // the command to be on the first level under the F10 menu. This path must
+  // already have been created.
+  repeated string path = 3;
+  // A struct containing data that will be included in the emitted event to the
+  // DCS-gRPC clients
+  google.protobuf.Struct details = 4;
+}
+
+message AddCoalitionCommandResponse {
+  // The full path to the command, including the command name. Use this path to
+  // delete the command.
+  repeated string path = 1;
+}
+
+message AddCoalitionCommandSubMenuRequest {
+  // The coalition whose players will be able to see the submenu
+  dcs.common.v0.Coalition coalition = 1;
+  // The name of the submenu that is displayed to the player.
+  // It will form the last entry in the returned path.
+  string name = 2;
+  // The menu path the submenu will appear under. This can be empty if you want
+  // the submenu to be on the first level under the F10 menu. This path must
+  // already have been created using this command. you cannot create a nested
+  // submenu tree in one command.
+  repeated string path = 3;
+}
+
+message AddCoalitionCommandSubMenuResponse {
+  // The full path to the submenu, including the submenu name. Use this path to
+  // add another submenu or command underneath it or delete the submenu.
+  repeated string path = 1;
+}
+
+message RemoveCoalitionCommandItemRequest {
+  // The coalition whose players will have the menu item removed
+  dcs.common.v0.Coalition coalition = 1; 
+  // The full path to the menu item, which can be a submenu or a command, to be
+  // removed. Deleting a menu item will delete all children it may have.
+  repeated string path = 2;
+}
+
+message RemoveCoalitionCommandItemResponse {
+}
+
+// GROUP
+
+// Adds an F10 radio command visible to all players in the specified group.
+// When the player activates the command then a `groupCommand` event will
+// be emitted to all connected DCS-gRPC clients for processing as they see fit.
+// The emitted event will include the group name.
+message AddGroupCommandRequest {
+  // The name of the group whose players will be able to see and execute the
+  // command. TODO (Figure out if this persists across spawns)
+  string group_name = 1;
+  // The name of the command that is displayed to the player.
+  // It will form the last entry in the returned path.
+  string name = 2;
+  // The menu path the command will appear under. This can be empty if you want
+  // the command to be on the first level under the F10 menu. This path must
+  // already have been created.
+  repeated string path = 3;
+  // A struct containing data that will be included in the emitted event to the
+  // DCS-gRPC clients
+  google.protobuf.Struct details = 4;
+}
+
+message AddGroupCommandResponse {
+  // The full path to the command, including the command name. Use this path to
+  // delete the command.
+  repeated string path = 1;
+}
+
+message AddGroupCommandSubMenuRequest {
+  // The name of the group whose players will be able to see the submenu
+  string group_name = 1;
+  // The name of the submenu that is displayed to the player.
+  // It will form the last entry in the returned path.
+  string name = 2;
+  // The menu path the submenu will appear under. This can be empty if you want
+  // the submenu to be on the first level under the F10 menu. This path must
+  // already have been created using this command. you cannot create a nested
+  // submenu tree in one command.
+  repeated string path = 3;
+}
+
+message AddGroupCommandSubMenuResponse {
+  // The full path to the submenu, including the submenu name. Use this path to
+  // add another submenu or command underneath it or delete the submenu.
+  repeated string path = 1;
+}
+
+message RemoveGroupCommandItemRequest {
+  // The group whose players will have the menu item removed
+  string group_name = 1;
+  // The full path to the menu item, which can be a submenu or a command, to be
+  // removed. Deleting a menu item will delete all children it may have.
+  repeated string path = 2;
+}
+
+message RemoveGroupCommandItemResponse {
 }

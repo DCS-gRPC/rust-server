@@ -1,3 +1,5 @@
+local missionCommands = missionCommands
+
 local function exporter(object)
   if object == nil then
     return nil
@@ -410,4 +412,117 @@ GRPC.onDcsEvent = function(event)
     GRPC.logWarning("Skipping unimplemented event id "..tostring(event.id))
     return nil
   end
+end
+
+-- Mission Level Commands
+
+local function missionCommandCallback(details)
+  local event = {
+    type = "missionCommand",
+    details = details,
+  }
+
+  GRPC.event({
+    time = timer.getTime(),
+    event = event
+  })
+end
+
+
+GRPC.methods.addMissionCommand = function(params)
+  return GRPC.success({
+    path = missionCommands.addCommand(params.name, params.path, missionCommandCallback, params.details)
+  })
+end
+
+GRPC.methods.addMissionCommandSubMenu = function(params)
+  return GRPC.success({
+    path = missionCommands.addSubMenu(params.name, params.path)
+  })
+end
+
+GRPC.methods.removeMissionCommandItem = function(params)
+  missionCommands.removeItem(params.path)
+  return GRPC.success(nil)
+end
+
+-- Coalition Level Commands
+
+local function coalitionCommandCallback(params)
+  local event = {
+    type = "coalitionCommand",
+    details = params.details,
+  }
+
+  GRPC.event({
+    time = timer.getTime(),
+    coalition = params.coalition,
+    event = event
+  })
+end
+
+GRPC.methods.addCoalitionCommand = function(params)
+  return GRPC.success({
+    path = missionCommands.addCommandForCoalition(params.coalition, params.name, params.path,
+      coalitionCommandCallback, params)
+  })
+end
+
+GRPC.methods.addCoalitionCommandSubMenu = function(params)
+  return GRPC.success({
+    path = missionCommands.addSubMenuForCoalition(params.coalition, params.name, params.path)
+  })
+end
+
+GRPC.methods.removeCoalitionCommandItem = function(params)
+  missionCommands.removeItemForCoalition(params.coalition, params.path)
+  return GRPC.success(nil)
+end
+
+-- Group Level Commands
+
+local function groupCommandCallback(params)
+  local event = {
+    type = "groupCommand",
+    details = params.details,
+  }
+
+  GRPC.event({
+    time = timer.getTime(),
+    groupName = params.groupName,
+    event = event
+  })
+end
+
+GRPC.methods.addCoalitionCommand = function(params)
+  local group = Group.getByName(params.groupName)
+  if group == nil then
+    return GRPC.errorNotFound("group does not exist")
+  end
+
+  return GRPC.success({
+    path = missionCommands.addCommandForCoalition(group:getID(), params.name, params.path,
+      groupCommandCallback, params.details)
+  })
+end
+
+GRPC.methods.addCoalitionCommandSubMenu = function(params)
+  local group = Group.getByName(params.groupName)
+  if group == nil then
+    return GRPC.errorNotFound("group does not exist")
+  end
+
+  return GRPC.success({
+    path = missionCommands.addSubMenuForCoalition(group:getID(), params.name, params.path)
+  })
+end
+
+GRPC.methods.removeCoalitionCommandItem = function(params)
+  local group = Group.getByName(params.groupName)
+  if group == nil then
+    return GRPC.errorNotFound("group does not exist")
+  end
+
+  missionCommands.removeItemForCoalition(group:getID(), params.path)
+  return GRPC.success(nil)
 end

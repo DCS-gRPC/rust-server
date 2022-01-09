@@ -24,24 +24,16 @@ service MissionService {
   rpc GetScenarioCurrentTime(GetScenarioCurrentTimeRequest)
       returns (GetScenarioCurrentTimeResponse) {}
 
+  // Registers a mission command.
+  // https://wiki.hoggitworld.com/view/DCS_func_addCommand
   rpc AddMissionCommand(AddMissionCommandRequest)
       returns (AddMissionCommandResponse) {}
 
+  // Removes a registered mission command.
+  // https://wiki.hoggitworld.com/view/DCS_func_removeItem
   rpc RemoveMissionCommand(RemoveMissionCommandRequest)
       returns (RemoveMissionCommandResponse) {}
 }
-
-message AddMissionCommandRequest {
-  string id = 1;
-  string name = 2;
-  repeated string path = 3;
-}
-
-message AddMissionCommandResponse {}
-
-message RemoveMissionCommandRequest { string path = 1; }
-
-message RemoveMissionCommandResponse {}
 
 message StreamEventsRequest {}
 
@@ -463,3 +455,18 @@ message GetScenarioStartTimeResponse { string datetime = 1; }
 message GetScenarioCurrentTimeRequest {}
 
 message GetScenarioCurrentTimeResponse { string datetime = 1; }
+
+message AddMissionCommandRequest {
+  // A unique identifier for this command. This will be passed within the
+  // corresponding
+  //  MissionCommandEvent.
+  string id = 1;
+  string name = 2;
+  repeated string path = 3;
+}
+
+message AddMissionCommandResponse {}
+
+message RemoveMissionCommandRequest { string path = 1; }
+
+message RemoveMissionCommandResponse {}

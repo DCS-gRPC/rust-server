@@ -82,7 +82,7 @@ README.
 
 ### Running only if the mission scripting enables it
 
-Make sure that Create the file `Saved Games\DCS\Config\dcs-grpc.lua` does not exist (Delete if if it does).
+Make sure that the file `Saved Games\DCS\Config\dcs-grpc.lua` does not exist (Delete if it does).
 
 Add the following code to your mission. This will start the DCS-gRPC server. You can add this code to a `DO SCRIPT`
 trigger in your .miz file or you can add this code to an existing lua file that your mission may be running.

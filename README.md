@@ -45,19 +45,20 @@ To make the gRPC server available in the mission scripting environment, add the 
   end
 ```
 
-### Prepare Mission
+### Running DCS-gRPC
 
-Add the following code to your mission. This will start the DCS-gRPC server. You can add this code to a `DO SCRIPT`
-trigger in your .miz file or you can add this code to an existing lua file that your mission may be running.
+There are two ways of running DCS-gRPC. One way allows it to run regardless of what mission is running and the other
+means that DCS-gRPC will _only_ run if the mission scripting itself enables it.
+
+### Running regardless of mission
+
+Create the file `Saved Games\DCS\Config\dcs-grpc.lua` and add the line below
 
 ```lua
--- Load the gRPC server into the mission
-GRPC.load()
+autostart = true
 ```
 
-### Settings
-
-The behaviour of the gRPC server can be fine-tuned using various settings that can be set inside of `Saved Games\DCS\Config\dcs-grpc.lua` (must be created if it doesn't exist). The available settings and their defaults are:
+As well as this you can set other options in this file. These are listed below:
 
 ```lua
 -- Whether the `Eval` method is enabled or not.
@@ -74,26 +75,55 @@ debug = false
 
 -- Limit of calls per second that are executed inside of the mission scripting environment.
 throughputLimit = 600
-
--- Whether the gRPC server should be automatically started for each mission on the DCS instance
--- When `true`, it is not necessary to run `GRPC.load()` inside of a mission anymore.
-autostart = false
 ```
 
-The settings `evalEnabled` and `debug` can also be set on the `GRPC` global before `GRPC.load()` is called (unless `autostart` is `true`):
+Once you have done this start the DCS server and skip to the "Confirming that DCS-gRPC is running" section of this
+README.
+
+### Running only if the mission scripting enables it
+
+Make sure that Create the file `Saved Games\DCS\Config\dcs-grpc.lua` does not exist (Delete if if it does).
+
+Add the following code to your mission. This will start the DCS-gRPC server. You can add this code to a `DO SCRIPT`
+trigger in your .miz file or you can add this code to an existing lua file that your mission may be running.
 
 ```lua
-GRPC.evalEnabled = true
-GRPC.debug = true
+-- Load the gRPC server into the mission
 GRPC.load()
 ```
 
-### Confirmation
+As well as this you can set other options in the script _before_ `GRPC.Load()` . These are listed below:
+
+```lua
+-- Whether the `Eval` method is enabled or not.
+GRPC.evalEnabled = false
+
+-- The host the gRPC listens on (use "0.0.0.0" to listen on all IP addresses of the host).
+GRPC.host = '127.0.0.1'
+
+-- The port to listen on.
+GRPC.port = 50051
+
+-- Whether debug logging is enabled or not.
+GRPC.debug = false
+
+-- Limit of calls per second that are executed inside of the mission scripting environment.
+GRPC.throughputLimit = 600
+```
+
+For example:
+
+```lua
+GRPC.host = '0.0.0.0'
+GRPC.load()
+```
+
+### Confirming that DCS-gRPC is running
 
 To confirm that the server is running check the `\Logs\dcs.log` file and look for entries prefixed with `GRPC`.
 You can also check for the present of a `\Logs\grpc.log` file.
 
-The server will be running on port 50051
+The server will be running on port 50051 by default.
 
 ## Client Development
 
@@ -200,8 +230,9 @@ The REPL is also available in the release and can be run by running `Tools/DCS-g
 
 ### Contributions
 
-This repository is powered by GitHub Actions for the Continuous Integration (CI) services. The same CI checks would be triggered and executed as you push code to your forked repository, and providing early feedback before a maintainer executes a manual execution on the pull request.
-
+This repository is powered by GitHub Actions for the Continuous Integration (CI) services. The same CI checks would be
+triggered and executed as you push code to your forked repository, and providing early feedback before a maintainer
+executes a manual execution on the pull request.
 
 ### Troublshooting
 

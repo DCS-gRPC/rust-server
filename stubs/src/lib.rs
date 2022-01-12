@@ -46,6 +46,12 @@ pub mod mission {
     }
 }
 
+pub mod net {
+    pub mod v0 {
+        tonic::include_proto!("dcs.net.v0");
+    }
+}
+
 pub mod timer {
     pub mod v0 {
         tonic::include_proto!("dcs.timer.v0");

@@ -10,6 +10,7 @@ import "dcs/custom/v0/custom.proto";
 import "dcs/group/v0/group.proto";
 import "dcs/hook/v0/hook.proto";
 import "dcs/mission/v0/mission.proto";
+import "dcs/net/v0/net.proto";
 import "dcs/timer/v0/timer.proto";
 import "dcs/trigger/v0/trigger.proto";
 import "dcs/unit/v0/unit.proto";

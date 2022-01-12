@@ -1,0 +1,29 @@
+syntax = "proto3";
+package dcs.net.v0;
+import "dcs/common/v0/common.proto";
+
+service NetService {
+  // https://wiki.hoggitworld.com/view/DCS_func_send_chat_to
+  rpc SendChatTo(SendChatToRequest) returns (SendChatToResponse) {}
+
+  // https://wiki.hoggitworld.com/view/DCS_func_send_chat
+  rpc SendChat(SendChatRequest) returns (SendChatResponse) {}
+}
+
+message SendChatToRequest {
+  // the message to send in the chat
+  string message = 1;
+  // the target player of the direct message
+  uint32 target_player_id = 2;
+}
+
+message SendChatToResponse {}
+
+message SendChatRequest {
+  // the message to send in the chat
+  string message = 1;
+  // which coalition? DCS only supports ALL or NEUTRAL (only applicable to send_chat)
+  dcs.common.v0.Coalition coalition = 2;
+}
+
+message SendChatResponse {}

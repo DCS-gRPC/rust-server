@@ -7,6 +7,7 @@ read_globals = {
   "AI",
   "atmosphere",
   "coalition",
+  "net",
   "coord",
   "DCS",
   "env",

@@ -15,6 +15,7 @@ mod custom;
 mod group;
 mod hook;
 mod mission;
+mod net;
 mod timer;
 mod trigger;
 mod unit;

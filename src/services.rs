@@ -6,6 +6,7 @@ use stubs::custom::v0::custom_service_server::CustomServiceServer;
 use stubs::group::v0::group_service_server::GroupServiceServer;
 use stubs::hook::v0::hook_service_server::HookServiceServer;
 use stubs::mission::v0::mission_service_server::MissionServiceServer;
+use stubs::net::v0::net_service_server::NetServiceServer;
 use stubs::timer::v0::timer_service_server::TimerServiceServer;
 use stubs::trigger::v0::trigger_service_server::TriggerServiceServer;
 use stubs::unit::v0::unit_service_server::UnitServiceServer;
@@ -36,6 +37,7 @@ pub struct DcsServices {
     group: GroupServiceServer<MissionRpc>,
     hook: HookServiceServer<HookRpc>,
     mission: MissionServiceServer<MissionRpc>,
+    net: NetServiceServer<MissionRpc>,
     timer: TimerServiceServer<MissionRpc>,
     trigger: TriggerServiceServer<MissionRpc>,
     unit: UnitServiceServer<MissionRpc>,
@@ -52,6 +54,7 @@ impl DcsServices {
             group: GroupServiceServer::new(mission_rpc.clone()),
             hook: HookServiceServer::new(hook_rpc),
             mission: MissionServiceServer::new(mission_rpc.clone()),
+            net: NetServiceServer::new(mission_rpc.clone()),
             timer: TimerServiceServer::new(mission_rpc.clone()),
             trigger: TriggerServiceServer::new(mission_rpc.clone()),
             unit: UnitServiceServer::new(mission_rpc.clone()),
@@ -93,6 +96,8 @@ impl Service<http::Request<transport::Body>> for DcsServices {
             self.hook.call(req)
         } else if path.starts_with(MissionServiceServer::<MissionRpc>::NAME) {
             self.mission.call(req)
+        } else if path.starts_with(NetServiceServer::<MissionRpc>::NAME) {
+            self.net.call(req)
         } else if path.starts_with(TimerServiceServer::<MissionRpc>::NAME) {
             self.timer.call(req)
         } else if path.starts_with(TriggerServiceServer::<MissionRpc>::NAME) {

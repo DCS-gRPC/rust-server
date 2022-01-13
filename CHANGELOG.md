@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Generated scaffolding for the `net.*` scope into `NetService`
 - `SendChat` API
 - `SendChatTo` API
+- `GetPlayerInfo` API
 
 ### Changed
 - Stream `PlayerSendChatEvent` to the `MissionService.StreamEvents` for clients to observe the chat as part of the event stream

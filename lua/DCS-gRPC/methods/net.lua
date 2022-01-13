@@ -20,3 +20,23 @@ GRPC.methods.sendChat = function(params)
     net.send_chat(params.message, toAll)
     return GRPC.success(nil)
 end
+
+GRPC.methods.getPlayerInfo = function(params)
+    local playerInfo = net.get_player_info(params.id);
+
+    if playerInfo == nil then
+        return GRPC.errorNotFound("requested player could not be found")
+    end
+
+    local normalizedResult = {
+        ["id"] = playerInfo.id,
+        ["name"] = playerInfo.name,
+        ["coalition"] = playerInfo.side + 1, -- common.Coalition enum offset
+        ["slot"] = playerInfo.slot,
+        ["ping"] = playerInfo.ping,
+        ["remoteAddress"] = playerInfo.ipaddr,
+        ["ucid"] = playerInfo.ucid,
+        ["locale"] = playerInfo.lang
+    }
+    return GRPC.success(normalizedResult)
+end

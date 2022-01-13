@@ -3,11 +3,21 @@ package dcs.net.v0;
 import "dcs/common/v0/common.proto";
 
 service NetService {
+  // https://wiki.hoggitworld.com/view/DCS_func_get_player_list
+  rpc GetPlayerList(GetPlayerListRequest) returns (GetPlayerListResponse) {}
+
   // https://wiki.hoggitworld.com/view/DCS_func_send_chat_to
   rpc SendChatTo(SendChatToRequest) returns (SendChatToResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_send_chat
   rpc SendChat(SendChatRequest) returns (SendChatResponse) {}
+}
+
+message GetPlayerListRequest {}
+
+message GetPlayerListResponse {
+  // the player ids connected to the mission/server
+  repeated uint32 ids = 1;
 }
 
 message SendChatToRequest {

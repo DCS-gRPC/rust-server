@@ -5,6 +5,14 @@ use tonic::{Request, Response, Status};
 
 #[tonic::async_trait]
 impl NetService for MissionRpc {
+    async fn get_player_list(
+        &self,
+        request: Request<net::v0::GetPlayerListRequest>,
+    ) -> Result<Response<net::v0::GetPlayerListResponse>, Status> {
+        let res: net::v0::GetPlayerListResponse = self.request("getPlayerList", request).await?;
+        Ok(Response::new(res))
+    }
+
     async fn send_chat_to(
         &self,
         request: Request<net::v0::SendChatToRequest>,

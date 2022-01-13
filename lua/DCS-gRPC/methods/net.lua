@@ -3,6 +3,11 @@
 -- https://wiki.hoggitworld.com/view/DCS_singleton_net
 --
 
+GRPC.methods.getPlayerList = function()
+    local playerList = net.get_player_list()
+    return GRPC.success({ids = playerList})
+end
+
 GRPC.methods.sendChatTo = function(params)
     -- note: it was explicitly decided not to place "from player id" parameter
     --       due to the magnitude of a social attack vector.

@@ -20,3 +20,24 @@ GRPC.methods.sendChat = function(params)
     net.send_chat(params.message, toAll)
     return GRPC.success(nil)
 end
+
+GRPC.methods.getPlayers = function()
+    local players = {};
+
+    for _,v in pairs(net.get_player_list()) do
+        local playerInfo = net.get_player_info(v);
+
+        table.insert(players, {
+            id = playerInfo.id,
+            name = playerInfo.name,
+            coalition = playerInfo.side + 1, -- common.Coalition enum offset
+            slot = playerInfo.slot,
+            ping = playerInfo.ping,
+            remoteAddress = playerInfo.ipaddr,
+            ucid = playerInfo.ucid,
+            locale = playerInfo.lang
+        })
+    end
+
+    return GRPC.success({players = players})
+end

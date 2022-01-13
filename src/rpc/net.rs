@@ -20,4 +20,12 @@ impl NetService for MissionRpc {
         self.notification("sendChat", request).await?;
         Ok(Response::new(net::v0::SendChatResponse {}))
     }
+
+    async fn get_players(
+        &self,
+        request: Request<net::v0::GetPlayersRequest>,
+    ) -> Result<Response<net::v0::GetPlayersResponse>, Status> {
+        let res: net::v0::GetPlayersResponse = self.request("getPlayers", request).await?;
+        Ok(Response::new(res))
+    }
 }

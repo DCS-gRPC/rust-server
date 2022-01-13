@@ -8,6 +8,10 @@ service NetService {
 
   // https://wiki.hoggitworld.com/view/DCS_func_send_chat
   rpc SendChat(SendChatRequest) returns (SendChatResponse) {}
+
+  // returns a list of all connected players.
+  // https://wiki.hoggitworld.com/view/DCS_func_get_player_info
+  rpc GetPlayers(GetPlayersRequest) returns (GetPlayersResponse) {}
 }
 
 message SendChatToRequest {
@@ -27,3 +31,31 @@ message SendChatRequest {
 }
 
 message SendChatResponse {}
+
+message GetPlayersRequest {}
+
+message GetPlayersResponse {
+  message GetPlayerInfo {
+    // the player id
+    uint32 id = 1;
+    // player's online name
+    string name = 2;
+    // coalition which player is slotted in
+    dcs.common.v0.Coalition coalition = 3;
+    // the slot identifier
+    string slot = 4;
+    // the ping of the player
+    uint32 ping = 5;
+    // the connection ip address and port the client has established with the server
+    string remoteAddress = 6;
+    // the unique identifier for the player
+    string ucid = 7;
+    // abbreviated language (locale) e.g. "en"
+    string locale = 8;
+  }
+
+  // list of all the players connected to the server
+  repeated GetPlayerInfo players = 1;
+}
+
+

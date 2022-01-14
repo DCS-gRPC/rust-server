@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.3.0] - 2022-01-14
 ### Added
 - Generated scaffolding for the `net.*` scope into `NetService`
 - `SendChat` API
@@ -13,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Stream `PlayerSendChatEvent` to the `MissionService.StreamEvents` for clients to observe the chat as part of the event stream
+- Fixed an issue where units updates were not being stream after initial load
 
 ### Removed
 - `HookService.StreamChatMessages` has been removed in favor for `PlayerSendChatEvent`

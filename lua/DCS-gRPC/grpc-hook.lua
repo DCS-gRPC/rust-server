@@ -83,4 +83,18 @@ function handler.onPlayerDisconnect(id, reason)
   })
 end
 
+function handler.onPlayerChangeSlot(playerId)
+  local playerInfo = net.get_player_info(playerId)
+
+  grpc.event({
+    time = DCS.getModelTime(),
+    event = {
+      type = "playerChangeSlot",
+      playerId = playerId,
+      coalition = playerInfo.side + 1, -- offsetting for grpc COALITION enum
+      slotId = playerInfo.slot
+    },
+  })
+end
+
 DCS.setUserCallbacks(handler)

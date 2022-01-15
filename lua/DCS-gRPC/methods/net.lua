@@ -41,3 +41,14 @@ GRPC.methods.getPlayers = function()
 
     return GRPC.success({players = players})
 end
+
+GRPC.methods.forcePlayerSlot = function(params)
+    if params.coalition == 0 then
+        return GRPC.errorInvalidArgument("Cannot force a player into the COALITION_ALL")
+    end
+
+    local normalizedCoalition = params.coalition - 1; -- adjusted for grpc offset
+    net.force_player_slot(params.playerId, normalizedCoalition, params.slotId)
+
+    return GRPC.success(nil)
+end

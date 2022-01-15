@@ -106,13 +106,16 @@ local createGroundGroupTemplate = function(groupTemplate)
 end
 
 GRPC.methods.addGroup = function(params)
+  if params.groupCategory == 0 then
+    return GRPC.errorInvalidArgument("group category must be specified")
+  end
   if params.country_id == 0 or params.country_id == 15 then
     return GRPC.errorInvalidArgument("invalid country code")
   end
 
   local template = createGroundGroupTemplate(params.template.groundTemplate)
 
-  coalition.addGroup(params.country - 1, params.groupCategory, template) -- Decrement for non zero-indexed gRPC enum
+  coalition.addGroup(params.country - 1, params.groupCategory - 1, template) -- Decrement for non zero-indexed gRPC enum
 
   return GRPC.success({group = GRPC.exporters.group(Group.getByName(template.name))})
 end

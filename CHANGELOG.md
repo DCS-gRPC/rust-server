@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `coalition.proto` - `AddGroupRequest.Point` - enum `Type` has been renamed to `PointType`
   - `coalition.proto` - `AddGroupRequest` - enum members of `Skill` has been prefixed with `SKILL_`
 
+### Breaking Changes
+- Added `GROUP_CATEGORY_UNSPECIFIED` to `dcs.v0.common.GroupCategory`; breaking change as all indexes have changed.
+
 ## [0.3.0] - 2022-01-14
 ### Added
 - Generated scaffolding for the `net.*` scope into `NetService`

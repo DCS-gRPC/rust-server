@@ -46,7 +46,7 @@ GRPC.exporters.unit = function(unit)
     numberInGroup = unit:getNumber(),
     heading = heading,
     speed = speed,
-    category = unit:getGroup():getCategory(),
+    category = unit:getGroup():getCategory() + 1, -- Increment for non zero-indexed gRPC enum
   }
 end
 
@@ -55,7 +55,7 @@ GRPC.exporters.group = function(group)
     id = tonumber(group:getID()),
     name = group:getName(),
     coalition = group:getCoalition() + 1, -- Increment for non zero-indexed gRPC enum
-    category = group:getCategory(),
+    category = group:getCategory() + 1, -- Increment for non zero-indexed gRPC enum
   }
 end
 

@@ -12,6 +12,11 @@ service NetService {
   // returns a list of all connected players.
   // https://wiki.hoggitworld.com/view/DCS_func_get_player_info
   rpc GetPlayers(GetPlayersRequest) returns (GetPlayersResponse) {}
+
+  // Force a player into a slot / coalition.
+  // To move the player back into spectators, use the following pseudo:
+  // `ForcePlayerSlot({ player_id: ..., coalition: NEUTRAL, slot_id: "" })`
+  rpc ForcePlayerSlot(ForcePlayerSlotRequest) returns (ForcePlayerSlotResponse) {}
 }
 
 message SendChatToRequest {
@@ -58,4 +63,10 @@ message GetPlayersResponse {
   repeated GetPlayerInfo players = 1;
 }
 
+message ForcePlayerSlotRequest {
+  uint32 player_id = 1;
+  dcs.common.v0.Coalition coalition = 2;
+  string slot_id = 3;
+}
 
+message ForcePlayerSlotResponse {}

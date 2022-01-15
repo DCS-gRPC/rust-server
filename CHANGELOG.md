@@ -7,8 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
-- Corrected `GetPlayersResponse.GetPlayerInfo.remote_address`; not a breaking change but some code generators may have
-  different casings generated via the `proto` definition during compilation.
+- Corrected `proto` files from camel-casing to snake-casing; not a runtime breaking change but some code generators
+  may generate different casing by convention, creating a compiler only issue.
+  - `net.proto` - `GetPlayerInfo.remote_address`
+  - `mission.proto` - `PlayerSendChatEvent.player_id`
 
 ## [0.3.0] - 2022-01-14
 ### Added

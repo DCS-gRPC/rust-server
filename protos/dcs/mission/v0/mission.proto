@@ -306,7 +306,7 @@ message StreamEventsResponse {
   // Occurs when a chat message is sent on the server
   message PlayerSendChatEvent {
     // The player's id in the current server session.
-    uint32 playerId = 1;
+    uint32 player_id = 1;
     // what was typed
     string message = 2;
   }

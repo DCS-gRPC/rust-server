@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Corrected `GetPlayersResponse.GetPlayerInfo.remote_address`; not a breaking change but some code generators may have
+  different casings generated via the `proto` definition during compilation.
+
 ## [0.3.0] - 2022-01-14
 ### Added
 - Generated scaffolding for the `net.*` scope into `NetService`

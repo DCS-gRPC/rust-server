@@ -261,12 +261,14 @@ message Weapon {
  * These objects are often buildings but can also be vehicles that have no AI or
  * other game behaviour aside from being destroyable
  */
-message Static {}
+message Static {
+}
 
 /**
  * An instance of a DCS scenery object
  */
-message Scenery {}
+message Scenery {
+}
 
 /**
  * An instance of a DCS Airfield
@@ -294,7 +296,8 @@ message Airbase {
 /**
  * An instance of a DCS Cargo object
  */
-message Cargo {}
+message Cargo {
+}
 
 /*
  * The initiator of an event

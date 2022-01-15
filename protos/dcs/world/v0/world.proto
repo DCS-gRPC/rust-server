@@ -19,7 +19,8 @@ message GetAirbasesResponse {
   repeated dcs.common.v0.Airbase airbases = 1;
 }
 
-message GetMarkPanelsRequest {}
+message GetMarkPanelsRequest {
+}
 
 message GetMarkPanelsResponse {
   repeated dcs.common.v0.MarkPanel mark_panels = 1;

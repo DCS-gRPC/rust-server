@@ -16,7 +16,8 @@ service NetService {
   // Force a player into a slot / coalition.
   // To move the player back into spectators, use the following pseudo:
   // `ForcePlayerSlot({ player_id: ..., coalition: NEUTRAL, slot_id: "" })`
-  rpc ForcePlayerSlot(ForcePlayerSlotRequest) returns (ForcePlayerSlotResponse) {}
+  rpc ForcePlayerSlot(ForcePlayerSlotRequest)
+      returns (ForcePlayerSlotResponse) {}
 }
 
 message SendChatToRequest {
@@ -26,18 +27,22 @@ message SendChatToRequest {
   uint32 target_player_id = 2;
 }
 
-message SendChatToResponse {}
+message SendChatToResponse {
+}
 
 message SendChatRequest {
   // the message to send in the chat
   string message = 1;
-  // which coalition? DCS only supports ALL or NEUTRAL (only applicable to send_chat)
+  // which coalition? DCS only supports ALL or NEUTRAL
+  // (only applicable to send_chat)
   dcs.common.v0.Coalition coalition = 2;
 }
 
-message SendChatResponse {}
+message SendChatResponse {
+}
 
-message GetPlayersRequest {}
+message GetPlayersRequest {
+}
 
 message GetPlayersResponse {
   message GetPlayerInfo {
@@ -51,7 +56,8 @@ message GetPlayersResponse {
     string slot = 4;
     // the ping of the player
     uint32 ping = 5;
-    // the connection ip address and port the client has established with the server
+    // the connection ip address and port the client
+    // has established with the server
     string remote_address = 6;
     // the unique identifier for the player
     string ucid = 7;
@@ -69,4 +75,5 @@ message ForcePlayerSlotRequest {
   string slot_id = 3;
 }
 
-message ForcePlayerSlotResponse {}
+message ForcePlayerSlotResponse {
+}

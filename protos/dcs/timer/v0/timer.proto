@@ -15,13 +15,15 @@ service TimerService {
   rpc GetTimeZero(GetTimeZeroRequest) returns (GetTimeZeroResponse) {}
 }
 
-message GetTimeRequest {}
+message GetTimeRequest {
+}
 
 message GetTimeResponse {
   double time = 1;
 }
 
-message GetAbsoluteTimeRequest {}
+message GetAbsoluteTimeRequest {
+}
 
 message GetAbsoluteTimeResponse {
   // The current time in seconds since 00:00 of the start date of the mission.
@@ -31,7 +33,8 @@ message GetAbsoluteTimeResponse {
   int32 year = 4;
 }
 
-message GetTimeZeroRequest {}
+message GetTimeZeroRequest {
+}
 
 message GetTimeZeroResponse {
   // The time in seconds since 00:00.

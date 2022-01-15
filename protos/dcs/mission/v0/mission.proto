@@ -25,7 +25,8 @@ service MissionService {
       returns (GetScenarioCurrentTimeResponse) {}
 }
 
-message StreamEventsRequest {}
+message StreamEventsRequest {
+}
 
 // The DCS Event information. Contains event information and a timestamp.
 message StreamEventsResponse {
@@ -113,10 +114,12 @@ message StreamEventsResponse {
   }
 
   // Occurs when the mission starts.
-  message MissionStartEvent {}
+  message MissionStartEvent {
+  }
 
   // Occurs when the mission stops.
-  message MissionEndEvent {}
+  message MissionEndEvent {
+  }
 
   // Occurs when an aircraft is finished taking fuel.
   message RefuelingStopEvent {
@@ -260,7 +263,8 @@ message StreamEventsResponse {
   }
 
   // A score change (doesn't contain any useful information)
-  message ScoreEvent {}
+  message ScoreEvent {
+  }
 
   // A unit got destroyed.
   message UnitLostEvent {
@@ -318,7 +322,7 @@ message StreamEventsResponse {
     // The slot's coalition
     dcs.common.v0.Coalition coalition = 2;
     // The slot's identifier
-    string slotId = 3;
+    string slot_id = 3;
   }
   
   /**
@@ -331,7 +335,8 @@ message StreamEventsResponse {
     string name = 2;
     // The player's unique client identifier (used to ban a player).
     string ucid = 3;
-    // The player's id in the current server session (used to for name/slot/... changes).
+    // The player's id in the current server session
+    // (used to for name/slot/... changes).
     uint32 id = 4;
   }
 
@@ -356,7 +361,8 @@ message StreamEventsResponse {
   }
 
   /**
-   * Fired when a player disconnected from the server (not fired for the server's player).
+   * Fired when a player disconnected from the server
+   * (not fired for the server's player).
    */
   message DisconnectEvent {
     // The player's id in the current server session.
@@ -406,8 +412,9 @@ message StreamEventsResponse {
     LandingQualityMarkEvent landing_quality_mark = 39;
     // @exclude 40 reserved for S_EVENT_BDA
 
-    // The following events are additions on top of DCS's own event enum, which is why they start at
-    // 8192 to give DCS plenty of space for new built-in events.
+    // The following events are additions on top of DCS's own event enum,
+    // which is why they start at 8192 to give DCS plenty of space for
+    // new built-in events.
     ConnectEvent connect = 8192;
     DisconnectEvent disconnect = 8193;
     PlayerSendChatEvent player_send_chat = 8194;
@@ -449,13 +456,15 @@ message StreamUnitsResponse {
   }
 }
 
-message GetScenarioStartTimeRequest {}
+message GetScenarioStartTimeRequest {
+}
 
 message GetScenarioStartTimeResponse {
   string datetime = 1;
 }
 
-message GetScenarioCurrentTimeRequest {}
+message GetScenarioCurrentTimeRequest {
+}
 
 message GetScenarioCurrentTimeResponse {
   string datetime = 1;

@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   may generate different casing by convention, creating a compiler only issue.
   - `net.proto` - `GetPlayerInfo.remote_address`
   - `mission.proto` - `PlayerSendChatEvent.player_id`
+- Corrected `proto` files with enumerations to be named correct; compiler-only breaking change, not runtime.
+  - `coalition.proto` - `AddGroupRequest.Point` - enum `Type` has been renamed to `PointType`
+  - `coalition.proto` - `AddGroupRequest` - enum members of `Skill` has been prefixed with `SKILL_`
 
 ## [0.3.0] - 2022-01-14
 ### Added

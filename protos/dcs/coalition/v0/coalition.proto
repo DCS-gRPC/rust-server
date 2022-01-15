@@ -114,7 +114,7 @@ message AddGroupResponse {
 
 message GetGroupsRequest {
   dcs.common.v0.Coalition coalition = 1;
-  optional dcs.common.v0.GroupCategory category = 2;
+  dcs.common.v0.GroupCategory category = 2;
 }
 
 message GetGroupsResponse {

@@ -68,3 +68,20 @@ jobs:
       - name: Lint
         run: luacheck ./lua
 
+  proto:
+    name: Proto
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install protolint
+        run: |
+          mkdir -p "$HOME/.local/bin"
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          wget -c https://github.com/yoheimuta/protolint/releases/download/v0.35.2/protolint_0.35.2_Linux_x86_64.tar.gz  -O - \
+            | tar -xz -C $HOME/.local/bin protolint
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Lint
+        run: protolint lint protos/.

@@ -106,7 +106,8 @@ message SetEmissionRequest {
   bool emitting = 2;
 }
 
-message SetEmissionResponse {}
+message SetEmissionResponse {
+}
 
 message GetRequest {
   string name = 1;

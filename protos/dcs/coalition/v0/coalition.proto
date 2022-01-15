@@ -61,14 +61,20 @@ message AddGroupRequest {
     Skill skill = 6;
   }
 
-  message ShipGroupTemplate {}
-  message ShipUnitTemplate {}
+  message ShipGroupTemplate {
+  }
+  message ShipUnitTemplate {
+  }
 
-  message HelicopterGroupTemplate {}
-  message HelicopterUnitTemplate {}
+  message HelicopterGroupTemplate {
+  }
+  message HelicopterUnitTemplate {
+  }
 
-  message PlaneGroupTemplate {}
-  message PlaneUnitTemplate {}
+  message PlaneGroupTemplate {
+  }
+  message PlaneUnitTemplate {
+  }
 
   message Point {
     enum AltitudeType {
@@ -105,7 +111,8 @@ message AddGroupRequest {
     SKILL_PLAYER = 5;
   }
 
-  message Task {}
+  message Task {
+  }
 }
 
 message AddGroupResponse {

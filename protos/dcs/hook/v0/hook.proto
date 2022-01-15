@@ -11,7 +11,8 @@ service HookService {
   rpc Eval(EvalRequest) returns (EvalResponse) {}
 }
 
-message GetMissionNameRequest {}
+message GetMissionNameRequest {
+}
 
 message GetMissionNameResponse {
   string name = 1;

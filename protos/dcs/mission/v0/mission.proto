@@ -310,6 +310,16 @@ message StreamEventsResponse {
     // what was typed
     string message = 2;
   }
+
+  // fired when the player changes across to a slot
+  message PlayerChangeSlotEvent {
+    // The player's id in the current server session.
+    uint32 player_id = 1;
+    // The slot's coalition
+    dcs.common.v0.Coalition coalition = 2;
+    // The slot's identifier
+    string slotId = 3;
+  }
   
   /**
    * Fired when a player connected to the server.
@@ -401,6 +411,7 @@ message StreamEventsResponse {
     ConnectEvent connect = 8192;
     DisconnectEvent disconnect = 8193;
     PlayerSendChatEvent player_send_chat = 8194;
+    PlayerChangeSlotEvent player_change_slot = 8195;
   }
 }
 

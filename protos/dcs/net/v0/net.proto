@@ -47,7 +47,7 @@ message GetPlayersResponse {
     // the ping of the player
     uint32 ping = 5;
     // the connection ip address and port the client has established with the server
-    string remoteAddress = 6;
+    string remote_address = 6;
     // the unique identifier for the player
     string ucid = 7;
     // abbreviated language (locale) e.g. "en"

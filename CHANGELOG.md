@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `ForcePlayerSlot` API
 - `PlayerChangeSlotEvent` emitted when player changes slot
+- `StreamUnits` can optionally specify the `category` of the units which may be monitored.
 
 ### Fixed
 - Corrected `proto` files from camel-casing to snake-casing; not a runtime breaking change but some code generators
@@ -17,9 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Corrected `proto` files with enumerations to be named correct; compiler-only breaking change, not runtime.
   - `coalition.proto` - `AddGroupRequest.Point` - enum `Type` has been renamed to `PointType`
   - `coalition.proto` - `AddGroupRequest` - enum members of `Skill` has been prefixed with `SKILL_`
+- `StreamUnits` would only monitor the `Plane` groups; now monitors all groups with the default option of `GROUP_CATEGORY_UNSPECIFIED`
 
 ### Breaking Changes
 - Added `GROUP_CATEGORY_UNSPECIFIED` to `dcs.v0.common.GroupCategory`; breaking change as all indexes have changed.
+
+
 
 ## [0.3.0] - 2022-01-14
 ### Added

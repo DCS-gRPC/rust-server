@@ -7,7 +7,7 @@ use futures_util::TryFutureExt;
 use stubs::coalition::v0::coalition_service_server::CoalitionService;
 use stubs::coalition::v0::GetGroupsRequest;
 use stubs::common;
-use stubs::common::v0::{Coalition, Position, Unit};
+use stubs::common::v0::{Coalition, GroupCategory, Position, Unit};
 use stubs::group::v0::group_service_server::GroupService;
 use stubs::group::v0::GetUnitsRequest;
 use stubs::mission::v0::stream_events_response::Event;
@@ -30,6 +30,7 @@ pub async fn stream_units(
     let poll_rate = opts.poll_rate.unwrap_or(5);
     let max_backoff = Duration::from_secs(opts.max_backoff.unwrap_or(30).max(poll_rate) as u64);
     let poll_rate = Duration::from_secs(poll_rate as u64);
+    let category = GroupCategory::from_i32(opts.category).unwrap_or(GroupCategory::Unspecified);
     let mut state = State {
         units: HashMap::new(),
         ctx: Context {
@@ -48,7 +49,7 @@ pub async fn stream_units(
                 .rpc
                 .get_groups(Request::new(GetGroupsRequest {
                     coalition: coalition.into(),
-                    category: None,
+                    category: opts.category,
                 }))
                 .map_ok(|res| res.into_inner().groups)
         }),
@@ -98,7 +99,7 @@ pub async fn stream_units(
         tokio::select! {
             // listen to events that update the current state
             Some(stubs::mission::v0::StreamEventsResponse { event: Some(event), .. }) = events.next() => {
-                handle_event(&mut state, event).await?;
+                handle_event(&mut state, event, category).await?;
             }
 
             // poll units for updates
@@ -125,7 +126,11 @@ struct Context {
 }
 
 /// Update the given [State] based on the given [Event].
-async fn handle_event(state: &mut State, event: Event) -> Result<(), Error> {
+async fn handle_event(
+    state: &mut State,
+    event: Event,
+    category: GroupCategory,
+) -> Result<(), Error> {
     match event {
         Event::Birth(BirthEvent {
             initiator:
@@ -134,8 +139,14 @@ async fn handle_event(state: &mut State, event: Event) -> Result<(), Error> {
                 }),
             ..
         }) => {
-            state.ctx.tx.send(Ok(Update::Unit(unit.clone()))).await?;
-            state.units.insert(unit.name.clone(), UnitState::new(unit));
+            // if we are monitoring all the categories, let's watch it.
+            // otherwise, we need to be selective on the units we are monitoring
+            let unit_category =
+                GroupCategory::from_i32(unit.category).unwrap_or(GroupCategory::Unspecified);
+            if category == unit_category || category == GroupCategory::Unspecified {
+                state.ctx.tx.send(Ok(Update::Unit(unit.clone()))).await?;
+                state.units.insert(unit.name.clone(), UnitState::new(unit));
+            }
         }
 
         // The dead event is known to not fire reliably in certain cases. This is fine here, because

@@ -125,7 +125,13 @@ GRPC.methods.getGroups = function(params)
   for _, c in pairs(coalition.side) do
     if params.coalition == 0 or params.coalition - 1 == c then -- Decrement for non zero-indexed gRPC enum
       -- https://wiki.hoggitworld.com/view/DCS_func_getGroups
-      local groups = coalition.getGroups(c, params.category)
+      local getFilteredGroups = function()
+        if params.category == 0 then
+          return coalition.getGroups(c)
+        end
+        return coalition.getGroups(c, params.category - 1)
+      end
+      local groups = getFilteredGroups()
 
       for _, group in ipairs(groups) do
         table.insert(result, GRPC.exporters.group(group))

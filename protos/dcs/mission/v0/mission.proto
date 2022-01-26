@@ -426,6 +426,12 @@ message StreamUnitsRequest {
   // poll rate for stationary units. Set it to the same value as `poll_rate` to
   // disable the backoff. Default: 30
   optional uint32 max_backoff = 2;
+
+  // The type of the unit to stream movements. Different categories of units
+  // would move at different speeds, which allows the stream to be configured
+  // with the appropriate polling rates. `GROUP_CATEGORY_UNSPECIFIED` would
+  // return all the units.
+  dcs.common.v0.GroupCategory category = 3;
 }
 
 message StreamUnitsResponse {

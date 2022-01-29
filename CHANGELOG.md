@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `StreamUnits` can optionally specify the `category` of the units which may be monitored.
 
 ### Fixed
+- `NetService.GetPlayers` overwrote `CoalitionService.GetPlayers` (see Breaking Changes for details)
 - Corrected `proto` files from camel-casing to snake-casing; not a runtime breaking change but some code generators
   may generate different casing by convention, creating a compiler only issue.
   - `net.proto` - `GetPlayerInfo.remote_address`

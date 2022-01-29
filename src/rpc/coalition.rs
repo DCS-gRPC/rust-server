@@ -34,7 +34,7 @@ impl CoalitionService for MissionRpc {
         request: Request<coalition::v0::GetPlayerUnitsRequest>,
     ) -> Result<Response<coalition::v0::GetPlayerUnitsResponse>, Status> {
         let res: coalition::v0::GetPlayerUnitsResponse =
-            self.request("getPlayers", request).await?;
+            self.request("getPlayerUnits", request).await?;
         Ok(Response::new(res))
     }
 }

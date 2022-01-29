@@ -156,7 +156,7 @@ GRPC.methods.getBullseye = function(params)
   })
 end
 
-GRPC.methods.getPlayers = function(params)
+GRPC.methods.getPlayerUnits = function(params)
   local units = coalition.getPlayers(params.coalition)
   local result = {}
   for i, unit in ipairs(units) do

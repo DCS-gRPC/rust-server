@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Breaking Changes
 - Added `GROUP_CATEGORY_UNSPECIFIED` to `dcs.v0.common.GroupCategory`; breaking change as all indexes have changed.
+- `CoalitionService.GetPlayers` was renamed to `CoalitionService.GetPlayerUnits`; fixes conflict with `NetService.GetPlayers`
 
 
 

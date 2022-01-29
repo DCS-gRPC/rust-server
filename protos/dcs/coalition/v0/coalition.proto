@@ -22,7 +22,7 @@ service CoalitionService {
   rpc GetBullseye(GetBullseyeRequest) returns (GetBullseyeResponse) {}
 
   // https://wiki.hoggitworld.com/view/DCS_func_getPlayers
-  rpc GetPlayers(GetPlayersRequest) returns (GetPlayersResponse) {}
+  rpc GetPlayerUnits(GetPlayerUnitsRequest) returns (GetPlayerUnitsResponse) {}
 }
 
 message AddGroupRequest {
@@ -138,10 +138,10 @@ message GetBullseyeResponse {
   dcs.common.v0.Position position = 1;
 }
 
-message GetPlayersRequest {
+message GetPlayerUnitsRequest {
   dcs.common.v0.Coalition coalition = 1;
 }
 
-message GetPlayersResponse {
+message GetPlayerUnitsResponse {
   repeated dcs.common.v0.Unit units = 1;
 }

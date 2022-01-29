@@ -1,6 +1,7 @@
 syntax = "proto3";
 package dcs.net.v0;
 import "dcs/common/v0/common.proto";
+option csharp_namespace = "RurouniJones.Dcs.Grpc.V0.Net";
 
 service NetService {
   // https://wiki.hoggitworld.com/view/DCS_func_send_chat_to

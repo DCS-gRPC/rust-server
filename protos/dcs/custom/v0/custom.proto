@@ -1,5 +1,6 @@
 syntax = "proto3";
 package dcs.custom.v0;
+option csharp_namespace = "RurouniJones.Dcs.Grpc.V0.Custom";
 
 // The Custom service is for APIs that do not map to the "standard library" of
 // DCS APIs provided by Eagle Dynamics.

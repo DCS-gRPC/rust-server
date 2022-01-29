@@ -1,6 +1,6 @@
 syntax = "proto3";
-
 package dcs.timer.v0;
+option csharp_namespace = "RurouniJones.Dcs.Grpc.V0.Timer";
 
 // https://wiki.hoggitworld.com/view/DCS_singleton_timer
 service TimerService {

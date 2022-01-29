@@ -1,5 +1,6 @@
 syntax = "proto3";
 package dcs.hook.v0;
+option csharp_namespace = "RurouniJones.Dcs.Grpc.V0.Hook";
 
 // APis that are part of the hook environment
 service HookService {

@@ -1,6 +1,7 @@
 syntax = "proto3";
 package dcs.coalition.v0;
 import "dcs/common/v0/common.proto";
+option csharp_namespace = "RurouniJones.Dcs.Grpc.V0.Coalition";
 
 // https://wiki.hoggitworld.com/view/DCS_singleton_coalition
 service CoalitionService {

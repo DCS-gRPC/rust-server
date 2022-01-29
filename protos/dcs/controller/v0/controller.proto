@@ -1,5 +1,6 @@
 syntax = "proto3";
 package dcs.controller.v0;
+option csharp_namespace = "RurouniJones.Dcs.Grpc.V0.Controller";
 
 service ControllerService {
   // https://wiki.hoggitworld.com/view/DCS_option_alarmState

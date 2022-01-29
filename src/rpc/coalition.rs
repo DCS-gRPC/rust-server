@@ -29,11 +29,12 @@ impl CoalitionService for MissionRpc {
         Ok(Response::new(res))
     }
 
-    async fn get_players(
+    async fn get_player_units(
         &self,
-        request: Request<coalition::v0::GetPlayersRequest>,
-    ) -> Result<Response<coalition::v0::GetPlayersResponse>, Status> {
-        let res: coalition::v0::GetPlayersResponse = self.request("getPlayers", request).await?;
+        request: Request<coalition::v0::GetPlayerUnitsRequest>,
+    ) -> Result<Response<coalition::v0::GetPlayerUnitsResponse>, Status> {
+        let res: coalition::v0::GetPlayerUnitsResponse =
+            self.request("getPlayers", request).await?;
         Ok(Response::new(res))
     }
 }

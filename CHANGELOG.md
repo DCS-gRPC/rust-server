@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Corrected `proto` files with enumerations to be named correct; compiler-only breaking change, not runtime.
   - `coalition.proto` - `AddGroupRequest.Point` - enum `Type` has been renamed to `PointType`
   - `coalition.proto` - `AddGroupRequest` - enum members of `Skill` has been prefixed with `SKILL_`
+- `CoalitionService.GetPlayers` did not filter correctly on specified coalition
 - `StreamUnits` would only monitor the `Plane` groups; now monitors all groups with the default option of `GROUP_CATEGORY_UNSPECIFIED`
 
 ### Breaking Changes

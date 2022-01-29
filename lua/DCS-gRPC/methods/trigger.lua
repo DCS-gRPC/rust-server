@@ -72,7 +72,8 @@ GRPC.methods.markToCoalition = function(params)
   local point = coord.LLtoLO(params.position.lat, params.position.lon, params.position.alt)
   local idx = getMarkId()
 
-  trigger.action.markToCoalition(idx, params.text, point, params.coalition, params.readOnly, params.message)
+  local coalition = params.coalition - 1 -- Decrement for non zero-indexed gRPC enum
+  trigger.action.markToCoalition(idx, params.text, point, coalition, params.readOnly, params.message)
 
   return GRPC.success({
     id = idx

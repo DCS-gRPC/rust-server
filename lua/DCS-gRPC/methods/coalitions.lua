@@ -157,7 +157,7 @@ GRPC.methods.getBullseye = function(params)
 end
 
 GRPC.methods.getPlayerUnits = function(params)
-  local units = coalition.getPlayers(params.coalition)
+  local units = coalition.getPlayers(params.coalition - 1) -- Decrement for non zero-indexed gRPC enum
   local result = {}
   for i, unit in ipairs(units) do
     result[i] = GRPC.exporters.unit(unit)

@@ -1,6 +1,7 @@
 syntax = "proto3";
 package dcs.controller.v0;
 option csharp_namespace = "RurouniJones.Dcs.Grpc.V0.Controller";
+option go_package = "github.com/DCS-gRPC/go-bindings/dcs/v0/controller";
 
 service ControllerService {
   // https://wiki.hoggitworld.com/view/DCS_option_alarmState

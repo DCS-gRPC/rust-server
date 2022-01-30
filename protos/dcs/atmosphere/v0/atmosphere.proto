@@ -2,7 +2,7 @@ syntax = "proto3";
 package dcs.atmosphere.v0;
 import "dcs/common/v0/common.proto";
 option csharp_namespace = "RurouniJones.Dcs.Grpc.V0.Atmosphere";
-
+option go_package = "github.com/DCS-gRPC/go-bindings/dcs/v0/atmosphere";
 
 // https://wiki.hoggitworld.com/view/DCS_singleton_atmosphere
 service AtmosphereService {

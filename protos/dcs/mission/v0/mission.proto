@@ -2,6 +2,7 @@ syntax = "proto3";
 package dcs.mission.v0;
 import "dcs/common/v0/common.proto";
 option csharp_namespace = "RurouniJones.Dcs.Grpc.V0.Mission";
+option go_package = "github.com/DCS-gRPC/go-bindings/dcs/v0/mission";
 
 // Contains the streaming APIs that streaming information out of the DCS server.
 service MissionService {

@@ -1,6 +1,7 @@
 syntax = "proto3";
 package dcs.common.v0;
 option csharp_namespace = "RurouniJones.Dcs.Grpc.V0.Common";
+option go_package = "github.com/DCS-gRPC/go-bindings/dcs/v0/common";
 
 /**
  * The category the object belongs to

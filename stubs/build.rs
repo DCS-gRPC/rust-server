@@ -20,6 +20,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "dcs.mission.v0.StreamEventsResponse.MarkRemoveEvent.visibility",
             "#[serde(flatten)]",
         )
+        .field_attribute(
+            "dcs.mission.v0.AddMissionCommandRequest.details",
+            r#"#[serde(with = "crate::utils::proto_struct")]"#,
+        )
+        .field_attribute(
+            "dcs.mission.v0.StreamEventsResponse.MissionCommandEvent.details",
+            r#"#[serde(with = "crate::utils::proto_struct")]"#,
+        )
         .build_server(cfg!(feature = "server"))
         .build_client(cfg!(feature = "client"))
         .compile(&["../protos/dcs/dcs.proto"], &["../protos"])?;

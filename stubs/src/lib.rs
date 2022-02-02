@@ -1,3 +1,5 @@
+mod utils;
+
 pub mod atmosphere {
     pub mod v0 {
         tonic::include_proto!("dcs.atmosphere.v0");

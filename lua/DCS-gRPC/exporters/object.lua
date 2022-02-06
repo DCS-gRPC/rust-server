@@ -67,8 +67,14 @@ GRPC.exporters.weapon = function(weapon)
   }
 end
 
-GRPC.exporters.static = function()
-  return {}
+GRPC.exporters.static = function(static)
+  return {
+    id = tonumber(static:getID()),
+    type = static:getTypeName(),
+    name = static:getName(),
+    coalition = static:getCoalition() + 1, -- Increment for non zero-indexed gRPC enum
+    position = GRPC.exporters.position(static:getPoint()),  
+  }
 end
 
 GRPC.exporters.airbase = function(airbase)

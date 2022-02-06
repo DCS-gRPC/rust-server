@@ -264,6 +264,16 @@ message Weapon {
  * other game behaviour aside from being destroyable
  */
 message Static {
+  // The DCS generated ID
+  uint32 id = 1;
+  // The DCS type-name of the static
+  string type = 2;
+  // The name of the static
+  string name = 3;
+  // The coalition the static belongs to
+  Coalition coalition = 4;
+  // The position of the static
+  Position position = 5;
 }
 
 /**

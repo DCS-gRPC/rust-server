@@ -73,7 +73,7 @@ GRPC.exporters.static = function(static)
     type = static:getTypeName(),
     name = static:getName(),
     coalition = static:getCoalition() + 1, -- Increment for non zero-indexed gRPC enum
-    position = GRPC.exporters.position(static:getPoint()),  
+    position = GRPC.exporters.position(static:getPoint()),
   }
 end
 
@@ -94,8 +94,12 @@ GRPC.exporters.airbase = function(airbase)
   return a
 end
 
-GRPC.exporters.scenery = function()
-  return {}
+GRPC.exporters.scenery = function(scenery)
+  return {
+    type = scenery:getTypeName(),
+    name = scenery:getName(),
+    position = GRPC.exporters.position(scenery:getPoint()),
+  }
 end
 
 GRPC.exporters.cargo = function()

@@ -5,6 +5,13 @@
 -- be kept in sync
 --
 
+local function mergeTable(t1, t2)
+  for k,v in pairs(t2) do
+    t1[k] = v
+  end
+  return t1
+end
+
 -- Convert DCS's unusual right-hand coordinate system where +x points north to a more common
 -- left-hand coordinate system where +z points north (and +x points east).
 GRPC.exporters.vector = function(v)
@@ -24,8 +31,8 @@ GRPC.exporters.position = function(pos)
   }
 end
 
-GRPC.exporters.unit = function(unit)
-  local vector = unit:getVelocity()
+local function exportObject(object, extendedObject)
+  local vector = object:getVelocity()
 
   local heading = math.deg(math.atan2(vector.z, vector.x))
   if heading < 0 then
@@ -34,20 +41,30 @@ GRPC.exporters.unit = function(unit)
 
   local speed = math.sqrt((vector.x)^2+(vector.z)^2)
 
-  return {
-    id = tonumber(unit:getID()),
-    name = unit:getName(),
-    callsign = unit:getCallsign(),
-    coalition = unit:getCoalition() + 1, -- Increment for non zero-indexed gRPC enum
-    type = unit:getTypeName(),
-    position = GRPC.exporters.position(unit:getPoint()),
-    playerName = Unit.getPlayerName(unit),
-    groupName = Unit.getGroup(unit):getName(),
-    numberInGroup = unit:getNumber(),
+  return mergeTable(extendedObject, {
+    type = object:getTypeName(),
+    name = object:getName(),
+    category = object:getCategory() + 1, -- Increment for non zero-indexed gRPC enum
+    position = GRPC.exporters.position(object:getPoint()),
     heading = heading,
     speed = speed,
-    category = unit:getGroup():getCategory() + 1, -- Increment for non zero-indexed gRPC enum
-  }
+  })
+end
+
+local function exportCoalitionObject(coalitionObject, extendedObject)
+  return exportObject(coalitionObject, mergeTable(extendedObject, {
+    coalition = coalitionObject:getCoalition() + 1, -- Increment for non zero-indexed gRPC enum
+  }))
+end
+
+GRPC.exporters.unit = function(unit)
+  return exportCoalitionObject(unit, {
+    id = tonumber(unit:getID()),
+    callsign = unit:getCallsign(),
+    playerName = unit:getPlayerName(),
+    groupName = unit:getGroup():getName(),
+    numberInGroup = unit:getNumber(),
+  })
 end
 
 GRPC.exporters.group = function(group)
@@ -60,59 +77,46 @@ GRPC.exporters.group = function(group)
 end
 
 GRPC.exporters.weapon = function(weapon)
-  return {
+  return exportCoalitionObject(weapon, {
     id = tonumber(weapon:getName()),
-    type = weapon:getTypeName(),
-    position = GRPC.exporters.position(weapon:getPoint()),
-  }
+  })
 end
 
 GRPC.exporters.static = function(static)
-  return {
+  return exportCoalitionObject(static, {
     id = tonumber(static:getID()),
-    type = static:getTypeName(),
-    name = static:getName(),
-    coalition = static:getCoalition() + 1, -- Increment for non zero-indexed gRPC enum
-    position = GRPC.exporters.position(static:getPoint()),
-  }
+  })
 end
 
 GRPC.exporters.airbase = function(airbase)
   local a = {
-    name = airbase:getName(),
     callsign = airbase:getCallsign(),
-    coalition = airbase:getCoalition() + 1, -- Increment for non zero-indexed gRPC enum
-    category = airbase:getDesc()['category'] + 1, -- Increment for non zero-indexed gRPC enum
     displayName = airbase:getDesc()['displayName'],
-    position = GRPC.exporters.position(airbase:getPoint())
   }
 
   if airbase:getUnit() then
     a.id = tonumber(airbase:getUnit():getID())
   end
 
-  return a
+  return exportCoalitionObject(airbase, a)
 end
 
 GRPC.exporters.scenery = function(scenery)
-  return {
-    type = scenery:getTypeName(),
-    name = scenery:getName(),
+  return exportObject(scenery, {
     position = GRPC.exporters.position(scenery:getPoint()),
-  }
+  })
 end
 
-GRPC.exporters.cargo = function()
-  return {}
+GRPC.exporters.cargo = function(cargo)
+  -- we know cargo is a static... will extend later
+  return GRPC.exporters.static(cargo)
 end
 
 -- every object, even an unknown one, should at least have getName implemented as it is
 -- in the base object of the hierarchy
 -- https://wiki.hoggitworld.com/view/DCS_Class_Object
 GRPC.exporters.unknown = function(object)
-  return {
-    name = object:getName(),
-  }
+  return exportObject(object, {})
 end
 
 GRPC.exporters.markPanel = function(markPanel)

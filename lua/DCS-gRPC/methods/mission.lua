@@ -463,19 +463,22 @@ end
 
 GRPC.methods.addCoalitionCommand = function(params)
   return GRPC.success({
-    path = missionCommands.addCommandForCoalition(params.coalition, params.name, params.path,
+    -- Decrement coalition for non zero-indexed gRPC enum
+    path = missionCommands.addCommandForCoalition(params.coalition - 1, params.name, params.path,
       coalitionCommandCallback, params)
   })
 end
 
 GRPC.methods.addCoalitionCommandSubMenu = function(params)
   return GRPC.success({
-    path = missionCommands.addSubMenuForCoalition(params.coalition, params.name, params.path)
+    -- Decrement coalition for non zero-indexed gRPC enum
+    path = missionCommands.addSubMenuForCoalition(params.coalition - 1, params.name, params.path)
   })
 end
 
 GRPC.methods.removeCoalitionCommandItem = function(params)
-  missionCommands.removeItemForCoalition(params.coalition, params.path)
+  -- Decrement coalition for non zero-indexed gRPC enum
+  missionCommands.removeItemForCoalition(params.coalition - 1, params.path)
   return GRPC.success(nil)
 end
 
@@ -494,35 +497,35 @@ local function groupCommandCallback(params)
   })
 end
 
-GRPC.methods.addCoalitionCommand = function(params)
+GRPC.methods.addGroupCommand = function(params)
   local group = Group.getByName(params.groupName)
   if group == nil then
     return GRPC.errorNotFound("group does not exist")
   end
 
   return GRPC.success({
-    path = missionCommands.addCommandForCoalition(group:getID(), params.name, params.path,
+    path = missionCommands.addCommandForGroup(group:getID(), params.name, params.path,
       groupCommandCallback, params.details)
   })
 end
 
-GRPC.methods.addCoalitionCommandSubMenu = function(params)
+GRPC.methods.addGroupCommandSubMenu = function(params)
   local group = Group.getByName(params.groupName)
   if group == nil then
     return GRPC.errorNotFound("group does not exist")
   end
 
   return GRPC.success({
-    path = missionCommands.addSubMenuForCoalition(group:getID(), params.name, params.path)
+    path = missionCommands.addSubMenuForGroup(group:getID(), params.name, params.path)
   })
 end
 
-GRPC.methods.removeCoalitionCommandItem = function(params)
+GRPC.methods.removeGroupCommandItem = function(params)
   local group = Group.getByName(params.groupName)
   if group == nil then
     return GRPC.errorNotFound("group does not exist")
   end
 
-  missionCommands.removeItemForCoalition(group:getID(), params.path)
+  missionCommands.removeItemForGroup(group:getID(), params.path)
   return GRPC.success(nil)
 end

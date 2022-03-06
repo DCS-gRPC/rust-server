@@ -451,12 +451,12 @@ end
 local function coalitionCommandCallback(params)
   local event = {
     type = "coalitionCommand",
+    coalition = params.coalition,
     details = params.details,
   }
 
   GRPC.event({
     time = timer.getTime(),
-    coalition = params.coalition,
     event = event
   })
 end
@@ -487,12 +487,12 @@ end
 local function groupCommandCallback(params)
   local event = {
     type = "groupCommand",
+    groupName = params.groupName,
     details = params.details,
   }
 
   GRPC.event({
     time = timer.getTime(),
-    groupName = params.groupName,
     event = event
   })
 end
@@ -505,7 +505,7 @@ GRPC.methods.addGroupCommand = function(params)
 
   return GRPC.success({
     path = missionCommands.addCommandForGroup(group:getID(), params.name, params.path,
-      groupCommandCallback, params.details)
+      groupCommandCallback, params)
   })
 end
 

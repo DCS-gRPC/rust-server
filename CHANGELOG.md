@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Replaced `groupName` field in the `GroupCommand` event with all the group details as exposed by the group exporter
+  (currently id, name, coalition, category). This change was made based on experience writing a client that processes these events
+  where only having the groupName was a limitation. This change breaks backwards compatibility with 0.4.0 where the `GroupCommand`
+  event was first added.
+
 ## [0.4.0] - 2022-03-07
 ### Added
 - `ForcePlayerSlot` API

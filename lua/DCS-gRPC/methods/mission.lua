@@ -487,7 +487,7 @@ end
 local function groupCommandCallback(params)
   local event = {
     type = "groupCommand",
-    groupName = params.groupName,
+    group = GRPC.exporters.group(params.group),
     details = params.details,
   }
 
@@ -502,6 +502,7 @@ GRPC.methods.addGroupCommand = function(params)
   if group == nil then
     return GRPC.errorNotFound("group does not exist")
   end
+  params['group'] = group
 
   return GRPC.success({
     path = missionCommands.addCommandForGroup(group:getID(), params.name, params.path,

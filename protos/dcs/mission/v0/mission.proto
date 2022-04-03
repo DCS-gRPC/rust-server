@@ -437,8 +437,8 @@ message StreamEventsResponse {
   }
 
   message GroupCommandEvent {
-    // The name of the group of the player who ran the command
-    string group_name = 1;
+    // Details of the group to which the player who ran the command is a unit of
+    dcs.common.v0.Group group = 1;
     // A struct containing details of the command that was run by a player
     google.protobuf.Struct details = 2;
   }

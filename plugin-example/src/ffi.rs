@@ -1,11 +1,12 @@
-use std::ffi::CString;
-use std::sync::Mutex;
+use std::mem::ManuallyDrop;
+use std::os::raw::c_char;
+use std::sync::RwLock;
 
 use once_cell::sync::Lazy;
-use tokio::sync::oneshot;
 use tonic::transport::NamedService;
 
 use crate::greeter::v0::greeter_service_server::GreeterServiceServer;
+use crate::Plugin;
 
 // extern "C" {
 //     fn log_error(err: *const c_char);
@@ -29,35 +30,44 @@ pub extern "C" fn api_version() -> i32 {
     i32::from_be_bytes(b)
 }
 
-static SHUTDOWN: Lazy<Mutex<Option<oneshot::Sender<()>>>> = Lazy::new(|| Mutex::new(None));
+static PLUGIN: Lazy<RwLock<Option<Plugin>>> = Lazy::new(|| RwLock::new(None));
 
 #[no_mangle]
-pub extern "C" fn start(dcs_grpc_port: u16, plugin_port: u16) {
-    let mut shutdown = SHUTDOWN.lock().unwrap();
+pub extern "C" fn start(port: u16) {
+    let mut shutdown = PLUGIN.write().unwrap();
     if shutdown.is_some() {
         // already started
         return;
     }
 
-    let (tx, rx) = oneshot::channel();
-    std::thread::spawn(move || {
-        if let Err(err) = super::start(dcs_grpc_port, plugin_port, rx) {
-            if let Ok(s) = CString::new(err.to_string()) {
-                // unsafe {
-                //     log_error(s.as_ptr());
-                // }
-                panic!("{}", err);
-            }
-        }
-    });
-
-    *shutdown = Some(tx);
-    drop(shutdown);
+    *shutdown = Some(Plugin::new(port));
 }
 
 #[no_mangle]
 pub extern "C" fn stop() {
-    if let Some(shutdown) = SHUTDOWN.lock().unwrap().take() {
-        shutdown.send(()).ok();
-    }
+    PLUGIN.write().unwrap().take();
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn call(
+    method_ptr: *const c_char,
+    method_len: usize,
+    request_ptr: *const u8,
+    request_len: usize,
+    response_ptr: *mut *mut u8,
+) -> usize {
+    let plugin = PLUGIN.read().unwrap();
+    let plugin = match &*plugin {
+        Some(plugin) => plugin,
+        None => return 0,
+    };
+
+    let method = std::slice::from_raw_parts(method_ptr as *const u8, method_len);
+    let method = std::str::from_utf8(method).unwrap_or_default();
+
+    let request = std::slice::from_raw_parts(request_ptr, request_len);
+    let response = super::handle_call(plugin, method, request);
+    let mut response = ManuallyDrop::new(response.into_boxed_slice());
+    *(response_ptr.as_mut().unwrap()) = response.as_mut_ptr();
+    response.len()
 }

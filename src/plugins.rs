@@ -1,8 +1,20 @@
+use std::convert::Infallible;
 use std::fs;
 use std::mem::MaybeUninit;
+use std::os::raw::c_char;
 use std::path::Path;
+use std::sync::Arc;
 
+use crate::rpc::{HookRpc, MissionRpc};
+use bytes::{Buf, BufMut};
+use futures_util::TryFutureExt;
+use http_body::Body;
 use libloading::{Library, Symbol};
+use tonic::body::BoxBody;
+use tonic::codegen::http::{self, StatusCode};
+use tonic::codegen::{BoxFuture, Never, Service};
+use tonic::transport::{self, NamedService};
+use tonic::{Code, Status};
 
 pub fn load(dir: impl AsRef<Path>) -> Vec<Plugin> {
     let mut plugins = Vec::new();
@@ -51,10 +63,15 @@ pub fn load(dir: impl AsRef<Path>) -> Vec<Plugin> {
     plugins
 }
 
+#[derive(Clone)]
 pub struct Plugin {
+    inner: Arc<PluginInner>,
+    port: u16,
+}
+
+struct PluginInner {
     name: String,
     lib: Library,
-    port: u16,
 }
 
 impl Plugin {
@@ -81,42 +98,210 @@ impl Plugin {
 
         // TODO: validate version against `env!("CARGO_PKG_VERSION")`
 
-        Ok(Plugin { name, lib, port: 0 })
+        Ok(Plugin {
+            inner: Arc::new(PluginInner { name, lib }),
+            port: 0,
+        })
     }
 
     pub fn name(&self) -> &str {
-        &self.name
+        &self.inner.name
     }
 
     pub fn port(&self) -> u16 {
         self.port
     }
 
-    pub fn start(&self, dcs_grpc_port: u16) {
+    pub fn start(&self, port: u16) {
         unsafe {
-            let start: Symbol<unsafe extern "C" fn(dcs_grpc_port: u16, plugin_port: u16)> =
-                match self.lib.get(b"start") {
-                    Ok(s) => s,
-                    Err(err) => {
-                        log::error!("Error starting plugin `{}`: {}", self.name, err);
-                        return;
-                    }
-                };
-            start(dcs_grpc_port, self.port);
+            let start: Symbol<unsafe extern "C" fn(port: u16)> = match self.inner.lib.get(b"start")
+            {
+                Ok(s) => s,
+                Err(err) => {
+                    log::error!("Error starting plugin `{}`: {}", self.inner.name, err);
+                    return;
+                }
+            };
+
+            if let Err(err) = std::panic::catch_unwind(|| {
+                start(port);
+            }) {
+                if let Ok(err) = err.downcast::<String>() {
+                    log::error!("starting plugin `{}` panicked: {:?}", self.name(), err);
+                } else {
+                    log::error!("starting plugin `{}` panicked", self.name());
+                }
+            }
         }
     }
 
     pub fn stop(&self) {
         unsafe {
-            let stop: Symbol<unsafe extern "C" fn()> = match self.lib.get(b"stop") {
+            let stop: Symbol<unsafe extern "C" fn()> = match self.inner.lib.get(b"stop") {
                 Ok(s) => s,
                 Err(err) => {
-                    log::error!("Error stopping plugin `{}`: {}", self.name, err);
+                    log::error!("Error stopping plugin `{}`: {}", self.inner.name, err);
                     return;
                 }
             };
-            stop();
+
+            if let Err(err) = std::panic::catch_unwind(|| {
+                stop();
+            }) {
+                if let Ok(err) = err.downcast::<String>() {
+                    log::error!("stopping plugin `{}` panicked: {:?}", self.name(), err);
+                } else {
+                    log::error!("stopping plugin `{}` panicked", self.name());
+                }
+            }
         }
+    }
+}
+
+impl Service<http::Request<transport::Body>> for Plugin {
+    type Response = http::Response<BoxBody>;
+    type Error = Never;
+    type Future = tonic::codegen::BoxFuture<Self::Response, Self::Error>;
+
+    #[inline]
+    fn poll_ready(
+        &mut self,
+        _: &mut std::task::Context<'_>,
+    ) -> std::task::Poll<Result<(), Self::Error>> {
+        std::task::Poll::Ready(Ok(()))
+    }
+
+    fn call(&mut self, req: http::Request<transport::Body>) -> Self::Future {
+        let plugin = self.clone();
+        let fut = async move {
+            // let inner = inner.inner;
+            // let method = GetMarkPanelsSvc(inner);
+            let mut grpc = tonic::server::Grpc::new(RawCodec);
+            let res = grpc.unary(plugin, req).await;
+            Ok(res)
+        };
+        Box::pin(fut)
+    }
+}
+
+impl tonic::server::UnaryService<Vec<u8>> for Plugin {
+    type Response = Vec<u8>;
+    type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+    fn call(&mut self, request: tonic::Request<Vec<u8>>) -> Self::Future {
+        let plugin = self.clone();
+        let fut = async move {
+            let data =
+                tokio::task::spawn_blocking(move || unsafe { asd(plugin, request.into_inner()) })
+                    .await
+                    .map_err(|err| {
+                        Status::new(Code::Unknown, format!("failed to spawn blocking: {}", err))
+                    })??;
+
+            Ok(tonic::Response::new(data))
+        };
+        Box::pin(fut)
+    }
+}
+
+unsafe fn asd(plugin: Plugin, request: Vec<u8>) -> Result<Vec<u8>, Status> {
+    log::info!("request: {:?}", request);
+
+    let call: Symbol<
+        unsafe extern "C" fn(
+            method_ptr: *const c_char,
+            method_len: usize,
+            request_ptr: *const u8,
+            request_len: usize,
+            response_ptr: *mut *mut u8,
+        ) -> usize,
+    > = plugin.inner.lib.get(b"call").map_err(|err| {
+        Status::internal(format!(
+            "failed to get `call` function from `{}` plugin: {}",
+            plugin.name(),
+            err
+        ))
+    })?;
+
+    let method = "example.greeter.v0.GreeterService/Greet";
+
+    log::info!("CALL");
+    let data = std::panic::catch_unwind(|| {
+        let mut response = MaybeUninit::uninit();
+        let len = call(
+            method.as_ptr() as *const c_char,
+            method.len(),
+            request.as_ptr(),
+            request.len(),
+            response.as_mut_ptr(),
+        );
+        if len == 0 {
+            unimplemented!("no response")
+        } else {
+            let response = response.assume_init();
+            let data = Box::from_raw(std::slice::from_raw_parts_mut(response, len));
+            let data = Vec::from(data);
+            data
+        }
+    })
+    .map_err(|err| {
+        if let Ok(err) = err.downcast::<String>() {
+            Status::internal(format!(
+                "calling plugin `{}` panicked: {:?}",
+                plugin.name(),
+                err
+            ))
+        } else {
+            Status::internal(format!("calling plugin `{}` panicked", plugin.name()))
+        }
+    })?;
+    log::info!("CALLED");
+    Ok(data)
+}
+
+#[derive(Default, Clone)]
+struct RawCodec;
+
+impl tonic::codec::Codec for RawCodec {
+    type Encode = Vec<u8>;
+    type Decode = Vec<u8>;
+
+    type Encoder = RawCodec;
+    type Decoder = RawCodec;
+
+    fn encoder(&mut self) -> Self::Encoder {
+        self.clone()
+    }
+
+    fn decoder(&mut self) -> Self::Decoder {
+        self.clone()
+    }
+}
+
+impl tonic::codec::Encoder for RawCodec {
+    type Item = Vec<u8>;
+    type Error = Status;
+
+    fn encode(
+        &mut self,
+        item: Self::Item,
+        buf: &mut tonic::codec::EncodeBuf<'_>,
+    ) -> Result<(), Self::Error> {
+        buf.put(&*item);
+        Ok(())
+    }
+}
+
+impl tonic::codec::Decoder for RawCodec {
+    type Item = Vec<u8>;
+    type Error = Status;
+
+    fn decode(
+        &mut self,
+        buf: &mut tonic::codec::DecodeBuf<'_>,
+    ) -> Result<Option<Self::Item>, Self::Error> {
+        let mut data = vec![0; buf.remaining()];
+        buf.copy_to_slice(&mut data);
+        Ok(Some(data))
     }
 }
 
@@ -126,4 +311,22 @@ pub enum PluginError {
     Io(#[from] std::io::Error),
     #[error(transparent)]
     Lib(#[from] libloading::Error),
+}
+
+struct Bla;
+impl tonic::client::GrpcService<tonic::body::BoxBody> for Bla {
+    type ResponseBody = tonic::body::BoxBody;
+    type Error = Infallible;
+    type Future = std::future::Ready<Result<http::Response<Self::ResponseBody>, Self::Error>>;
+
+    fn poll_ready(
+        &mut self,
+        cx: &mut std::task::Context<'_>,
+    ) -> std::task::Poll<Result<(), Self::Error>> {
+        todo!()
+    }
+
+    fn call(&mut self, request: http::Request<tonic::body::BoxBody>) -> Self::Future {
+        todo!()
+    }
 }

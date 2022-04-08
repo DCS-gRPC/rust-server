@@ -120,63 +120,7 @@ impl Service<http::Request<transport::Body>> for DcsServices {
                 log::info!("Test plugin {} {}", plugin.name(), path);
                 if path.starts_with(plugin.name()) {
                     log::info!("Matches plugin {}", plugin.name());
-
-                    let url = format!("http://127.0.0.1:{}", plugin.port());
-                    // TODO: unwrap
-                    let mut channel = transport::Endpoint::from_str(&url).unwrap().connect_lazy();
-                    log::info!("1");
-
-                    // self.inner.ready().await.map_err(|e| {
-                    //     tonic::Status::new(
-                    //         tonic::Code::Unknown,
-                    //         format!("Service was not ready: {}", e.into()),
-                    //     )
-                    // })?;
-                    // let codec = tonic::codec::ProstCodec::default();
-                    // let path =
-                    //     http::uri::PathAndQuery::from_static("/dcs.world.v0.WorldService/GetAirbases");
-                    // self.inner.unary(request.into_request(), path, codec).await
-
-                    // let client = tonic::client::Grpc::new(channel);
-                    // let codec = tonic::codec::ProstCodec::default();
-                    // return client.unary(req, req.uri().path_and_query().unwrap().clone(), codec);
-
-                    let (parts, body) = req.into_parts();
-                    let req: http::Request<http_body::combinators::UnsyncBoxBody<_, Status>> =
-                        http::Request::from_parts(
-                            parts,
-                            body.map_err(|err| Status::new(Code::Unknown, err.to_string()))
-                                .boxed_unsync(),
-                        );
-                    log::info!("2");
-                    return Box::pin(async move {
-                        log::info!("3");
-                        Ok(match channel.call(req).await {
-                            Ok(res) => {
-                                log::info!("OK");
-                                let (parts, body) = res.into_parts();
-                                http::Response::from_parts(
-                                    parts,
-                                    body.map_err(|err| Status::new(Code::Unknown, err.to_string()))
-                                        .boxed_unsync(),
-                                )
-                            }
-                            Err(err) => {
-                                log::info!("ERR");
-
-                                http::Response::builder()
-                                    .status(StatusCode::INTERNAL_SERVER_ERROR)
-                                    .body(
-                                        transport::Body::from(err.to_string())
-                                            .map_err(|err| {
-                                                Status::new(Code::Unknown, err.to_string())
-                                            })
-                                            .boxed_unsync(),
-                                    )
-                                    .unwrap()
-                            }
-                        })
-                    });
+                    return plugin.clone().call(req);
                 }
             }
 

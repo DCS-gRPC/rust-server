@@ -8,6 +8,7 @@ rust-version = "1.56"
 
 [workspace]
 members = [
+  "plugin-example",
   "repl",
   "stubs",
 ]
@@ -19,7 +20,7 @@ crate-type = ["cdylib"]
 dcs-module-ipc = "0.6"
 futures-util = "0.3"
 igrf = "0.2"
-libloading = { version = "0.7", optional = true }
+libloading = { version = "0.7" }
 log4rs = "1.0"
 log = "0.4"
 mlua = { version = "0.7", default-features = false, features = ["lua51", "module", "serialize"] }
@@ -33,7 +34,8 @@ time = { version = "0.3", features = ["formatting", "parsing"] }
 tokio = { version = "1.0", features = ["rt-multi-thread", "time", "sync"] }
 tokio-stream = { version = "0.1", features = ["sync"] }
 tonic = "0.6"
+http-body = "0.4"
 
 [features]
 default = []
-hot-reload = ["libloading"]
+hot-reload = []

@@ -1,4 +1,9 @@
+use std::str::FromStr;
+use std::sync::Arc;
+
+use crate::plugins::Plugin;
 use crate::rpc::{HookRpc, MissionRpc};
+use http_body::Body;
 use stubs::atmosphere::v0::atmosphere_service_server::AtmosphereServiceServer;
 use stubs::coalition::v0::coalition_service_server::CoalitionServiceServer;
 use stubs::controller::v0::controller_service_server::ControllerServiceServer;
@@ -12,8 +17,10 @@ use stubs::trigger::v0::trigger_service_server::TriggerServiceServer;
 use stubs::unit::v0::unit_service_server::UnitServiceServer;
 use stubs::world::v0::world_service_server::WorldServiceServer;
 use tonic::body::BoxBody;
+use tonic::codegen::http::StatusCode;
 use tonic::codegen::{http, Never, Service};
 use tonic::transport::{self, NamedService};
+use tonic::{Code, Status};
 
 /// The gRPC server is usually constructed via:
 /// ```rust
@@ -42,10 +49,11 @@ pub struct DcsServices {
     trigger: TriggerServiceServer<MissionRpc>,
     unit: UnitServiceServer<MissionRpc>,
     world: WorldServiceServer<MissionRpc>,
+    plugins: Arc<Vec<Plugin>>,
 }
 
 impl DcsServices {
-    pub fn new(mission_rpc: MissionRpc, hook_rpc: HookRpc) -> Self {
+    pub fn new(mission_rpc: MissionRpc, hook_rpc: HookRpc, plugins: Arc<Vec<Plugin>>) -> Self {
         Self {
             atmosphere: AtmosphereServiceServer::new(mission_rpc.clone()),
             coalition: CoalitionServiceServer::new(mission_rpc.clone()),
@@ -59,6 +67,7 @@ impl DcsServices {
             trigger: TriggerServiceServer::new(mission_rpc.clone()),
             unit: UnitServiceServer::new(mission_rpc.clone()),
             world: WorldServiceServer::new(mission_rpc),
+            plugins,
         }
     }
 }
@@ -107,6 +116,70 @@ impl Service<http::Request<transport::Body>> for DcsServices {
         } else if path.starts_with(WorldServiceServer::<MissionRpc>::NAME) {
             self.world.call(req)
         } else {
+            for plugin in self.plugins.iter() {
+                log::info!("Test plugin {} {}", plugin.name(), path);
+                if path.starts_with(plugin.name()) {
+                    log::info!("Matches plugin {}", plugin.name());
+
+                    let url = format!("http://127.0.0.1:{}", plugin.port());
+                    // TODO: unwrap
+                    let mut channel = transport::Endpoint::from_str(&url).unwrap().connect_lazy();
+                    log::info!("1");
+
+                    // self.inner.ready().await.map_err(|e| {
+                    //     tonic::Status::new(
+                    //         tonic::Code::Unknown,
+                    //         format!("Service was not ready: {}", e.into()),
+                    //     )
+                    // })?;
+                    // let codec = tonic::codec::ProstCodec::default();
+                    // let path =
+                    //     http::uri::PathAndQuery::from_static("/dcs.world.v0.WorldService/GetAirbases");
+                    // self.inner.unary(request.into_request(), path, codec).await
+
+                    // let client = tonic::client::Grpc::new(channel);
+                    // let codec = tonic::codec::ProstCodec::default();
+                    // return client.unary(req, req.uri().path_and_query().unwrap().clone(), codec);
+
+                    let (parts, body) = req.into_parts();
+                    let req: http::Request<http_body::combinators::UnsyncBoxBody<_, Status>> =
+                        http::Request::from_parts(
+                            parts,
+                            body.map_err(|err| Status::new(Code::Unknown, err.to_string()))
+                                .boxed_unsync(),
+                        );
+                    log::info!("2");
+                    return Box::pin(async move {
+                        log::info!("3");
+                        Ok(match channel.call(req).await {
+                            Ok(res) => {
+                                log::info!("OK");
+                                let (parts, body) = res.into_parts();
+                                http::Response::from_parts(
+                                    parts,
+                                    body.map_err(|err| Status::new(Code::Unknown, err.to_string()))
+                                        .boxed_unsync(),
+                                )
+                            }
+                            Err(err) => {
+                                log::info!("ERR");
+
+                                http::Response::builder()
+                                    .status(StatusCode::INTERNAL_SERVER_ERROR)
+                                    .body(
+                                        transport::Body::from(err.to_string())
+                                            .map_err(|err| {
+                                                Status::new(Code::Unknown, err.to_string())
+                                            })
+                                            .boxed_unsync(),
+                                    )
+                                    .unwrap()
+                            }
+                        })
+                    });
+                }
+            }
+
             Box::pin(std::future::ready(Ok(http::Response::builder()
                 .status(200)
                 .header("grpc-status", "12")

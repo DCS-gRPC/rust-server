@@ -156,11 +156,12 @@ dependencies = [
 
 [[package]]
 name = "dcs-grpc"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "dcs-grpc-stubs",
  "dcs-module-ipc",
  "futures-util",
+ "http-body",
  "igrf",
  "libloading",
  "log",
@@ -673,9 +674,9 @@ dependencies = [
 
 [[package]]
 name = "once_cell"
-version = "1.9.0"
+version = "1.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "da32515d9f6e6e489d7bc9d84c71b060db7247dc035bbe44eac88cf87486d8d5"
+checksum = "87f3e037eac156d1775da914196f0f37741a274155e34a0b7e427c35d2a2ecb9"
 
 [[package]]
 name = "ordered-float"
@@ -773,6 +774,20 @@ name = "pkg-config"
 version = "0.3.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "58893f751c9b0412871a09abd62ecd2a00298c6c83befa223ef98c52aef40cbe"
+
+[[package]]
+name = "plugin-example"
+version = "0.1.0"
+dependencies = [
+ "dcs-grpc-stubs",
+ "once_cell",
+ "prost",
+ "prost-types",
+ "serde",
+ "tokio",
+ "tonic",
+ "tonic-build",
+]
 
 [[package]]
 name = "ppv-lite86"

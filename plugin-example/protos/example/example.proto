@@ -1,0 +1,6 @@
+syntax = "proto3";
+
+package example;
+
+import "example/greeter/v0/greeter.proto";
+

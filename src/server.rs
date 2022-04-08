@@ -1,7 +1,10 @@
 use std::future::Future;
 use std::net::SocketAddr;
+use std::path::PathBuf;
+use std::sync::Arc;
 use std::time::Duration;
 
+use crate::plugins::{self, Plugin};
 use crate::rpc::{HookRpc, MissionRpc};
 use crate::services::DcsServices;
 use crate::shutdown::{Shutdown, ShutdownHandle};
@@ -29,6 +32,7 @@ struct ServerState {
     ipc_mission: IPC<StreamEventsResponse>,
     ipc_hook: IPC<()>,
     stats: Stats,
+    plugins: Arc<Vec<Plugin>>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -52,6 +56,11 @@ impl Server {
         let ipc_hook = IPC::default();
         let runtime = Runtime::new()?;
         let shutdown = Shutdown::new();
+
+        let mut plugins_dir = PathBuf::from(&config.write_dir);
+        plugins_dir.push("Mods/tech/DCS-gRPC/plugins");
+        let plugins = plugins::load(plugins_dir);
+
         Ok(Self {
             runtime,
             after_shutdown: None,
@@ -61,6 +70,7 @@ impl Server {
                 ipc_mission,
                 ipc_hook,
                 stats: Stats::new(shutdown.handle()),
+                plugins: Arc::new(plugins),
             },
             shutdown,
         })
@@ -83,9 +93,17 @@ impl Server {
 
         self.runtime
             .spawn(self.state.stats.clone().run_in_background());
+
+        for plugin in self.state.plugins.iter() {
+            plugin.start(self.state.addr.port());
+        }
     }
 
     pub fn stop_blocking(mut self) {
+        for plugin in self.state.plugins.iter() {
+            plugin.stop();
+        }
+
         // graceful shutdown
         self.runtime.block_on(self.shutdown.shutdown());
         if let Some(after_shutdown) = self.after_shutdown.take() {
@@ -144,6 +162,7 @@ async fn try_run(
         ipc_mission,
         ipc_hook,
         stats,
+        plugins,
     } = state;
 
     let mut mission_rpc = MissionRpc::new(ipc_mission, stats.clone(), shutdown_signal.clone());
@@ -155,7 +174,7 @@ async fn try_run(
     }
 
     transport::Server::builder()
-        .add_service(DcsServices::new(mission_rpc, hook_rpc))
+        .add_service(DcsServices::new(mission_rpc, hook_rpc, plugins))
         .serve_with_shutdown(addr, after_shutdown.map(|_| ()))
         .await?;
 

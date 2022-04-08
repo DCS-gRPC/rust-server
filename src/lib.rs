@@ -3,6 +3,7 @@
 
 #[cfg(feature = "hot-reload")]
 mod hot_reload;
+mod plugins;
 pub mod rpc;
 mod server;
 mod services;

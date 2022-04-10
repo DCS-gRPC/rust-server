@@ -76,7 +76,11 @@ impl NamedService for DcsServices {
     const NAME: &'static str = "";
 }
 
-impl Service<http::Request<transport::Body>> for DcsServices {
+impl<B> Service<http::Request<B>> for DcsServices
+where
+    B: Body + Send + 'static,
+    B::Error: Into<Box<dyn std::error::Error + Send + Sync + 'static>> + Send + 'static,
+{
     type Response = http::Response<BoxBody>;
     type Error = Never;
     type Future = tonic::codegen::BoxFuture<Self::Response, Self::Error>;
@@ -89,7 +93,7 @@ impl Service<http::Request<transport::Body>> for DcsServices {
         std::task::Poll::Ready(Ok(()))
     }
 
-    fn call(&mut self, req: tonic::codegen::http::Request<transport::Body>) -> Self::Future {
+    fn call(&mut self, req: tonic::codegen::http::Request<B>) -> Self::Future {
         let path = req.uri().path().trim_start_matches('/');
         if path.starts_with(AtmosphereServiceServer::<MissionRpc>::NAME) {
             self.atmosphere.call(req)

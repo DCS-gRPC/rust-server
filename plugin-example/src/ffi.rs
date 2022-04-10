@@ -32,15 +32,23 @@ pub extern "C" fn api_version() -> i32 {
 
 static PLUGIN: Lazy<RwLock<Option<Plugin>>> = Lazy::new(|| RwLock::new(None));
 
+type RequestFn = unsafe extern "C" fn(
+    method_ptr: *const c_char,
+    method_len: usize,
+    request_ptr: *const u8,
+    request_len: usize,
+    response_ptr: *mut *mut u8,
+) -> usize;
+
 #[no_mangle]
-pub extern "C" fn start(port: u16) {
+pub extern "C" fn start(request_fn: RequestFn) {
     let mut shutdown = PLUGIN.write().unwrap();
     if shutdown.is_some() {
         // already started
         return;
     }
 
-    *shutdown = Some(Plugin::new(port));
+    *shutdown = Some(Plugin::new(request_fn));
 }
 
 #[no_mangle]
@@ -70,4 +78,42 @@ pub unsafe extern "C" fn call(
     let mut response = ManuallyDrop::new(response.into_boxed_slice());
     *(response_ptr.as_mut().unwrap()) = response.as_mut_ptr();
     response.len()
+}
+
+struct Client(RequestFn);
+
+impl tonic::client::GrpcService<tonic::body::BoxBody> for Client {
+    type ResponseBody = tonic::body::BoxBody;
+    type Error = std::convert::Infallible;
+    type Future =
+        std::future::Ready<Result<tonic::codegen::http::Response<Self::ResponseBody>, Self::Error>>;
+
+    fn poll_ready(
+        &mut self,
+        _cx: &mut std::task::Context<'_>,
+    ) -> std::task::Poll<Result<(), Self::Error>> {
+        std::task::Poll::Ready(Ok(()))
+    }
+
+    fn call(
+        &mut self,
+        request: tonic::codegen::http::Request<tonic::body::BoxBody>,
+    ) -> Self::Future {
+        use futures_util::stream::TryStreamExt;
+
+        let fut = async move {
+            let (parts, body) = request.into_parts();
+            // let bytes = hyper::body::to_bytes(body).await?;
+            let entire_body = body
+                .try_fold(Vec::new(), |mut data, chunk| async move {
+                    data.extend_from_slice(&chunk);
+                    Ok(data)
+                })
+                .await;
+
+            todo!()
+        };
+
+        todo!()
+    }
 }

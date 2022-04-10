@@ -95,7 +95,7 @@ impl Server {
             .spawn(self.state.stats.clone().run_in_background());
 
         for plugin in self.state.plugins.iter() {
-            plugin.start(self.state.addr.port());
+            plugin.start();
         }
     }
 
@@ -125,6 +125,10 @@ impl Server {
 
     pub fn stats(&self) -> &Stats {
         &self.state.stats
+    }
+
+    pub fn shutdown_handle(&self) -> ShutdownHandle {
+        self.shutdown.handle()
     }
 
     pub fn block_on<F: Future>(&self, future: F) -> F::Output {

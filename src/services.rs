@@ -1,9 +1,7 @@
-use std::str::FromStr;
 use std::sync::Arc;
 
 use crate::plugins::Plugin;
 use crate::rpc::{HookRpc, MissionRpc};
-use http_body::Body;
 use stubs::atmosphere::v0::atmosphere_service_server::AtmosphereServiceServer;
 use stubs::coalition::v0::coalition_service_server::CoalitionServiceServer;
 use stubs::controller::v0::controller_service_server::ControllerServiceServer;
@@ -17,10 +15,8 @@ use stubs::trigger::v0::trigger_service_server::TriggerServiceServer;
 use stubs::unit::v0::unit_service_server::UnitServiceServer;
 use stubs::world::v0::world_service_server::WorldServiceServer;
 use tonic::body::BoxBody;
-use tonic::codegen::http::StatusCode;
 use tonic::codegen::{http, Never, Service};
 use tonic::transport::{self, NamedService};
-use tonic::{Code, Status};
 
 /// The gRPC server is usually constructed via:
 /// ```rust
@@ -76,11 +72,7 @@ impl NamedService for DcsServices {
     const NAME: &'static str = "";
 }
 
-impl<B> Service<http::Request<B>> for DcsServices
-where
-    B: Body + Send + 'static,
-    B::Error: Into<Box<dyn std::error::Error + Send + Sync + 'static>> + Send + 'static,
-{
+impl Service<http::Request<transport::Body>> for DcsServices {
     type Response = http::Response<BoxBody>;
     type Error = Never;
     type Future = tonic::codegen::BoxFuture<Self::Response, Self::Error>;
@@ -93,7 +85,7 @@ where
         std::task::Poll::Ready(Ok(()))
     }
 
-    fn call(&mut self, req: tonic::codegen::http::Request<B>) -> Self::Future {
+    fn call(&mut self, req: tonic::codegen::http::Request<transport::Body>) -> Self::Future {
         let path = req.uri().path().trim_start_matches('/');
         if path.starts_with(AtmosphereServiceServer::<MissionRpc>::NAME) {
             self.atmosphere.call(req)

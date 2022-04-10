@@ -71,6 +71,18 @@ pub fn event(lua: &Lua, event: Value) -> LuaResult<()> {
     }
 }
 
+pub fn plugin(lua: &Lua, arg: (String, Value)) -> LuaResult<()> {
+    if let Some(ref lib) = *LIBRARY.read().unwrap() {
+        let f: Symbol<fn(lua: &Lua, arg: (String, Value)) -> LuaResult<()>> = unsafe {
+            lib.get(b"plugin")
+                .map_err(|err| mlua::Error::ExternalError(Arc::new(err)))?
+        };
+        f(lua, arg)
+    } else {
+        Ok(())
+    }
+}
+
 pub fn log_error(lua: &Lua, err: String) -> LuaResult<()> {
     if let Some(ref lib) = *LIBRARY.read().unwrap() {
         let f: Symbol<fn(lua: &Lua, err: String) -> LuaResult<()>> = unsafe {

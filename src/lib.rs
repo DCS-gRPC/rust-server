@@ -19,6 +19,7 @@ use std::time::Instant;
 use mlua::{prelude::*, LuaSerdeExt};
 use mlua::{Function, Value};
 use once_cell::sync::Lazy;
+use prost_reflect::{DynamicMessage, FileDescriptor};
 use server::{Config, Server};
 use stubs::mission::v0::StreamEventsResponse;
 use thiserror::Error;
@@ -192,6 +193,72 @@ pub fn event(lua: &Lua, event: Value) -> LuaResult<()> {
 }
 
 #[no_mangle]
+pub fn plugin(lua: &Lua, (plugin_name, command): (String, Value)) -> LuaResult<()> {
+    let start = Instant::now();
+
+    let file_descriptor = match FileDescriptor::decode(
+        include_bytes!("../plugin-example/protos/descriptor_set.bin").as_ref(),
+    ) {
+        Ok(file_descriptor) => file_descriptor,
+        Err(err) => {
+            log::error!("failed to decode file description: {}", err);
+            return Ok(());
+        }
+    };
+
+    let message_descriptor = match file_descriptor.get_message_by_name("example.GreetCommand") {
+        Some(message_descriptor) => message_descriptor,
+        None => {
+            log::error!("could not find message in descriptor");
+            return Ok(());
+        }
+    };
+
+    let mut deserializer = mlua::serde::Deserializer::new(command);
+    let command = match DynamicMessage::deserialize(message_descriptor, deserializer) {
+        Ok(command) => command,
+        Err(err) => {
+            log::error!("failed to deserialize command: {}", err);
+            // In certain cases DCS crashes when we return an error back to Lua here (see
+            // https://github.com/DCS-gRPC/rust-server/issues/19), which we are working around
+            // by intercepting and logging the error instead.
+            return Ok(());
+        }
+    };
+
+    log::info!(
+        "Successfully deserialized into dynamic message. Name: {:?}",
+        command.get_field_by_name("name")
+    );
+
+    // assert_eq!(
+    //     dynamic_message.get_field_by_name("foo").unwrap().as_ref(),
+    //     &Value::I32(150)
+    // );
+
+    // let event: StreamEventsResponse = match lua.from_value(event) {
+    //     Ok(event) => event,
+    //     Err(err) => {
+    //         log::error!("failed to deserialize event: {}", err);
+    //         // In certain cases DCS crashes when we return an error back to Lua here (see
+    //         // https://github.com/DCS-gRPC/rust-server/issues/19), which we are working around
+    //         // by intercepting and logging the error instead.
+    //         return Ok(());
+    //     }
+    // };
+
+    // if let Some(server) = &*SERVER.read().unwrap() {
+    //     let _guard = server.stats().track_block_time(start);
+    //     server.stats().track_event();
+
+    //     log::debug!("Received event: {:#?}", event);
+    //     server.block_on(server.ipc_mission().event(event));
+    // }
+
+    Ok(())
+}
+
+#[no_mangle]
 pub fn log_error(_: &Lua, err: String) -> LuaResult<()> {
     log::error!("{}", err);
     Ok(())
@@ -238,6 +305,7 @@ pub fn dcs_grpc_hot_reload(lua: &Lua) -> LuaResult<LuaTable> {
     exports.set("stop", lua.create_function(hot_reload::stop)?)?;
     exports.set("next", lua.create_function(hot_reload::next)?)?;
     exports.set("event", lua.create_function(hot_reload::event)?)?;
+    exports.set("plugin", lua.create_function(hot_reload::plugin)?)?;
     exports.set("logError", lua.create_function(hot_reload::log_error)?)?;
     exports.set("logWarning", lua.create_function(hot_reload::log_warning)?)?;
     exports.set("logInfo", lua.create_function(hot_reload::log_info)?)?;
@@ -253,6 +321,7 @@ pub fn dcs_grpc(lua: &Lua) -> LuaResult<LuaTable> {
     exports.set("stop", lua.create_function(stop)?)?;
     exports.set("next", lua.create_function(next)?)?;
     exports.set("event", lua.create_function(event)?)?;
+    exports.set("plugin", lua.create_function(plugin)?)?;
     exports.set("logError", lua.create_function(log_error)?)?;
     exports.set("logWarning", lua.create_function(log_warning)?)?;
     exports.set("logInfo", lua.create_function(log_info)?)?;

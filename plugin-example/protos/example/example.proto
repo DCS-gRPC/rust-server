@@ -4,3 +4,12 @@ package example;
 
 import "example/greeter/v0/greeter.proto";
 
+message Command {
+  oneof command {
+    GreetCommand greet = 1;
+  }
+}
+
+message GreetCommand {
+  string name = 1;
+}

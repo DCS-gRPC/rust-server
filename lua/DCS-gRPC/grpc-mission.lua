@@ -61,3 +61,5 @@ if GRPC.autostart == true then
   env.info("[GRPC] auto starting")
   GRPC.load()
 end
+
+GRPC.plugin = grpc.plugin

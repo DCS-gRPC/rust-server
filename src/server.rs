@@ -93,15 +93,11 @@ impl Server {
 
         self.runtime
             .spawn(self.state.stats.clone().run_in_background());
-
-        for plugin in self.state.plugins.iter() {
-            plugin.start();
-        }
     }
 
     pub fn stop_blocking(mut self) {
         for plugin in self.state.plugins.iter() {
-            plugin.stop();
+            self.runtime.block_on(plugin.stop());
         }
 
         // graceful shutdown
@@ -168,6 +164,10 @@ async fn try_run(
         stats,
         plugins,
     } = state;
+
+    for plugin in plugins.iter() {
+        plugin.start(addr.port()).await;
+    }
 
     let mut mission_rpc = MissionRpc::new(ipc_mission, stats.clone(), shutdown_signal.clone());
     let mut hook_rpc = HookRpc::new(ipc_hook, stats, shutdown_signal.clone());

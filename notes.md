@@ -1,1 +1,5 @@
 .\grpcurl.exe -plaintext -import-path ./plugin-example/protos -proto ./plugin-example/protos/example/example.proto -d '{\"name\": \"Someone\"}' 127.0.0.1:50051 example.greeter.v0.GreeterService/Greet
+
+
+
+m:\Downloads\protoc-3.20.0-win64\bin\protoc.exe --proto_path=plugin-example\protos --descriptor_set_out=plugin-example\protos\descriptor_set.bin plugin-example\protos\example\example.proto

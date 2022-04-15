@@ -7,4 +7,6 @@
 scratchpad.txt
 grpcurl.exe
 /doc
-protoc*.exe
+*.exe
+protos/google
+releases/

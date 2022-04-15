@@ -260,7 +260,7 @@ should use their independent logging and tracing functions.
 - [x] `setPause` - API name changed to `setPaused` as this is more accurate
 - [x] `getPause` - API name changed to `getPaused` as this is more accurate
 - [x] `stopMission`
-- [ ] `exitProcess`
+- [x] `exitProcess`
 - [ ] `isServer`
 - [ ] `getModelTime`
 - [ ] `getRealTime`

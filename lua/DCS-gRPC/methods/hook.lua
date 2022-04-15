@@ -27,6 +27,11 @@ GRPC.methods.stopMission = function()
   return GRPC.success(nil)
 end
 
+GRPC.methods.exitProcess = function()
+  DCS.exitProcess()
+  return GRPC.success(nil)
+end
+
 GRPC.methods.hookEval = function(params)
   local fn, err = loadstring(params.lua)
   if not fn then

@@ -13,6 +13,20 @@ GRPC.methods.getMissionFilename = function()
   return GRPC.success({name = DCS.getMissionFilename()})
 end
 
+GRPC.methods.getPaused = function()
+  return GRPC.success({paused = DCS.getPause()})
+end
+
+GRPC.methods.setPaused = function(params)
+  DCS.setPause(params.paused)
+  return GRPC.success(nil)
+end
+
+GRPC.methods.stopMission = function()
+  DCS.stopMission()
+  return GRPC.success(nil)
+end
+
 GRPC.methods.hookEval = function(params)
   local fn, err = loadstring(params.lua)
   if not fn then

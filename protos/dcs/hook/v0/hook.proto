@@ -12,6 +12,15 @@ service HookService {
   rpc GetMissionFilename(GetMissionFilenameRequest)
     returns (GetMissionFilenameResponse) {}
 
+  // https://wiki.hoggitworld.com/view/DCS_func_getPause
+  rpc GetPaused(GetPausedRequest) returns (GetPausedResponse) {}
+
+  // https://wiki.hoggitworld.com/view/DCS_func_setPause
+  rpc SetPaused(SetPausedRequest) returns (SetPausedResponse) {}
+
+  // https://wiki.hoggitworld.com/view/DCS_func_stopMission
+  rpc StopMission(StopMissionRequest) returns (StopMissionResponse) {}
+
   // Evaluate some Lua inside of the hook environment and return the result as a
   // JSON string. Disabled by default.
   rpc Eval(EvalRequest) returns (EvalResponse) {}
@@ -29,6 +38,26 @@ message GetMissionFilenameRequest {
 
 message GetMissionFilenameResponse {
   string name = 1;
+}
+
+message GetPausedRequest {
+}
+
+message GetPausedResponse {
+  bool paused = 1;
+}
+
+message SetPausedRequest {
+  bool paused = 1;
+}
+
+message SetPausedResponse {
+}
+
+message StopMissionRequest {
+}
+
+message StopMissionResponse {
 }
 
 message EvalRequest {

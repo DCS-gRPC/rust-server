@@ -257,9 +257,9 @@ should use their independent logging and tracing functions.
   - [x] `onPlayerTryConnect` (Emitted as a special GRPC event)
   - [x] `onPlayerTrySendChat` (Emitted as a special GRPC event)
   - [ ] `onPlayerTryChangeSlot`
-- [ ] `setPause`
-- [ ] `getPause`
-- [ ] `stopMission`
+- [x] `setPause` - API name changed to `setPaused` as this is more accurate
+- [x] `getPause` - API name changed to `getPaused` as this is more accurate
+- [x] `stopMission`
 - [ ] `exitProcess`
 - [ ] `isServer`
 - [ ] `getModelTime`

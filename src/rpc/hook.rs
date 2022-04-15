@@ -22,6 +22,30 @@ impl HookService for HookRpc {
         Ok(Response::new(res))
     }
 
+    async fn get_paused(
+        &self,
+        request: Request<hook::v0::GetPausedRequest>,
+    ) -> Result<Response<hook::v0::GetPausedResponse>, Status> {
+        let res: hook::v0::GetPausedResponse = self.request("getPaused", request).await?;
+        Ok(Response::new(res))
+    }
+
+    async fn set_paused(
+        &self,
+        request: Request<hook::v0::SetPausedRequest>,
+    ) -> Result<Response<hook::v0::SetPausedResponse>, Status> {
+        self.notification("setPaused", request).await?;
+        Ok(Response::new(hook::v0::SetPausedResponse {}))
+    }
+
+    async fn stop_mission(
+        &self,
+        request: Request<hook::v0::StopMissionRequest>,
+    ) -> Result<Response<hook::v0::StopMissionResponse>, Status> {
+        self.notification("stopMission", request).await?;
+        Ok(Response::new(hook::v0::StopMissionResponse {}))
+    }
+
     async fn eval(
         &self,
         request: Request<hook::v0::EvalRequest>,

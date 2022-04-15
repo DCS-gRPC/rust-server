@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - `GetMissionFilename` API
+- `GetPaused` API
+- `SetPaused` API
+- `StopMission` API
 
 ### Changed
 - Replaced `groupName` field in the `GroupCommand` event with all the group details as exposed by the group exporter

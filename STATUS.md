@@ -269,7 +269,7 @@ should use their independent logging and tracing functions.
 - [ ] `getAvailableSlots`
 - [ ] `getCurrentMission`
 - [x] `getMissionName`
-- [ ] `getMissionFilename`
+- [x] `getMissionFilename`
 - [ ] `getMissionResult`
 - [ ] `getUnitProperty`
 - [ ] `getUnitType`

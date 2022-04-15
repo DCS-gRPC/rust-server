@@ -8,6 +8,10 @@ service HookService {
   // https://wiki.hoggitworld.com/view/DCS_func_getMissionName
   rpc GetMissionName(GetMissionNameRequest) returns (GetMissionNameResponse) {}
 
+  // https://wiki.hoggitworld.com/view/DCS_func_getMissionFilename
+  rpc GetMissionFilename(GetMissionFilenameRequest)
+    returns (GetMissionFilenameResponse) {}
+
   // Evaluate some Lua inside of the hook environment and return the result as a
   // JSON string. Disabled by default.
   rpc Eval(EvalRequest) returns (EvalResponse) {}
@@ -17,6 +21,13 @@ message GetMissionNameRequest {
 }
 
 message GetMissionNameResponse {
+  string name = 1;
+}
+
+message GetMissionFilenameRequest {
+}
+
+message GetMissionFilenameResponse {
   string name = 1;
 }
 

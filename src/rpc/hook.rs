@@ -60,4 +60,12 @@ impl HookService for HookRpc {
         })?;
         Ok(Response::new(hook::v0::EvalResponse { json }))
     }
+
+    async fn exit_process(
+        &self,
+        request: Request<hook::v0::ExitProcessRequest>,
+    ) -> Result<Response<hook::v0::ExitProcessResponse>, Status> {
+        self.notification("exitProcess", request).await?;
+        Ok(Response::new(hook::v0::ExitProcessResponse {}))
+    }
 }

@@ -97,7 +97,7 @@ should use their independent logging and tracing functions.
 - [ ] `get_server_id`
 - [x] `get_player_info`
   - Returned as a detailed response with compounded `get_player_list`
-- [ ] `kick`
+- [x] `kick`
 - [ ] `get_stat`
 - [x] <strike>`get_name`</strike> (will not be implemented -- returned part of `get_player_info`)
 - [x] <strike>`get_slot`</strike> (will not be implemented -- returned part of `get_player_info`)

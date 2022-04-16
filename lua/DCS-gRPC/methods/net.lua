@@ -52,3 +52,18 @@ GRPC.methods.forcePlayerSlot = function(params)
 
     return GRPC.success(nil)
 end
+
+GRPC.methods.kickPlayer = function(params)
+  if params.id == 1 then
+    return GRPC.errorInvalidArgument("Cannot kick the server user")
+  end
+
+  local player_id = net.get_player_info(params.id, "id")
+
+  if not player_id then
+    return GRPC.errorNotFound("Could not find player with the ID of " .. params.id)
+  end
+
+  net.kick(params.id, params.message)
+  return GRPC.success(nil)
+end

@@ -36,4 +36,12 @@ impl NetService for MissionRpc {
         self.notification("forcePlayerSlot", request).await?;
         Ok(Response::new(net::v0::ForcePlayerSlotResponse {}))
     }
+
+    async fn kick_player(
+        &self,
+        request: Request<net::v0::KickPlayerRequest>,
+    ) -> Result<Response<net::v0::KickPlayerResponse>, Status> {
+        let res: net::v0::KickPlayerResponse = self.request("kickPlayer", request).await?;
+        Ok(Response::new(res))
+    }
 }

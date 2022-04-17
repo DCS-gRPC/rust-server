@@ -13,6 +13,15 @@ impl HookService for HookRpc {
         Ok(Response::new(res))
     }
 
+    async fn get_mission_description(
+        &self,
+        request: Request<hook::v0::GetMissionDescriptionRequest>,
+    ) -> Result<Response<hook::v0::GetMissionDescriptionResponse>, Status> {
+        let res: hook::v0::GetMissionDescriptionResponse =
+            self.request("getMissionDescription", request).await?;
+        Ok(Response::new(res))
+    }
+
     async fn get_mission_filename(
         &self,
         request: Request<hook::v0::GetMissionFilenameRequest>,

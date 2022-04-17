@@ -13,6 +13,10 @@ GRPC.methods.getMissionFilename = function()
   return GRPC.success({name = DCS.getMissionFilename()})
 end
 
+GRPC.methods.getMissionDescription = function()
+  return GRPC.success({description = DCS.getMissionDescription()})
+end
+
 GRPC.methods.getPaused = function()
   return GRPC.success({paused = DCS.getPause()})
 end

@@ -12,6 +12,10 @@ service HookService {
   rpc GetMissionFilename(GetMissionFilenameRequest)
     returns (GetMissionFilenameResponse) {}
 
+  // https://wiki.hoggitworld.com/view/DCS_func_getMissionDescription
+  rpc GetMissionDescription(GetMissionDescriptionRequest)
+    returns (GetMissionDescriptionResponse) {}
+
   // https://wiki.hoggitworld.com/view/DCS_func_getPause
   rpc GetPaused(GetPausedRequest) returns (GetPausedResponse) {}
 
@@ -47,6 +51,13 @@ message GetMissionFilenameRequest {
 
 message GetMissionFilenameResponse {
   string name = 1;
+}
+
+message GetMissionDescriptionRequest {
+}
+
+message GetMissionDescriptionResponse {
+  string description = 1;
 }
 
 message GetPausedRequest {

@@ -270,6 +270,7 @@ should use their independent logging and tracing functions.
 - [ ] `getAvailableSlots`
 - [ ] `getCurrentMission`
 - [x] `getMissionName`
+- [x] `getMissionDescription`
 - [x] `getMissionFilename`
 - [ ] `getMissionResult`
 - [ ] `getUnitProperty`

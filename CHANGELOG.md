@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `KickPlayer` API
 - `IsMultiplayer` API
 - `IsServer` API
+- `GetMissionDescription` API
 
 ### Changed
 - Replaced `groupName` field in the `GroupCommand` event with all the group details as exposed by the group exporter

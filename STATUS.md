@@ -261,7 +261,8 @@ should use their independent logging and tracing functions.
 - [x] `getPause` - API name changed to `getPaused` as this is more accurate
 - [x] `stopMission`
 - [x] `exitProcess`
-- [ ] `isServer`
+- [x] `isMultiplayer`
+- [x] `isServer`
 - [ ] `getModelTime`
 - [ ] `getRealTime`
 - [ ] `getMissionOptions`

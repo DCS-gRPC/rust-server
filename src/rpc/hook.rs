@@ -68,4 +68,20 @@ impl HookService for HookRpc {
         self.notification("exitProcess", request).await?;
         Ok(Response::new(hook::v0::ExitProcessResponse {}))
     }
+
+    async fn is_multiplayer(
+        &self,
+        request: Request<hook::v0::IsMultiplayerRequest>,
+    ) -> Result<Response<hook::v0::IsMultiplayerResponse>, Status> {
+        let res: hook::v0::IsMultiplayerResponse = self.request("isMultiplayer", request).await?;
+        Ok(Response::new(res))
+    }
+
+    async fn is_server(
+        &self,
+        request: Request<hook::v0::IsServerRequest>,
+    ) -> Result<Response<hook::v0::IsServerResponse>, Status> {
+        let res: hook::v0::IsServerResponse = self.request("isServer", request).await?;
+        Ok(Response::new(res))
+    }
 }

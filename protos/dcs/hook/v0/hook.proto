@@ -27,6 +27,12 @@ service HookService {
 
   // https://wiki.hoggitworld.com/view/DCS_func_exitProcess
   rpc ExitProcess(ExitProcessRequest) returns (ExitProcessResponse) {}
+
+  // https://wiki.hoggitworld.com/view/DCS_func_isMultiplayer
+  rpc IsMultiplayer(IsMultiplayerRequest) returns (IsMultiplayerResponse) {}
+
+  // https://wiki.hoggitworld.com/view/DCS_func_isServer
+  rpc IsServer(IsServerRequest) returns (IsServerResponse) {}
 }
 
 message GetMissionNameRequest {
@@ -75,4 +81,18 @@ message ExitProcessRequest {
 }
 
 message ExitProcessResponse {
+}
+
+message IsMultiplayerRequest {
+}
+
+message IsMultiplayerResponse {
+  bool multiplayer = 1;
+}
+
+message IsServerRequest {
+}
+
+message IsServerResponse {
+  bool server = 1;
 }

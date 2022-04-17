@@ -45,3 +45,11 @@ GRPC.methods.hookEval = function(params)
 
   return GRPC.success(result)
 end
+
+GRPC.methods.isMultiplayer = function()
+  return GRPC.success({multiplayer = DCS.isMultiplayer()})
+end
+
+GRPC.methods.isServer = function()
+  return GRPC.success({server = DCS.isServer()})
+end

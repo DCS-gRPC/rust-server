@@ -57,3 +57,38 @@ end
 GRPC.methods.isServer = function()
   return GRPC.success({server = DCS.isServer()})
 end
+
+GRPC.methods.banPlayer = function(params)
+  if params.id == 1 then
+    return GRPC.errorInvalidArgument("Cannot ban the server user")
+  end
+
+  local player_id = net.get_player_info(params.id, "id")
+
+  if not player_id then
+    return GRPC.errorNotFound("Could not find player with the ID of " .. params.id)
+  end
+
+  return GRPC.success({banned = net.banlist_add(params.id, params.period, params.reason)})
+end
+
+GRPC.methods.unbanPlayer = function(params)
+  return GRPC.success({unbanned = net.banlist_remove(params.ucid)})
+end
+
+GRPC.methods.getBannedPlayers = function()
+  local result = {}
+
+  for i, detail in ipairs(net.banlist_get()) do
+    result[i] = {
+      ucid = detail.ucid,
+      ipAddress = detail.ipaddr,
+      playerName = detail.name,
+      reason = detail.reason,
+      bannedFrom = detail.banned_from,
+      bannedUntil = detail.banned_until
+    }
+  end
+
+  return GRPC.success({bans = result})
+end

@@ -37,6 +37,16 @@ service HookService {
 
   // https://wiki.hoggitworld.com/view/DCS_func_isServer
   rpc IsServer(IsServerRequest) returns (IsServerResponse) {}
+
+  // Bans a player that is currently connected to the server
+  rpc BanPlayer(BanPlayerRequest) returns (BanPlayerResponse) {}
+
+  // Unbans a player via their globally unique ID
+  rpc UnbanPlayer(UnbanPlayerRequest) returns (UnbanPlayerResponse) {}
+
+  // Get a list of all the banned players
+  rpc GetBannedPlayers(GetBannedPlayersRequest)
+    returns (GetBannedPlayersResponse) {}
 }
 
 message GetMissionNameRequest {
@@ -106,4 +116,50 @@ message IsServerRequest {
 
 message IsServerResponse {
   bool server = 1;
+}
+
+message BanPlayerRequest {
+  // The session ID of the player
+  uint32 id = 1;
+  // The period of the ban in seconds
+  uint32 period = 2;
+  // The reason for the ban
+  string reason = 3;
+}
+
+message BanPlayerResponse {
+  // Was the player successfully banned
+  bool banned = 1;
+}
+
+message UnbanPlayerRequest {
+  // The globally unique ID of the player
+  string ucid = 1;
+}
+
+message UnbanPlayerResponse {
+  // Was the player successfully unbanned
+  bool unbanned = 1;
+}
+
+message GetBannedPlayersRequest {
+}
+
+message GetBannedPlayersResponse {
+  repeated BanDetails bans = 1;
+}
+
+message BanDetails {
+  // The globally unique ID of the player
+  string ucid = 1;
+  // The IP address the user had when they were banned
+  string ip_address = 2;
+  // The Name of the player at the time of the ban
+  string player_name = 3;
+  // The reason given for the ban
+  string reason = 4;
+  // When the ban was issued in unixtime
+  uint64 banned_from = 5;
+  // When the ban will expire in unixtime
+  uint64 banned_until = 6;
 }

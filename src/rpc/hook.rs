@@ -93,4 +93,29 @@ impl HookService for HookRpc {
         let res: hook::v0::IsServerResponse = self.request("isServer", request).await?;
         Ok(Response::new(res))
     }
+
+    async fn ban_player(
+        &self,
+        request: Request<hook::v0::BanPlayerRequest>,
+    ) -> Result<Response<hook::v0::BanPlayerResponse>, Status> {
+        let res: hook::v0::BanPlayerResponse = self.request("banPlayer", request).await?;
+        Ok(Response::new(res))
+    }
+
+    async fn unban_player(
+        &self,
+        request: Request<hook::v0::UnbanPlayerRequest>,
+    ) -> Result<Response<hook::v0::UnbanPlayerResponse>, Status> {
+        let res: hook::v0::UnbanPlayerResponse = self.request("unbanPlayer", request).await?;
+        Ok(Response::new(res))
+    }
+
+    async fn get_banned_players(
+        &self,
+        request: Request<hook::v0::GetBannedPlayersRequest>,
+    ) -> Result<Response<hook::v0::GetBannedPlayersResponse>, Status> {
+        let res: hook::v0::GetBannedPlayersResponse =
+            self.request("getBannedPlayers", request).await?;
+        Ok(Response::new(res))
+    }
 }

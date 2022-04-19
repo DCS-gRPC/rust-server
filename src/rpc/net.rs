@@ -9,7 +9,7 @@ impl NetService for MissionRpc {
         &self,
         request: Request<net::v0::SendChatToRequest>,
     ) -> Result<Response<net::v0::SendChatToResponse>, Status> {
-        self.notification("sendChatTo", request).await?;
+        self.request("sendChatTo", request).await?;
         Ok(Response::new(net::v0::SendChatToResponse {}))
     }
 
@@ -17,7 +17,7 @@ impl NetService for MissionRpc {
         &self,
         request: Request<net::v0::SendChatRequest>,
     ) -> Result<Response<net::v0::SendChatResponse>, Status> {
-        self.notification("sendChat", request).await?;
+        self.request("sendChat", request).await?;
         Ok(Response::new(net::v0::SendChatResponse {}))
     }
 
@@ -33,7 +33,7 @@ impl NetService for MissionRpc {
         &self,
         request: Request<net::v0::ForcePlayerSlotRequest>,
     ) -> Result<Response<net::v0::ForcePlayerSlotResponse>, Status> {
-        self.notification("forcePlayerSlot", request).await?;
+        self.request("forcePlayerSlot", request).await?;
         Ok(Response::new(net::v0::ForcePlayerSlotResponse {}))
     }
 

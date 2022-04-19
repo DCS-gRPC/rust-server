@@ -74,17 +74,6 @@ impl MissionRpc {
             .map_err(to_status)
     }
 
-    pub async fn notification<I>(&self, method: &str, request: Request<I>) -> Result<(), Status>
-    where
-        I: serde::Serialize + Send + Sync + 'static,
-    {
-        let _guard = self.stats.track_queue_size();
-        self.ipc
-            .notification(method, Some(request.into_inner()))
-            .await
-            .map_err(to_status)
-    }
-
     pub async fn events(&self) -> impl Stream<Item = StreamEventsResponse> {
         self.ipc.events().await
     }
@@ -112,17 +101,6 @@ impl HookRpc {
         let _guard = self.stats.track_queue_size();
         self.ipc
             .request(method, Some(request.into_inner()))
-            .await
-            .map_err(to_status)
-    }
-
-    pub async fn notification<I>(&self, method: &str, request: Request<I>) -> Result<(), Status>
-    where
-        I: serde::Serialize + Send + Sync + 'static,
-    {
-        let _guard = self.stats.track_queue_size();
-        self.ipc
-            .notification(method, Some(request.into_inner()))
             .await
             .map_err(to_status)
     }

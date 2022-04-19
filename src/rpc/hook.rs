@@ -43,7 +43,7 @@ impl HookService for HookRpc {
         &self,
         request: Request<hook::v0::SetPausedRequest>,
     ) -> Result<Response<hook::v0::SetPausedResponse>, Status> {
-        self.notification("setPaused", request).await?;
+        self.request("setPaused", request).await?;
         Ok(Response::new(hook::v0::SetPausedResponse {}))
     }
 
@@ -51,7 +51,7 @@ impl HookService for HookRpc {
         &self,
         request: Request<hook::v0::StopMissionRequest>,
     ) -> Result<Response<hook::v0::StopMissionResponse>, Status> {
-        self.notification("stopMission", request).await?;
+        self.request("stopMission", request).await?;
         Ok(Response::new(hook::v0::StopMissionResponse {}))
     }
 
@@ -74,7 +74,7 @@ impl HookService for HookRpc {
         &self,
         request: Request<hook::v0::ExitProcessRequest>,
     ) -> Result<Response<hook::v0::ExitProcessResponse>, Status> {
-        self.notification("exitProcess", request).await?;
+        self.request("exitProcess", request).await?;
         Ok(Response::new(hook::v0::ExitProcessResponse {}))
     }
 

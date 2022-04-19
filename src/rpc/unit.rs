@@ -46,7 +46,7 @@ impl UnitService for MissionRpc {
         &self,
         request: Request<unit::v0::SetEmissionRequest>,
     ) -> Result<Response<unit::v0::SetEmissionResponse>, Status> {
-        self.notification("setEmission", request).await?;
+        self.request("setEmission", request).await?;
         Ok(Response::new(unit::v0::SetEmissionResponse {}))
     }
 

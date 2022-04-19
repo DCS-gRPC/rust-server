@@ -9,7 +9,7 @@ impl TriggerService for MissionRpc {
         &self,
         request: Request<trigger::v0::OutTextRequest>,
     ) -> Result<Response<trigger::v0::OutTextResponse>, Status> {
-        self.notification("outText", request).await?;
+        self.request("outText", request).await?;
         Ok(Response::new(trigger::v0::OutTextResponse {}))
     }
 
@@ -17,7 +17,7 @@ impl TriggerService for MissionRpc {
         &self,
         request: Request<trigger::v0::OutTextForCoalitionRequest>,
     ) -> Result<Response<trigger::v0::OutTextForCoalitionResponse>, Status> {
-        self.notification("outTextForCoalition", request).await?;
+        self.request("outTextForCoalition", request).await?;
         Ok(Response::new(trigger::v0::OutTextForCoalitionResponse {}))
     }
 
@@ -25,7 +25,7 @@ impl TriggerService for MissionRpc {
         &self,
         request: Request<trigger::v0::OutTextForGroupRequest>,
     ) -> Result<Response<trigger::v0::OutTextForGroupResponse>, Status> {
-        self.notification("outTextForGroup", request).await?;
+        self.request("outTextForGroup", request).await?;
         Ok(Response::new(trigger::v0::OutTextForGroupResponse {}))
     }
 
@@ -41,7 +41,7 @@ impl TriggerService for MissionRpc {
         &self,
         request: Request<trigger::v0::SetUserFlagRequest>,
     ) -> Result<Response<trigger::v0::SetUserFlagResponse>, Status> {
-        self.notification("setUserFlag", request).await?;
+        self.request("setUserFlag", request).await?;
         Ok(Response::new(trigger::v0::SetUserFlagResponse {}))
     }
 
@@ -74,7 +74,7 @@ impl TriggerService for MissionRpc {
         &self,
         request: Request<trigger::v0::RemoveMarkRequest>,
     ) -> Result<Response<trigger::v0::RemoveMarkResponse>, Status> {
-        self.notification("removeMark", request).await?;
+        self.request("removeMark", request).await?;
         Ok(Response::new(trigger::v0::RemoveMarkResponse {}))
     }
 
@@ -82,7 +82,7 @@ impl TriggerService for MissionRpc {
         &self,
         request: Request<trigger::v0::ExplosionRequest>,
     ) -> Result<Response<trigger::v0::ExplosionResponse>, Status> {
-        self.notification("explosion", request).await?;
+        self.request("explosion", request).await?;
         Ok(Response::new(trigger::v0::ExplosionResponse {}))
     }
 
@@ -90,7 +90,7 @@ impl TriggerService for MissionRpc {
         &self,
         request: Request<trigger::v0::SmokeRequest>,
     ) -> Result<Response<trigger::v0::SmokeResponse>, Status> {
-        self.notification("smoke", request).await?;
+        self.request("smoke", request).await?;
         Ok(Response::new(trigger::v0::SmokeResponse {}))
     }
 
@@ -98,7 +98,7 @@ impl TriggerService for MissionRpc {
         &self,
         request: Request<trigger::v0::IlluminationBombRequest>,
     ) -> Result<Response<trigger::v0::IlluminationBombResponse>, Status> {
-        self.notification("illuminationBomb", request).await?;
+        self.request("illuminationBomb", request).await?;
         Ok(Response::new(trigger::v0::IlluminationBombResponse {}))
     }
 
@@ -106,7 +106,7 @@ impl TriggerService for MissionRpc {
         &self,
         request: Request<trigger::v0::SignalFlareRequest>,
     ) -> Result<Response<trigger::v0::SignalFlareResponse>, Status> {
-        self.notification("signalFlare", request).await?;
+        self.request("signalFlare", request).await?;
         Ok(Response::new(trigger::v0::SignalFlareResponse {}))
     }
 }

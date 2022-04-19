@@ -116,8 +116,7 @@ impl MissionService for MissionRpc {
         &self,
         request: Request<mission::v0::RemoveMissionCommandItemRequest>,
     ) -> Result<Response<mission::v0::RemoveMissionCommandItemResponse>, Status> {
-        self.notification("removeMissionCommandItem", request)
-            .await?;
+        self.request("removeMissionCommandItem", request).await?;
         Ok(Response::new(
             mission::v0::RemoveMissionCommandItemResponse {},
         ))
@@ -145,8 +144,7 @@ impl MissionService for MissionRpc {
         &self,
         request: Request<mission::v0::RemoveCoalitionCommandItemRequest>,
     ) -> Result<Response<mission::v0::RemoveCoalitionCommandItemResponse>, Status> {
-        self.notification("removeCoalitionCommandItem", request)
-            .await?;
+        self.request("removeCoalitionCommandItem", request).await?;
         Ok(Response::new(
             mission::v0::RemoveCoalitionCommandItemResponse {},
         ))
@@ -174,7 +172,7 @@ impl MissionService for MissionRpc {
         &self,
         request: Request<mission::v0::RemoveGroupCommandItemRequest>,
     ) -> Result<Response<mission::v0::RemoveGroupCommandItemResponse>, Status> {
-        self.notification("removeGroupCommandItem", request).await?;
+        self.request("removeGroupCommandItem", request).await?;
         Ok(Response::new(
             mission::v0::RemoveGroupCommandItemResponse {},
         ))

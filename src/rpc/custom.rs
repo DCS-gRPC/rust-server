@@ -11,8 +11,7 @@ impl CustomService for MissionRpc {
         &self,
         request: Request<custom::v0::RequestMissionAssignmentRequest>,
     ) -> Result<Response<custom::v0::RequestMissionAssignmentResponse>, Status> {
-        self.notification("requestMissionAssignment", request)
-            .await?;
+        self.request("requestMissionAssignment", request).await?;
         Ok(Response::new(
             custom::v0::RequestMissionAssignmentResponse {},
         ))
@@ -22,7 +21,7 @@ impl CustomService for MissionRpc {
         &self,
         request: Request<custom::v0::JoinMissionRequest>,
     ) -> Result<Response<custom::v0::JoinMissionResponse>, Status> {
-        self.notification("joinMission", request).await?;
+        self.request("joinMission", request).await?;
         Ok(Response::new(custom::v0::JoinMissionResponse {}))
     }
 
@@ -30,7 +29,7 @@ impl CustomService for MissionRpc {
         &self,
         request: Request<custom::v0::AbortMissionRequest>,
     ) -> Result<Response<custom::v0::AbortMissionResponse>, Status> {
-        self.notification("abortMission", request).await?;
+        self.request("abortMission", request).await?;
         Ok(Response::new(custom::v0::AbortMissionResponse {}))
     }
 
@@ -38,7 +37,7 @@ impl CustomService for MissionRpc {
         &self,
         request: Request<custom::v0::GetMissionStatusRequest>,
     ) -> Result<Response<custom::v0::GetMissionStatusResponse>, Status> {
-        self.notification("getMissionStatus", request).await?;
+        self.request("getMissionStatus", request).await?;
         Ok(Response::new(custom::v0::GetMissionStatusResponse {}))
     }
 

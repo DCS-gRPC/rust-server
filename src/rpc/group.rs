@@ -9,7 +9,7 @@ impl GroupService for MissionRpc {
         &self,
         request: Request<group::v0::GetUnitsRequest>,
     ) -> Result<Response<group::v0::GetUnitsResponse>, Status> {
-        let res: group::v0::GetUnitsResponse = self.request("getUnits", request).await?;
+        let res = self.request("getUnits", request).await?;
         Ok(Response::new(res))
     }
 }

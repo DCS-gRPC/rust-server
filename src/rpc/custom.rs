@@ -11,34 +11,32 @@ impl CustomService for MissionRpc {
         &self,
         request: Request<custom::v0::RequestMissionAssignmentRequest>,
     ) -> Result<Response<custom::v0::RequestMissionAssignmentResponse>, Status> {
-        self.request("requestMissionAssignment", request).await?;
-        Ok(Response::new(
-            custom::v0::RequestMissionAssignmentResponse {},
-        ))
+        let res = self.request("requestMissionAssignment", request).await?;
+        Ok(Response::new(res))
     }
 
     async fn join_mission(
         &self,
         request: Request<custom::v0::JoinMissionRequest>,
     ) -> Result<Response<custom::v0::JoinMissionResponse>, Status> {
-        self.request("joinMission", request).await?;
-        Ok(Response::new(custom::v0::JoinMissionResponse {}))
+        let res = self.request("joinMission", request).await?;
+        Ok(Response::new(res))
     }
 
     async fn abort_mission(
         &self,
         request: Request<custom::v0::AbortMissionRequest>,
     ) -> Result<Response<custom::v0::AbortMissionResponse>, Status> {
-        self.request("abortMission", request).await?;
-        Ok(Response::new(custom::v0::AbortMissionResponse {}))
+        let res = self.request("abortMission", request).await?;
+        Ok(Response::new(res))
     }
 
     async fn get_mission_status(
         &self,
         request: Request<custom::v0::GetMissionStatusRequest>,
     ) -> Result<Response<custom::v0::GetMissionStatusResponse>, Status> {
-        self.request("getMissionStatus", request).await?;
-        Ok(Response::new(custom::v0::GetMissionStatusResponse {}))
+        let res = self.request("getMissionStatus", request).await?;
+        Ok(Response::new(res))
     }
 
     async fn eval(

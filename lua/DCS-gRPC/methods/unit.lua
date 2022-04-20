@@ -123,7 +123,7 @@ GRPC.methods.setEmission = function(params)
   if unit == nil then
     return GRPC.errorNotFound("unit does not exist")
   end  unit:enableEmission(params.emitting)
-  return GRPC.success(nil)
+  return GRPC.success({})
 end
 
 GRPC.methods.getUnit = function(params)

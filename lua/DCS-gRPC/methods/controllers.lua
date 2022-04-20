@@ -28,5 +28,5 @@ GRPC.methods.setAlarmState = function(params)
 
   controller:setOption(state_id, params.alarmState - 1)
 
-  return GRPC.success(nil)
+  return GRPC.success({})
 end

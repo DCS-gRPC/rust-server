@@ -32,8 +32,7 @@ impl AtmosphereService for MissionRpc {
         &self,
         request: Request<atmosphere::v0::GetTemperatureAndPressureRequest>,
     ) -> Result<Response<atmosphere::v0::GetTemperatureAndPressureResponse>, Status> {
-        let res: atmosphere::v0::GetTemperatureAndPressureResponse =
-            self.request("getTemperatureAndPressure", request).await?;
+        let res = self.request("getTemperatureAndPressure", request).await?;
         Ok(Response::new(res))
     }
 }

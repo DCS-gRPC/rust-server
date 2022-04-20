@@ -98,8 +98,7 @@ impl MissionService for MissionRpc {
         &self,
         request: Request<mission::v0::AddMissionCommandRequest>,
     ) -> Result<Response<mission::v0::AddMissionCommandResponse>, Status> {
-        let res: mission::v0::AddMissionCommandResponse =
-            self.request("addMissionCommand", request).await?;
+        let res = self.request("addMissionCommand", request).await?;
         Ok(Response::new(res))
     }
 
@@ -107,8 +106,7 @@ impl MissionService for MissionRpc {
         &self,
         request: Request<mission::v0::AddMissionCommandSubMenuRequest>,
     ) -> Result<Response<mission::v0::AddMissionCommandSubMenuResponse>, Status> {
-        let res: mission::v0::AddMissionCommandSubMenuResponse =
-            self.request("addMissionCommandSubMenu", request).await?;
+        let res = self.request("addMissionCommandSubMenu", request).await?;
         Ok(Response::new(res))
     }
 
@@ -116,18 +114,15 @@ impl MissionService for MissionRpc {
         &self,
         request: Request<mission::v0::RemoveMissionCommandItemRequest>,
     ) -> Result<Response<mission::v0::RemoveMissionCommandItemResponse>, Status> {
-        self.request("removeMissionCommandItem", request).await?;
-        Ok(Response::new(
-            mission::v0::RemoveMissionCommandItemResponse {},
-        ))
+        let res = self.request("removeMissionCommandItem", request).await?;
+        Ok(Response::new(res))
     }
 
     async fn add_coalition_command(
         &self,
         request: Request<mission::v0::AddCoalitionCommandRequest>,
     ) -> Result<Response<mission::v0::AddCoalitionCommandResponse>, Status> {
-        let res: mission::v0::AddCoalitionCommandResponse =
-            self.request("addCoalitionCommand", request).await?;
+        let res = self.request("addCoalitionCommand", request).await?;
         Ok(Response::new(res))
     }
 
@@ -135,8 +130,7 @@ impl MissionService for MissionRpc {
         &self,
         request: Request<mission::v0::AddCoalitionCommandSubMenuRequest>,
     ) -> Result<Response<mission::v0::AddCoalitionCommandSubMenuResponse>, Status> {
-        let res: mission::v0::AddCoalitionCommandSubMenuResponse =
-            self.request("addCoalitionCommandSubMenu", request).await?;
+        let res = self.request("addCoalitionCommandSubMenu", request).await?;
         Ok(Response::new(res))
     }
 
@@ -144,18 +138,15 @@ impl MissionService for MissionRpc {
         &self,
         request: Request<mission::v0::RemoveCoalitionCommandItemRequest>,
     ) -> Result<Response<mission::v0::RemoveCoalitionCommandItemResponse>, Status> {
-        self.request("removeCoalitionCommandItem", request).await?;
-        Ok(Response::new(
-            mission::v0::RemoveCoalitionCommandItemResponse {},
-        ))
+        let res = self.request("removeCoalitionCommandItem", request).await?;
+        Ok(Response::new(res))
     }
 
     async fn add_group_command(
         &self,
         request: Request<mission::v0::AddGroupCommandRequest>,
     ) -> Result<Response<mission::v0::AddGroupCommandResponse>, Status> {
-        let res: mission::v0::AddGroupCommandResponse =
-            self.request("addGroupCommand", request).await?;
+        let res = self.request("addGroupCommand", request).await?;
         Ok(Response::new(res))
     }
 
@@ -163,8 +154,7 @@ impl MissionService for MissionRpc {
         &self,
         request: Request<mission::v0::AddGroupCommandSubMenuRequest>,
     ) -> Result<Response<mission::v0::AddGroupCommandSubMenuResponse>, Status> {
-        let res: mission::v0::AddGroupCommandSubMenuResponse =
-            self.request("addGroupCommandSubMenu", request).await?;
+        let res = self.request("addGroupCommandSubMenu", request).await?;
         Ok(Response::new(res))
     }
 
@@ -172,10 +162,8 @@ impl MissionService for MissionRpc {
         &self,
         request: Request<mission::v0::RemoveGroupCommandItemRequest>,
     ) -> Result<Response<mission::v0::RemoveGroupCommandItemResponse>, Status> {
-        self.request("removeGroupCommandItem", request).await?;
-        Ok(Response::new(
-            mission::v0::RemoveGroupCommandItemResponse {},
-        ))
+        let res = self.request("removeGroupCommandItem", request).await?;
+        Ok(Response::new(res))
     }
 }
 

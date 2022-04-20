@@ -9,7 +9,7 @@ impl TimerService for MissionRpc {
         &self,
         request: Request<timer::v0::GetTimeRequest>,
     ) -> Result<Response<timer::v0::GetTimeResponse>, Status> {
-        let res: timer::v0::GetTimeResponse = self.request("getTime", request).await?;
+        let res = self.request("getTime", request).await?;
         Ok(Response::new(res))
     }
 
@@ -17,8 +17,7 @@ impl TimerService for MissionRpc {
         &self,
         request: Request<timer::v0::GetAbsoluteTimeRequest>,
     ) -> Result<Response<timer::v0::GetAbsoluteTimeResponse>, Status> {
-        let res: timer::v0::GetAbsoluteTimeResponse =
-            self.request("getAbsoluteTime", request).await?;
+        let res = self.request("getAbsoluteTime", request).await?;
         Ok(Response::new(res))
     }
 
@@ -26,7 +25,7 @@ impl TimerService for MissionRpc {
         &self,
         request: Request<timer::v0::GetTimeZeroRequest>,
     ) -> Result<Response<timer::v0::GetTimeZeroResponse>, Status> {
-        let res: timer::v0::GetTimeZeroResponse = self.request("getTimeZero", request).await?;
+        let res = self.request("getTimeZero", request).await?;
         Ok(Response::new(res))
     }
 }

@@ -9,7 +9,7 @@ impl WorldService for MissionRpc {
         &self,
         request: Request<world::v0::GetAirbasesRequest>,
     ) -> Result<Response<world::v0::GetAirbasesResponse>, Status> {
-        let res: world::v0::GetAirbasesResponse = self.request("getAirbases", request).await?;
+        let res = self.request("getAirbases", request).await?;
         Ok(Response::new(res))
     }
 
@@ -17,7 +17,7 @@ impl WorldService for MissionRpc {
         &self,
         request: Request<world::v0::GetMarkPanelsRequest>,
     ) -> Result<Response<world::v0::GetMarkPanelsResponse>, Status> {
-        let res: world::v0::GetMarkPanelsResponse = self.request("getMarkPanels", request).await?;
+        let res = self.request("getMarkPanels", request).await?;
         Ok(Response::new(res))
     }
 }

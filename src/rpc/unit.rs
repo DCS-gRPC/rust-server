@@ -12,7 +12,7 @@ impl UnitService for MissionRpc {
         &self,
         request: Request<unit::v0::GetRadarRequest>,
     ) -> Result<Response<unit::v0::GetRadarResponse>, Status> {
-        let res: unit::v0::GetRadarResponse = self.request("getRadar", request).await?;
+        let res = self.request("getRadar", request).await?;
         Ok(Response::new(res))
     }
 
@@ -20,7 +20,7 @@ impl UnitService for MissionRpc {
         &self,
         request: Request<unit::v0::GetPositionRequest>,
     ) -> Result<Response<unit::v0::GetPositionResponse>, Status> {
-        let res: unit::v0::GetPositionResponse = self.request("getUnitPosition", request).await?;
+        let res = self.request("getUnitPosition", request).await?;
         Ok(Response::new(res))
     }
 
@@ -28,8 +28,7 @@ impl UnitService for MissionRpc {
         &self,
         request: Request<unit::v0::GetPlayerNameRequest>,
     ) -> Result<Response<unit::v0::GetPlayerNameResponse>, Status> {
-        let res: unit::v0::GetPlayerNameResponse =
-            self.request("getUnitPlayerName", request).await?;
+        let res = self.request("getUnitPlayerName", request).await?;
         Ok(Response::new(res))
     }
 
@@ -37,8 +36,7 @@ impl UnitService for MissionRpc {
         &self,
         request: Request<unit::v0::GetDescriptorRequest>,
     ) -> Result<Response<unit::v0::GetDescriptorResponse>, Status> {
-        let res: unit::v0::GetDescriptorResponse =
-            self.request("getUnitDescriptor", request).await?;
+        let res = self.request("getUnitDescriptor", request).await?;
         Ok(Response::new(res))
     }
 
@@ -46,15 +44,15 @@ impl UnitService for MissionRpc {
         &self,
         request: Request<unit::v0::SetEmissionRequest>,
     ) -> Result<Response<unit::v0::SetEmissionResponse>, Status> {
-        self.request("setEmission", request).await?;
-        Ok(Response::new(unit::v0::SetEmissionResponse {}))
+        let res = self.request("setEmission", request).await?;
+        Ok(Response::new(res))
     }
 
     async fn get(
         &self,
         request: Request<unit::v0::GetRequest>,
     ) -> Result<Response<unit::v0::GetResponse>, Status> {
-        let res: unit::v0::GetResponse = self.request("getUnit", request).await?;
+        let res = self.request("getUnit", request).await?;
         Ok(Response::new(res))
     }
 

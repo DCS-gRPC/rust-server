@@ -9,7 +9,7 @@ impl ControllerService for MissionRpc {
         &self,
         request: Request<controller::v0::SetAlarmStateRequest>,
     ) -> Result<Response<controller::v0::SetAlarmStateResponse>, Status> {
-        self.request("setAlarmState", request).await?;
-        Ok(Response::new(controller::v0::SetAlarmStateResponse {}))
+        let res = self.request("setAlarmState", request).await?;
+        Ok(Response::new(res))
     }
 }

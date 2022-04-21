@@ -443,7 +443,7 @@ end
 
 GRPC.methods.removeMissionCommandItem = function(params)
   missionCommands.removeItem(params.path)
-  return GRPC.success(nil)
+  return GRPC.success({})
 end
 
 -- Coalition Level Commands
@@ -479,7 +479,7 @@ end
 GRPC.methods.removeCoalitionCommandItem = function(params)
   -- Decrement coalition for non zero-indexed gRPC enum
   missionCommands.removeItemForCoalition(params.coalition - 1, params.path)
-  return GRPC.success(nil)
+  return GRPC.success({})
 end
 
 -- Group Level Commands
@@ -528,5 +528,5 @@ GRPC.methods.removeGroupCommandItem = function(params)
   end
 
   missionCommands.removeItemForGroup(group:getID(), params.path)
-  return GRPC.success(nil)
+  return GRPC.success({})
 end

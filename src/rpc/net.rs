@@ -9,23 +9,23 @@ impl NetService for MissionRpc {
         &self,
         request: Request<net::v0::SendChatToRequest>,
     ) -> Result<Response<net::v0::SendChatToResponse>, Status> {
-        self.notification("sendChatTo", request).await?;
-        Ok(Response::new(net::v0::SendChatToResponse {}))
+        let res = self.request("sendChatTo", request).await?;
+        Ok(Response::new(res))
     }
 
     async fn send_chat(
         &self,
         request: Request<net::v0::SendChatRequest>,
     ) -> Result<Response<net::v0::SendChatResponse>, Status> {
-        self.notification("sendChat", request).await?;
-        Ok(Response::new(net::v0::SendChatResponse {}))
+        let res = self.request("sendChat", request).await?;
+        Ok(Response::new(res))
     }
 
     async fn get_players(
         &self,
         request: Request<net::v0::GetPlayersRequest>,
     ) -> Result<Response<net::v0::GetPlayersResponse>, Status> {
-        let res: net::v0::GetPlayersResponse = self.request("getPlayers", request).await?;
+        let res = self.request("getPlayers", request).await?;
         Ok(Response::new(res))
     }
 
@@ -33,15 +33,15 @@ impl NetService for MissionRpc {
         &self,
         request: Request<net::v0::ForcePlayerSlotRequest>,
     ) -> Result<Response<net::v0::ForcePlayerSlotResponse>, Status> {
-        self.notification("forcePlayerSlot", request).await?;
-        Ok(Response::new(net::v0::ForcePlayerSlotResponse {}))
+        let res = self.request("forcePlayerSlot", request).await?;
+        Ok(Response::new(res))
     }
 
     async fn kick_player(
         &self,
         request: Request<net::v0::KickPlayerRequest>,
     ) -> Result<Response<net::v0::KickPlayerResponse>, Status> {
-        let res: net::v0::KickPlayerResponse = self.request("kickPlayer", request).await?;
+        let res = self.request("kickPlayer", request).await?;
         Ok(Response::new(res))
     }
 }

@@ -23,17 +23,17 @@ end
 
 GRPC.methods.setPaused = function(params)
   DCS.setPause(params.paused)
-  return GRPC.success(nil)
+  return GRPC.success({})
 end
 
 GRPC.methods.stopMission = function()
   DCS.stopMission()
-  return GRPC.success(nil)
+  return GRPC.success({})
 end
 
 GRPC.methods.exitProcess = function()
   DCS.exitProcess()
-  return GRPC.success(nil)
+  return GRPC.success({})
 end
 
 GRPC.methods.hookEval = function(params)

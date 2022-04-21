@@ -8,7 +8,7 @@ GRPC.methods.sendChatTo = function(params)
     --       due to the magnitude of a social attack vector.
     --       https://github.com/DCS-gRPC/rust-server/pull/94#discussion_r780777794
     net.send_chat_to(params.message, params.targetPlayerId)
-    return GRPC.success(nil)
+    return GRPC.success({})
 end
 
 GRPC.methods.sendChat = function(params)
@@ -18,7 +18,7 @@ GRPC.methods.sendChat = function(params)
 
     local toAll = params.coalition ~= 1
     net.send_chat(params.message, toAll)
-    return GRPC.success(nil)
+    return GRPC.success({})
 end
 
 GRPC.methods.getPlayers = function()
@@ -50,7 +50,7 @@ GRPC.methods.forcePlayerSlot = function(params)
     local normalizedCoalition = params.coalition - 1; -- adjusted for grpc offset
     net.force_player_slot(params.playerId, normalizedCoalition, params.slotId)
 
-    return GRPC.success(nil)
+    return GRPC.success({})
 end
 
 GRPC.methods.kickPlayer = function(params)
@@ -65,5 +65,5 @@ GRPC.methods.kickPlayer = function(params)
   end
 
   net.kick(params.id, params.message)
-  return GRPC.success(nil)
+  return GRPC.success({})
 end

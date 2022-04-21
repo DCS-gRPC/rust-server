@@ -9,7 +9,7 @@ impl HookService for HookRpc {
         &self,
         request: Request<hook::v0::GetMissionNameRequest>,
     ) -> Result<Response<hook::v0::GetMissionNameResponse>, Status> {
-        let res: hook::v0::GetMissionNameResponse = self.request("getMissionName", request).await?;
+        let res = self.request("getMissionName", request).await?;
         Ok(Response::new(res))
     }
 
@@ -17,8 +17,7 @@ impl HookService for HookRpc {
         &self,
         request: Request<hook::v0::GetMissionDescriptionRequest>,
     ) -> Result<Response<hook::v0::GetMissionDescriptionResponse>, Status> {
-        let res: hook::v0::GetMissionDescriptionResponse =
-            self.request("getMissionDescription", request).await?;
+        let res = self.request("getMissionDescription", request).await?;
         Ok(Response::new(res))
     }
 
@@ -26,8 +25,7 @@ impl HookService for HookRpc {
         &self,
         request: Request<hook::v0::GetMissionFilenameRequest>,
     ) -> Result<Response<hook::v0::GetMissionFilenameResponse>, Status> {
-        let res: hook::v0::GetMissionFilenameResponse =
-            self.request("getMissionFilename", request).await?;
+        let res = self.request("getMissionFilename", request).await?;
         Ok(Response::new(res))
     }
 
@@ -35,7 +33,7 @@ impl HookService for HookRpc {
         &self,
         request: Request<hook::v0::GetPausedRequest>,
     ) -> Result<Response<hook::v0::GetPausedResponse>, Status> {
-        let res: hook::v0::GetPausedResponse = self.request("getPaused", request).await?;
+        let res = self.request("getPaused", request).await?;
         Ok(Response::new(res))
     }
 
@@ -43,16 +41,16 @@ impl HookService for HookRpc {
         &self,
         request: Request<hook::v0::SetPausedRequest>,
     ) -> Result<Response<hook::v0::SetPausedResponse>, Status> {
-        self.notification("setPaused", request).await?;
-        Ok(Response::new(hook::v0::SetPausedResponse {}))
+        let res = self.request("setPaused", request).await?;
+        Ok(Response::new(res))
     }
 
     async fn stop_mission(
         &self,
         request: Request<hook::v0::StopMissionRequest>,
     ) -> Result<Response<hook::v0::StopMissionResponse>, Status> {
-        self.notification("stopMission", request).await?;
-        Ok(Response::new(hook::v0::StopMissionResponse {}))
+        let res = self.request("stopMission", request).await?;
+        Ok(Response::new(res))
     }
 
     async fn eval(
@@ -74,15 +72,15 @@ impl HookService for HookRpc {
         &self,
         request: Request<hook::v0::ExitProcessRequest>,
     ) -> Result<Response<hook::v0::ExitProcessResponse>, Status> {
-        self.notification("exitProcess", request).await?;
-        Ok(Response::new(hook::v0::ExitProcessResponse {}))
+        let res = self.request("exitProcess", request).await?;
+        Ok(Response::new(res))
     }
 
     async fn is_multiplayer(
         &self,
         request: Request<hook::v0::IsMultiplayerRequest>,
     ) -> Result<Response<hook::v0::IsMultiplayerResponse>, Status> {
-        let res: hook::v0::IsMultiplayerResponse = self.request("isMultiplayer", request).await?;
+        let res = self.request("isMultiplayer", request).await?;
         Ok(Response::new(res))
     }
 
@@ -90,7 +88,7 @@ impl HookService for HookRpc {
         &self,
         request: Request<hook::v0::IsServerRequest>,
     ) -> Result<Response<hook::v0::IsServerResponse>, Status> {
-        let res: hook::v0::IsServerResponse = self.request("isServer", request).await?;
+        let res = self.request("isServer", request).await?;
         Ok(Response::new(res))
     }
 
@@ -98,7 +96,7 @@ impl HookService for HookRpc {
         &self,
         request: Request<hook::v0::BanPlayerRequest>,
     ) -> Result<Response<hook::v0::BanPlayerResponse>, Status> {
-        let res: hook::v0::BanPlayerResponse = self.request("banPlayer", request).await?;
+        let res = self.request("banPlayer", request).await?;
         Ok(Response::new(res))
     }
 
@@ -106,7 +104,7 @@ impl HookService for HookRpc {
         &self,
         request: Request<hook::v0::UnbanPlayerRequest>,
     ) -> Result<Response<hook::v0::UnbanPlayerResponse>, Status> {
-        let res: hook::v0::UnbanPlayerResponse = self.request("unbanPlayer", request).await?;
+        let res = self.request("unbanPlayer", request).await?;
         Ok(Response::new(res))
     }
 
@@ -114,8 +112,7 @@ impl HookService for HookRpc {
         &self,
         request: Request<hook::v0::GetBannedPlayersRequest>,
     ) -> Result<Response<hook::v0::GetBannedPlayersResponse>, Status> {
-        let res: hook::v0::GetBannedPlayersResponse =
-            self.request("getBannedPlayers", request).await?;
+        let res = self.request("getBannedPlayers", request).await?;
         Ok(Response::new(res))
     }
 }

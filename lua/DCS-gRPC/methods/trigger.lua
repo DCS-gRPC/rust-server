@@ -26,7 +26,7 @@ end
 GRPC.methods.outText = function(params)
   trigger.action.outText(params.text, params.displayTime, params.clearView)
 
-  return GRPC.success(nil)
+  return GRPC.success({})
 end
 
 GRPC.methods.outTextForCoalition = function(params)
@@ -37,13 +37,13 @@ GRPC.methods.outTextForCoalition = function(params)
   -- Decrement for non zero-indexed gRPC enum
   trigger.action.outTextForCoalition(params.coalition - 1, params.text, params.displayTime, params.clearView)
 
-  return GRPC.success(nil)
+  return GRPC.success({})
 end
 
 GRPC.methods.outTextForGroup = function(params)
   trigger.action.outTextForGroup(params.groupId, params.text, params.displayTime, params.clearView)
 
-  return GRPC.success(nil)
+  return GRPC.success({})
 end
 
 GRPC.methods.getUserFlag = function(params)
@@ -54,7 +54,7 @@ end
 
 GRPC.methods.setUserFlag = function(params)
   trigger.action.setUserFlag(params.flag, params.value)
-  return GRPC.success(nil)
+  return GRPC.success({})
 end
 
 GRPC.methods.markToAll = function(params)
@@ -94,7 +94,7 @@ end
 GRPC.methods.removeMark = function(params)
   trigger.action.removeMark(params.id)
 
-  return GRPC.success(nil)
+  return GRPC.success({})
 end
 
 GRPC.methods.explosion = function(params)
@@ -102,7 +102,7 @@ GRPC.methods.explosion = function(params)
 
   trigger.action.explosion(point, params.power)
 
-  return GRPC.success(nil)
+  return GRPC.success({})
 end
 
 -- gRPC enums should avoid 0 so we increment it there and then subtract by 1
@@ -120,7 +120,7 @@ GRPC.methods.smoke = function(params)
 
   trigger.action.smoke(groundPoint, params.color - 1)
 
-  return GRPC.success(nil)
+  return GRPC.success({})
 end
 
 GRPC.methods.illuminationBomb = function(params)
@@ -133,7 +133,7 @@ GRPC.methods.illuminationBomb = function(params)
 
   trigger.action.illuminationBomb(groundOffsetPoint, params.power)
 
-  return GRPC.success(nil)
+  return GRPC.success({})
 end
 
 -- gRPC enums should avoid 0 so we increment it there and then subtract by 1
@@ -150,5 +150,5 @@ GRPC.methods.signalFlare = function(params)
 
   trigger.action.signalFlare(groundPoint, params.color - 1, params.azimuth)
 
-  return GRPC.success(nil)
+  return GRPC.success({})
 end

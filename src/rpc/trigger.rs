@@ -9,31 +9,31 @@ impl TriggerService for MissionRpc {
         &self,
         request: Request<trigger::v0::OutTextRequest>,
     ) -> Result<Response<trigger::v0::OutTextResponse>, Status> {
-        self.notification("outText", request).await?;
-        Ok(Response::new(trigger::v0::OutTextResponse {}))
+        let res = self.request("outText", request).await?;
+        Ok(Response::new(res))
     }
 
     async fn out_text_for_coalition(
         &self,
         request: Request<trigger::v0::OutTextForCoalitionRequest>,
     ) -> Result<Response<trigger::v0::OutTextForCoalitionResponse>, Status> {
-        self.notification("outTextForCoalition", request).await?;
-        Ok(Response::new(trigger::v0::OutTextForCoalitionResponse {}))
+        let res = self.request("outTextForCoalition", request).await?;
+        Ok(Response::new(res))
     }
 
     async fn out_text_for_group(
         &self,
         request: Request<trigger::v0::OutTextForGroupRequest>,
     ) -> Result<Response<trigger::v0::OutTextForGroupResponse>, Status> {
-        self.notification("outTextForGroup", request).await?;
-        Ok(Response::new(trigger::v0::OutTextForGroupResponse {}))
+        let res = self.request("outTextForGroup", request).await?;
+        Ok(Response::new(res))
     }
 
     async fn get_user_flag(
         &self,
         request: Request<trigger::v0::GetUserFlagRequest>,
     ) -> Result<Response<trigger::v0::GetUserFlagResponse>, Status> {
-        let res: trigger::v0::GetUserFlagResponse = self.request("getUserFlag", request).await?;
+        let res = self.request("getUserFlag", request).await?;
         Ok(Response::new(res))
     }
 
@@ -41,15 +41,15 @@ impl TriggerService for MissionRpc {
         &self,
         request: Request<trigger::v0::SetUserFlagRequest>,
     ) -> Result<Response<trigger::v0::SetUserFlagResponse>, Status> {
-        self.notification("setUserFlag", request).await?;
-        Ok(Response::new(trigger::v0::SetUserFlagResponse {}))
+        let res = self.request("setUserFlag", request).await?;
+        Ok(Response::new(res))
     }
 
     async fn mark_to_all(
         &self,
         request: Request<trigger::v0::MarkToAllRequest>,
     ) -> Result<Response<trigger::v0::MarkToAllResponse>, Status> {
-        let res: trigger::v0::MarkToAllResponse = self.request("markToAll", request).await?;
+        let res = self.request("markToAll", request).await?;
         Ok(Response::new(res))
     }
 
@@ -57,8 +57,7 @@ impl TriggerService for MissionRpc {
         &self,
         request: Request<trigger::v0::MarkToCoalitionRequest>,
     ) -> Result<Response<trigger::v0::MarkToCoalitionResponse>, Status> {
-        let res: trigger::v0::MarkToCoalitionResponse =
-            self.request("markToCoalition", request).await?;
+        let res = self.request("markToCoalition", request).await?;
         Ok(Response::new(res))
     }
 
@@ -66,7 +65,7 @@ impl TriggerService for MissionRpc {
         &self,
         request: Request<trigger::v0::MarkToGroupRequest>,
     ) -> Result<Response<trigger::v0::MarkToGroupResponse>, Status> {
-        let res: trigger::v0::MarkToGroupResponse = self.request("markToGroup", request).await?;
+        let res = self.request("markToGroup", request).await?;
         Ok(Response::new(res))
     }
 
@@ -74,39 +73,39 @@ impl TriggerService for MissionRpc {
         &self,
         request: Request<trigger::v0::RemoveMarkRequest>,
     ) -> Result<Response<trigger::v0::RemoveMarkResponse>, Status> {
-        self.notification("removeMark", request).await?;
-        Ok(Response::new(trigger::v0::RemoveMarkResponse {}))
+        let res = self.request("removeMark", request).await?;
+        Ok(Response::new(res))
     }
 
     async fn explosion(
         &self,
         request: Request<trigger::v0::ExplosionRequest>,
     ) -> Result<Response<trigger::v0::ExplosionResponse>, Status> {
-        self.notification("explosion", request).await?;
-        Ok(Response::new(trigger::v0::ExplosionResponse {}))
+        let res = self.request("explosion", request).await?;
+        Ok(Response::new(res))
     }
 
     async fn smoke(
         &self,
         request: Request<trigger::v0::SmokeRequest>,
     ) -> Result<Response<trigger::v0::SmokeResponse>, Status> {
-        self.notification("smoke", request).await?;
-        Ok(Response::new(trigger::v0::SmokeResponse {}))
+        let res = self.request("smoke", request).await?;
+        Ok(Response::new(res))
     }
 
     async fn illumination_bomb(
         &self,
         request: Request<trigger::v0::IlluminationBombRequest>,
     ) -> Result<Response<trigger::v0::IlluminationBombResponse>, Status> {
-        self.notification("illuminationBomb", request).await?;
-        Ok(Response::new(trigger::v0::IlluminationBombResponse {}))
+        let res = self.request("illuminationBomb", request).await?;
+        Ok(Response::new(res))
     }
 
     async fn signal_flare(
         &self,
         request: Request<trigger::v0::SignalFlareRequest>,
     ) -> Result<Response<trigger::v0::SignalFlareResponse>, Status> {
-        self.notification("signalFlare", request).await?;
-        Ok(Response::new(trigger::v0::SignalFlareResponse {}))
+        let res = self.request("signalFlare", request).await?;
+        Ok(Response::new(res))
     }
 }

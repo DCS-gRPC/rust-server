@@ -9,7 +9,7 @@ impl CoalitionService for MissionRpc {
         &self,
         request: Request<coalition::v0::AddGroupRequest>,
     ) -> Result<Response<coalition::v0::AddGroupResponse>, Status> {
-        let res: coalition::v0::AddGroupResponse = self.request("addGroup", request).await?;
+        let res = self.request("addGroup", request).await?;
         Ok(Response::new(res))
     }
 
@@ -17,7 +17,7 @@ impl CoalitionService for MissionRpc {
         &self,
         request: Request<coalition::v0::GetGroupsRequest>,
     ) -> Result<Response<coalition::v0::GetGroupsResponse>, Status> {
-        let res: coalition::v0::GetGroupsResponse = self.request("getGroups", request).await?;
+        let res = self.request("getGroups", request).await?;
         Ok(Response::new(res))
     }
 
@@ -25,7 +25,7 @@ impl CoalitionService for MissionRpc {
         &self,
         request: Request<coalition::v0::GetBullseyeRequest>,
     ) -> Result<Response<coalition::v0::GetBullseyeResponse>, Status> {
-        let res: coalition::v0::GetBullseyeResponse = self.request("getBullseye", request).await?;
+        let res = self.request("getBullseye", request).await?;
         Ok(Response::new(res))
     }
 
@@ -33,8 +33,7 @@ impl CoalitionService for MissionRpc {
         &self,
         request: Request<coalition::v0::GetPlayerUnitsRequest>,
     ) -> Result<Response<coalition::v0::GetPlayerUnitsResponse>, Status> {
-        let res: coalition::v0::GetPlayerUnitsResponse =
-            self.request("getPlayerUnits", request).await?;
+        let res = self.request("getPlayerUnits", request).await?;
         Ok(Response::new(res))
     }
 }

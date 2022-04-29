@@ -143,6 +143,7 @@ should use their independent logging and tracing functions.
 - [x] `outTextForCoalition`
 - [ ] `outTextForCountry`
 - [x] `outTextForGroup`
+- [x] `outTextForUnit`
 
 - [ ] `addOtherCommand`
 - [ ] `removeOtherCommand`

@@ -29,6 +29,14 @@ impl TriggerService for MissionRpc {
         Ok(Response::new(res))
     }
 
+    async fn out_text_for_unit(
+        &self,
+        request: Request<trigger::v0::OutTextForUnitRequest>,
+    ) -> Result<Response<trigger::v0::OutTextForUnitResponse>, Status> {
+        let res = self.request("outTextForUnit", request).await?;
+        Ok(Response::new(res))
+    }
+
     async fn get_user_flag(
         &self,
         request: Request<trigger::v0::GetUserFlagRequest>,

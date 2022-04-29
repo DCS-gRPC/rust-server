@@ -46,6 +46,12 @@ GRPC.methods.outTextForGroup = function(params)
   return GRPC.success({})
 end
 
+GRPC.methods.outTextForUnit = function(params)
+  trigger.action.outTextForUnit(params.unitId, params.text, params.displayTime, params.clearView)
+
+  return GRPC.success({})
+end
+
 GRPC.methods.getUserFlag = function(params)
   return GRPC.success({
     value = trigger.misc.getUserFlag(params.flag),

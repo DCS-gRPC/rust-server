@@ -17,6 +17,10 @@ service TriggerService {
   rpc OutTextForGroup(OutTextForGroupRequest)
       returns (OutTextForGroupResponse) {}
 
+  // https://wiki.hoggitworld.com/view/DCS_func_outTextForUnit
+  rpc OutTextForUnit(OutTextForUnitRequest)
+      returns (OutTextForUnitResponse) {}
+
   // https://wiki.hoggitworld.com/view/DCS_func_getUserFlag
   rpc GetUserFlag(GetUserFlagRequest) returns (GetUserFlagResponse) {}
 
@@ -77,6 +81,16 @@ message OutTextForGroupRequest {
 }
 
 message OutTextForGroupResponse {
+}
+
+message OutTextForUnitRequest {
+  string text = 1;
+  int32 display_time = 2;
+  bool clear_view = 3;
+  uint32 unit_id = 4;
+}
+
+message OutTextForUnitResponse {
 }
 
 message GetUserFlagRequest {

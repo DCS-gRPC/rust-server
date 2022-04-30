@@ -37,6 +37,14 @@ service TriggerService {
   // https://wiki.hoggitworld.com/view/DCS_func_markToGroup
   rpc MarkToGroup(MarkToGroupRequest) returns (MarkToGroupResponse) {}
 
+  // https://wiki.hoggitworld.com/view/DCS_func_markupToAll
+  rpc MarkupToAll(MarkupToAllRequest) returns (MarkupToAllResponse) {}
+
+  // Uses markupToAll under the hood but enforces a coalition to be specified
+  // https://wiki.hoggitworld.com/view/DCS_func_markupToAll
+  rpc MarkupToCoalition(MarkupToCoalitionRequest)
+      returns (MarkupToCoalitionResponse) {}
+
   // https://wiki.hoggitworld.com/view/DCS_func_removeMark
   rpc RemoveMark(RemoveMarkRequest) returns (RemoveMarkResponse) {}
 
@@ -207,4 +215,65 @@ message SignalFlareRequest {
 }
 
 message SignalFlareResponse {
+}
+
+enum LineType {
+  // protolint:disable:next ENUM_FIELD_NAMES_ZERO_VALUE_END_WITH
+  LINE_TYPE_NO_LINE = 0;
+  LINE_TYPE_SOLID = 1;
+  LINE_TYPE_DASHED = 2;
+  LINE_TYPE_DOTTED = 3;
+  LINE_TYPE_DOT_DASH = 4;
+  LINE_TYPE_LONG_DASH = 5;
+  LINE_TYPE_TWO_DASH = 6;
+}
+
+// Represents an RGBA color but instead of using 0-255 as the color
+// values it uses 0 to 1. A red color with 50% transparency would be
+// RGBA of 1, 0, 0, 0.5
+message Color {
+  double red = 1;
+  double green = 2;
+  double blue = 3;
+  double alpha = 4;
+}
+
+enum Shape {
+  SHAPE_UNSPECIFIED = 0;
+  SHAPE_LINE = 1;
+  SHAPE_CIRCLE = 2;
+  SHAPE_RECT = 3;
+  SHAPE_ARROW = 4;
+  SHAPE_TEXT = 5;
+  SHAPE_QUAD = 6;
+  SHAPE_FREEFORM = 7;
+}
+
+message MarkupToAllRequest {
+  Shape shape = 1;
+  repeated dcs.common.v0.Position points = 2;
+  Color border_color = 3;
+  Color fill_color = 4;
+  LineType line_type = 5;
+  bool read_only = 6;
+  string message = 7;
+}
+
+message MarkupToAllResponse {
+  uint32 id = 1;
+}
+
+message MarkupToCoalitionRequest {
+  Shape shape = 1;
+  dcs.common.v0.Coalition coalition = 2;
+  repeated dcs.common.v0.Position points = 3;
+  Color border_color = 4;
+  Color fill_color = 5;
+  LineType line_type = 6;
+  bool read_only = 7;
+  string message = 8;
+}
+
+message MarkupToCoalitionResponse {
+  uint32 id = 1;
 }

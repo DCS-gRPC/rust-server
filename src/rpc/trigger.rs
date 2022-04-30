@@ -85,6 +85,22 @@ impl TriggerService for MissionRpc {
         Ok(Response::new(res))
     }
 
+    async fn markup_to_all(
+        &self,
+        request: Request<trigger::v0::MarkupToAllRequest>,
+    ) -> Result<Response<trigger::v0::MarkupToAllResponse>, Status> {
+        let res = self.request("markupToAll", request).await?;
+        Ok(Response::new(res))
+    }
+
+    async fn markup_to_coalition(
+        &self,
+        request: Request<trigger::v0::MarkupToCoalitionRequest>,
+    ) -> Result<Response<trigger::v0::MarkupToCoalitionResponse>, Status> {
+        let res = self.request("markupToCoalition", request).await?;
+        Ok(Response::new(res))
+    }
+
     async fn explosion(
         &self,
         request: Request<trigger::v0::ExplosionRequest>,

@@ -103,6 +103,52 @@ GRPC.methods.removeMark = function(params)
   return GRPC.success({})
 end
 
+GRPC.methods.markupToAll = function(params)
+  local idx = getMarkId()
+  local coalition = params.coalition or -1
+
+   -- Number of points is variable so we need to make a table that we unpack
+   -- later and add all parameters after the points into it as well
+  local packedParams = {}
+  for _, value in ipairs(params.points) do
+    table.insert(packedParams, coord.LLtoLO(value.lat, value.lon, value.alt))
+  end
+
+  table.insert(packedParams, {
+    params.borderColor.red,
+    params.borderColor.green,
+    params.borderColor.blue,
+    params.borderColor.alpha
+  })
+  table.insert(packedParams, {
+    params.fillColor.red,
+    params.fillColor.green,
+    params.fillColor.blue,
+    params.fillColor.alpha
+  })
+  table.insert(packedParams, params.lineType)
+  table.insert(packedParams, params.readOnly)
+  table.insert(packedParams, params.message)
+
+  trigger.action.markupToAll(params.shape, coalition, idx, unpack(packedParams))
+
+  return GRPC.success({
+    id = idx
+  })
+end
+
+GRPC.methods.markupToCoalition = function(params)
+  if params.coalition == 0 then
+    return GRPC.errorInvalidArgument("a specific coalition must be chosen")
+  end
+
+  params.coalition = params.coalition - 1 -- Decrement for non zero-indexed gRPC enum
+
+  return GRPC.methods.markupToAll(params)
+
+end
+
+
 GRPC.methods.explosion = function(params)
   local point = coord.LLtoLO(params.position.lat, params.position.lon, params.position.alt)
 

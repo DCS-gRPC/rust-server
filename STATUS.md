@@ -157,7 +157,8 @@ should use their independent logging and tracing functions.
 - [x] `markToCoalition`
 - [x] `markToGroup`
 - [x] `removeMark`
-- [ ] `markupToAll`
+- [x] `markupToAll`
+- [x] `markupToCoalition`
 - [ ] `lineToAll`
 - [ ] `circleToAll`
 - [ ] `rectToAll`

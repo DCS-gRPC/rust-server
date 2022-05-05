@@ -11,6 +11,9 @@ service WorldService {
 
   // https://wiki.hoggitworld.com/view/DCS_func_getMarkPanels
   rpc GetMarkPanels(GetMarkPanelsRequest) returns (GetMarkPanelsResponse) {}
+
+  // Returns the theatre (Map name) of the mission
+  rpc GetTheatre(GetTheatreRequest) returns (GetTheatreResponse) {}
 }
 
 message GetAirbasesRequest {
@@ -26,4 +29,11 @@ message GetMarkPanelsRequest {
 
 message GetMarkPanelsResponse {
   repeated dcs.common.v0.MarkPanel mark_panels = 1;
+}
+
+message GetTheatreRequest {
+}
+
+message GetTheatreResponse {
+  string theatre = 1;
 }

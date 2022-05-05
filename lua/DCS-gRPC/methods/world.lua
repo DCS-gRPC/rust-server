@@ -38,3 +38,7 @@ GRPC.methods.getMarkPanels = function()
 
   return GRPC.success({markPanels = result})
 end
+
+GRPC.methods.getTheatre = function()
+  return GRPC.success({theatre = env.mission.theatre})
+end

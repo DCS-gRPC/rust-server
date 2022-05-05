@@ -187,13 +187,14 @@ should use their independent logging and tracing functions.
 ### Voice Chat
 - [ ] `createRoom`
 
-### DCS Singleton
+### DCS Singleton (DCS-gRPC WorldService)
 - [ ] `addEventHandler` (TODO: Should implement? Probably not)
 - [ ] `removeEventHandler`
 - [ ] `getPlayer`
 - [x] `getAirbases`
 - [ ] `searchObjects`
 - [x] `getMarkPanels`
+- [x] `getTheatre` (DCS-gRPC method. Calls env.mission.theatre internally)
 
 ### DCS Events
 - [x] `S_EVENT_INVALID`

@@ -20,4 +20,12 @@ impl WorldService for MissionRpc {
         let res = self.request("getMarkPanels", request).await?;
         Ok(Response::new(res))
     }
+
+    async fn get_theatre(
+        &self,
+        request: Request<world::v0::GetTheatreRequest>,
+    ) -> Result<Response<world::v0::GetTheatreResponse>, Status> {
+        let res = self.request("getTheatre", request).await?;
+        Ok(Response::new(res))
+    }
 }

@@ -228,6 +228,11 @@ return Group.getByName('Aerial-1'):getName()
 
 The REPL is also available in the release and can be run by running `Tools/DCS-gRPC/repl.exe`
 
+Please note that there are some circumstances where results will not return properly:
+
+* Lua tables that do not have a 0 index will cause an error and return nothing
+* Lua tables with a mix of integer and string keys will return only the integer keys.
+
 ### Contributions
 
 This repository is powered by GitHub Actions for the Continuous Integration (CI) services. The same CI checks would be

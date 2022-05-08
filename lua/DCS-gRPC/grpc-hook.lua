@@ -4,7 +4,7 @@ local function load()
 
   -- Let DCS know where to find the DLLs
   if not string.find(package.cpath, GRPC.dllPath) then
-    package.cpath = package.cpath .. [[;]] .. GRPC.dllPath .. [[?.dll;]]
+    package.cpath =  GRPC.dllPath .. [[?.dll;]] .. package.cpath
   end
 
   local ok, grpc = pcall(require, "dcs_grpc_hot_reload")

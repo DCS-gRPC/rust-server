@@ -29,7 +29,7 @@ end
 
 -- Let DCS know where to find the DLLs
 if not string.find(package.cpath, GRPC.dllPath) then
-  package.cpath = package.cpath .. [[;]] .. GRPC.dllPath .. [[?.dll;]]
+  package.cpath =  GRPC.dllPath .. [[?.dll;]] .. package.cpath
 end
 
 -- Load DLL before `require` gets sanitized.

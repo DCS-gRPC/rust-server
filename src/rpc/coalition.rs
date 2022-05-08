@@ -13,6 +13,22 @@ impl CoalitionService for MissionRpc {
         Ok(Response::new(res))
     }
 
+    async fn add_static_object(
+        &self,
+        request: Request<coalition::v0::AddStaticObjectRequest>,
+    ) -> Result<Response<coalition::v0::AddStaticObjectResponse>, Status> {
+        let res = self.request("addStaticObject", request).await?;
+        Ok(Response::new(res))
+    }
+
+    async fn add_linked_static(
+        &self,
+        request: Request<coalition::v0::AddLinkedStaticRequest>,
+    ) -> Result<Response<coalition::v0::AddLinkedStaticResponse>, Status> {
+        let res = self.request("addLinkedStatic", request).await?;
+        Ok(Response::new(res))
+    }
+
     async fn get_groups(
         &self,
         request: Request<coalition::v0::GetGroupsRequest>,

@@ -16,6 +16,7 @@ read_globals = {
   "lfs",
   "log",
   "Object",
+  "StaticObject",
   "timer",
   "trigger",
   "Unit",

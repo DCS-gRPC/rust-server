@@ -39,7 +39,7 @@ future; pull requests are welcomed for expanding the API equivalency.
     - [ ] Waypoints
     - [ ] Tasks
     - [ ] Loadout
-- [ ] `addStaticObject`
+- [x] `addStaticObject`
 - [x] `getGroups`
 - [ ] `getStaticObjects`
 - [x] `getAirbases`

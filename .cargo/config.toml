@@ -2,3 +2,4 @@
 LUA_LIB_NAME = "lua"
 LUA_LIB = { value = "src/lua5.1/", relative = true }
 LUA_INC = { value = "src/lua5.1/include", relative = true }
+PROTOC = { value = "bin/protoc-3.20.1.exe", relative = true }

@@ -6,16 +6,25 @@ on:
   pull_request:
     branches: [main]
 
-env:
-  CARGO_TERM_COLOR: always
-
 jobs:
 
   rust:
     name: Rust
     runs-on: ubuntu-latest
 
+    env:
+      CARGO_TERM_COLOR: always
+      PROTOC: /home/runner/.local/bin/protoc
+
     steps:
+      - name: Install protoc
+        run: |
+          mkdir -p "$HOME/.local/bin"
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          curl -LO https://github.com/protocolbuffers/protobuf/releases/download/v3.20.1/protoc-3.20.1-linux-x86_64.zip
+          unzip -j protoc-3.20.1-linux-x86_64.zip bin/protoc -d $HOME/.local/bin
+          rm protoc-3.20.1-linux-x86_64.zip
+
       - name: Checkout code
         uses: actions/checkout@v2
 

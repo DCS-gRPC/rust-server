@@ -47,7 +47,7 @@ GRPC.methods.hookEval = function(params)
     return GRPC.error("Failed to execute Lua code: "..result)
   end
 
-  return GRPC.success(result)
+  return GRPC.success(net.lua2json(result))
 end
 
 GRPC.methods.isMultiplayer = function()

@@ -61,10 +61,7 @@ impl HookService for HookRpc {
             return Err(Status::permission_denied("eval operation is disabled"));
         }
 
-        let json: serde_json::Value = self.request("hookEval", request).await?;
-        let json = serde_json::to_string(&json).map_err(|err| {
-            Status::internal(format!("failed to deserialize eval result: {}", err))
-        })?;
+        let json: String = self.request("hookEval", request).await?;
         Ok(Response::new(hook::v0::EvalResponse { json }))
     }
 

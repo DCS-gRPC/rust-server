@@ -247,6 +247,7 @@ version = "0.1.0"
 dependencies = [
  "prost",
  "prost-types",
+ "protoc-bundled",
  "serde",
  "serde_json",
  "tonic",
@@ -926,6 +927,11 @@ dependencies = [
  "bytes",
  "prost",
 ]
+
+[[package]]
+name = "protoc-bundled"
+version = "3.20.1"
+source = "git+https://github.com/rkusa/protoc-bundled.git?rev=3.20.1#f04760ec823e60c9ef8f9960802a8baf6fb3c540"
 
 [[package]]
 name = "quote"

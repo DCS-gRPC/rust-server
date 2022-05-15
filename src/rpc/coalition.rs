@@ -13,6 +13,14 @@ impl CoalitionService for MissionRpc {
         Ok(Response::new(res))
     }
 
+    async fn get_static_objects(
+        &self,
+        request: Request<coalition::v0::GetStaticObjectsRequest>,
+    ) -> Result<Response<coalition::v0::GetStaticObjectsResponse>, Status> {
+        let res = self.request("getStaticObjects", request).await?;
+        Ok(Response::new(res))
+    }
+
     async fn add_static_object(
         &self,
         request: Request<coalition::v0::AddStaticObjectRequest>,

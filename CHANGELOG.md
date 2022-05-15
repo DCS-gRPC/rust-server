@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - `OutTextForUnit` API
+- `GetStaticObjects` API
 - `AddStaticObject` API (for standard static objects)
 - `AddLinkedStatic` API (for statics linked to units such as ships)
 - `MarkupToAll` API

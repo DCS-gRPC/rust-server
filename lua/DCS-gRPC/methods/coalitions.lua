@@ -120,6 +120,21 @@ GRPC.methods.addGroup = function(params)
   return GRPC.success({group = GRPC.exporters.group(Group.getByName(template.name))})
 end
 
+GRPC.methods.getStaticObjects = function(params)
+  local result = {}
+  for _, coalitionId in pairs(coalition.side) do
+    if params.coalition == 0 or params.coalition - 1 == coalitionId then -- Decrement for non zero-indexed gRPC enum
+      local staticObjects = coalition.getStaticObjects(coalitionId)
+
+      for _, staticObject in ipairs(staticObjects) do
+        table.insert(result, GRPC.exporters.static(staticObject))
+      end
+    end
+  end
+
+  return GRPC.success({statics = result})
+end
+
 GRPC.methods.addStaticObject = function(params)
   if params.name == nil or params.name == "" then
     return GRPC.errorInvalidArgument("name not supplied")

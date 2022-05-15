@@ -9,6 +9,16 @@ service CoalitionService {
   // https://wiki.hoggitworld.com/view/DCS_func_addGroup
   rpc AddGroup(AddGroupRequest) returns (AddGroupResponse) {}
 
+  // Focussed on statics (linked statics - see `AddLinkedStatic`)
+  // https://wiki.hoggitworld.com/view/DCS_func_addStaticObject
+  rpc AddStaticObject(AddStaticObjectRequest)
+      returns (AddStaticObjectResponse) {}
+
+  // Focussed on properties relevant to linked static objects
+  // https://wiki.hoggitworld.com/view/DCS_func_addStaticObject
+  rpc AddLinkedStatic(AddLinkedStaticRequest)
+      returns (AddLinkedStaticResponse) {}
+
   // https://wiki.hoggitworld.com/view/DCS_func_getGroups
   rpc GetGroups(GetGroupsRequest) returns (GetGroupsResponse) {}
 
@@ -119,6 +129,59 @@ message AddGroupRequest {
 
 message AddGroupResponse {
   dcs.common.v0.Group group = 1;
+}
+
+message AddStaticObjectRequest {
+  // the name of the static; must be unique or would destroy previous object
+  string name = 1;
+  // country the unit belongs to
+  dcs.common.v0.Country country = 2;
+  // type of the static object (e.g. "Farm A", "AS32-31A")
+  string type = 3;
+  // string name of the livery for the aircraft
+  string livery = 4;
+  // boolean for whether or not the object will appear as a wreck
+  bool dead = 5;
+  // number value for the "score" of the object when it is killed
+  optional uint32 rate = 6;
+
+  double heading = 7;
+  dcs.common.v0.Position position = 8;
+  // cargo mass in kilograms
+  uint32 cargo_mass = 9;
+}
+
+message AddStaticObjectResponse {
+  string name = 1;
+}
+
+message AddLinkedStaticRequest {
+  // the name of the static; must be unique or would destroy previous object
+  string name = 1;
+  // country the unit belongs to
+  dcs.common.v0.Country country = 2;
+  // type of the static object (e.g. "Farm A", "AS32-31A")
+  string type = 3;
+  // string name of the livery for the aircraft
+  string livery = 4;
+  // boolean for whether or not the object will appear as a wreck
+  bool dead = 5;
+  // number value for the "score" of the object when it is killed
+  optional uint32 rate = 6;
+  // the name of the unit to offset from
+  string unit = 7;
+  // the angle to relative to the linked unit, in a clockwise direction.
+  // negative values are anti-clockwise
+  double angle = 8;
+  // x offset from linked unit center (positive is forward; negative is aft)
+  double x = 9;
+  // y offset from linked unit center (positive is starboard-side;
+  // negative is port-side)
+  double y = 10;
+}
+
+message AddLinkedStaticResponse {
+  string name = 1;
 }
 
 message GetGroupsRequest {

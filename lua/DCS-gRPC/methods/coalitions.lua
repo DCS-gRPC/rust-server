@@ -120,6 +120,91 @@ GRPC.methods.addGroup = function(params)
   return GRPC.success({group = GRPC.exporters.group(Group.getByName(template.name))})
 end
 
+GRPC.methods.addStaticObject = function(params)
+  if params.name == nil or params.name == "" then
+    return GRPC.errorInvalidArgument("name not supplied")
+  end
+  if params.type == nil or params.type == "" then
+    return GRPC.errorInvalidArgument("type not supplied")
+  end
+  if params.country_id == 0 or params.country_id == 15 then
+    return GRPC.errorInvalidArgument("invalid country code")
+  end
+
+  if params.position == nil then
+    return GRPC.errorInvalidArgument("provide position")
+  end
+
+  local pos = coord.LLtoLO(params.position.lat, params.position.lon)
+  local staticTemplate = {
+    name = params.name,
+    type = params.type,
+    heading = math.rad(params.heading),
+    dead = params.dead,
+    x = pos.x,
+    y = pos.z,
+  }
+
+  if params.score ~= nil then
+    staticTemplate.rate = params.score
+  end
+
+  if params.cargoMass > 0 then
+    staticTemplate.canCargo = true
+    staticTemplate.mass = params.cargoMass
+  end
+
+  coalition.addStaticObject(params.country - 1, staticTemplate)
+
+  return GRPC.success({ name = params.name })
+end
+
+GRPC.methods.addLinkedStatic = function(params)
+  if params.name == nil or params.name == "" then
+    return GRPC.errorInvalidArgument("name not supplied")
+  end
+  if params.type == nil or params.type == "" then
+    return GRPC.errorInvalidArgument("type not supplied")
+  end
+  if params.country_id == 0 or params.country_id == 15 then
+    return GRPC.errorInvalidArgument("invalid country code")
+  end
+  if params.unit == nil or params.unit == "" then
+    return GRPC.errorInvalidArgument("provide the unit to ")
+  end
+
+  local unit = Unit.getByName(params.unit)
+  if unit == nil then
+    return GRPC.errorNotFound("offset unit name not found")
+  end
+
+  -- we still need to supply a position to ED API, so current linked unit is good enough
+  local pos = unit:getPoint()
+
+  local staticTemplate = {
+    name = params.name,
+    type = params.type,
+    x = pos.x,
+    y = pos.z,
+    dead = params.dead,
+    linkOffset = true,
+    linkUnit = unit:getID(),
+    offsets = {
+      x = params.x,
+      y = params.y,
+      angle = math.rad(params.angle),
+    }
+  }
+
+  if params.score ~= nil then
+    staticTemplate.rate = params.score
+  end
+
+  coalition.addStaticObject(params.country - 1, staticTemplate)
+
+  return GRPC.success({ name = params.name })
+end
+
 GRPC.methods.getGroups = function(params)
   local result = {}
   for _, c in pairs(coalition.side) do

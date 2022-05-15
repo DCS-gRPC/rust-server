@@ -41,7 +41,7 @@ future; pull requests are welcomed for expanding the API equivalency.
     - [ ] Loadout
 - [x] `addStaticObject`
 - [x] `getGroups`
-- [ ] `getStaticObjects`
+- [x] `getStaticObjects`
 - [x] `getAirbases`
 - [x] `getPlayers`
 - [ ] `getServiceProviders`

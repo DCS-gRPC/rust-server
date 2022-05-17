@@ -1,4 +1,7 @@
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    std::env::set_var("PROTOC", protoc_bundled::PROTOC);
+    std::env::set_var("PROTOC_INCLUDE", protoc_bundled::PROTOC_INCLUDE);
+
     println!("cargo:rerun-if-changed=../protos/dcs");
 
     tonic_build::configure()

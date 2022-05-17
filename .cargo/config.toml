@@ -2,3 +2,8 @@
 LUA_LIB_NAME = "lua"
 LUA_LIB = { value = "src/lua5.1/", relative = true }
 LUA_INC = { value = "src/lua5.1/include", relative = true }
+
+# This env var must be set so that `prost-build` doesn't try to build protoc (as this would require
+# `cmake` to be installed). The value here doesn't matter, as it will be overriden to a valid path
+# (pointing to a bundled protoc from `protoc-bundled`) by `build.rs` later on.
+PROTOC = { value = "protoc.exe", relative = true }

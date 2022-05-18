@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `MarkupToAll` API
 - `MarkupToCoalition` API
 - `GetTheatre` API
+- `GetUnitType` API
 
 ## [0.5.0] - 2022-04-19
 ### Added

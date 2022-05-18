@@ -47,6 +47,9 @@ service HookService {
   // Get a list of all the banned players
   rpc GetBannedPlayers(GetBannedPlayersRequest)
     returns (GetBannedPlayersResponse) {}
+
+  // https://wiki.hoggitworld.com/view/DCS_func_getUnitType
+  rpc GetUnitType(GetUnitTypeRequest) returns (GetUnitTypeResponse) {}
 }
 
 message GetMissionNameRequest {
@@ -162,4 +165,14 @@ message BanDetails {
   uint64 banned_from = 5;
   // When the ban will expire in unixtime
   uint64 banned_until = 6;
+}
+
+message GetUnitTypeRequest {
+  // The slot or unit ID of the unit to retrieve the type of
+  string id = 1;
+}
+
+message GetUnitTypeResponse {
+  // Type of unit (e.g. "F-14B")
+  string type = 1;
 }

@@ -276,7 +276,7 @@ should use their independent logging and tracing functions.
 - [x] `getMissionFilename`
 - [ ] `getMissionResult`
 - [ ] `getUnitProperty`
-- [ ] `getUnitType`
+- [x] `getUnitType`
 - [ ] `getUnitTypeAttribute`
 - [ ] `writeDebriefing`
 - [ ] `makeScreenShot`

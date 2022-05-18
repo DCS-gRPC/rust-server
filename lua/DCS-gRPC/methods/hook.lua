@@ -92,3 +92,14 @@ GRPC.methods.getBannedPlayers = function()
 
   return GRPC.success({bans = result})
 end
+
+GRPC.methods.getUnitType = function(params)
+  -- https://wiki.hoggitworld.com/view/DCS_func_getUnitType
+  local unit_type = DCS.getUnitType(params.id)
+  -- getUnitType returns an empty string if the unit doesn't exist, ensure we catch eventual nils too
+  if unit_type == nil or unit_type == "" then
+    return GRPC.errorNotFound("unit `" .. tostring(params.id) .. "` does not exist")
+  end
+
+  return GRPC.success({type = unit_type})
+end

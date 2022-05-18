@@ -112,4 +112,12 @@ impl HookService for HookRpc {
         let res = self.request("getBannedPlayers", request).await?;
         Ok(Response::new(res))
     }
+
+    async fn get_unit_type(
+        &self,
+        request: Request<hook::v0::GetUnitTypeRequest>,
+    ) -> Result<Response<hook::v0::GetUnitTypeResponse>, Status> {
+        let res = self.request("getUnitType", request).await?;
+        Ok(Response::new(res))
+    }
 }

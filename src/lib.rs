@@ -11,7 +11,7 @@ mod stream;
 
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{Arc, RwLock};
+use std::sync::RwLock;
 use std::time::Instant;
 
 use mlua::{prelude::*, LuaSerdeExt};
@@ -19,7 +19,6 @@ use mlua::{Function, Value};
 use once_cell::sync::Lazy;
 use server::{Config, Server};
 use stubs::mission::v0::StreamEventsResponse;
-use thiserror::Error;
 
 static INITIALIZED: Lazy<AtomicBool> = Lazy::new(|| AtomicBool::new(false));
 static SERVER: Lazy<RwLock<Option<Server>>> = Lazy::new(|| RwLock::new(None));
@@ -67,10 +66,11 @@ pub fn init(config: &Config) {
 }
 
 #[no_mangle]
-pub fn start(_: &Lua, config: Config) -> LuaResult<()> {
+pub fn start(_: &Lua, config: Config) {
     {
+        // do nothing if already started
         if SERVER.read().unwrap().is_some() {
-            return Ok(());
+            return;
         }
     }
 
@@ -79,18 +79,20 @@ pub fn start(_: &Lua, config: Config) -> LuaResult<()> {
     log::debug!("Config: {:#?}", config);
     log::info!("Starting ...");
 
-    let mut server =
-        Server::new(&config).map_err(|err| mlua::Error::ExternalError(Arc::new(err)))?;
-    server.run_in_background();
-    *(SERVER.write().unwrap()) = Some(server);
-
-    log::info!("Started");
-
-    Ok(())
+    match Server::new(&config) {
+        Ok(mut server) => {
+            server.run_in_background();
+            *(SERVER.write().unwrap()) = Some(server);
+            log::info!("Started");
+        }
+        Err(err) => {
+            log::error!("Failed to start server: {}", err)
+        }
+    }
 }
 
 #[no_mangle]
-pub fn stop(_: &Lua, _: ()) -> LuaResult<()> {
+pub fn stop(_: &Lua, _: ()) {
     log::info!("Stopping ...");
 
     if let Some(server) = SERVER.write().unwrap().take() {
@@ -98,12 +100,10 @@ pub fn stop(_: &Lua, _: ()) -> LuaResult<()> {
     }
 
     log::info!("Stopped");
-
-    Ok(())
 }
 
 #[no_mangle]
-pub fn next(lua: &Lua, (env, callback): (i32, Function)) -> LuaResult<bool> {
+pub fn next(lua: &Lua, (env, callback): (i32, Function)) -> bool {
     let start = Instant::now();
 
     if let Some(server) = &*SERVER.read().unwrap() {
@@ -112,69 +112,83 @@ pub fn next(lua: &Lua, (env, callback): (i32, Function)) -> LuaResult<bool> {
         let next = match env {
             1 => server.ipc_mission().try_next(),
             2 => server.ipc_hook().try_next(),
-            _ => return Ok(false),
+            _ => return false,
         };
 
         if let Some(mut next) = next {
             let _call = server.stats().track_call();
 
             let method = next.method().to_string();
-            let params = next
-                .params(lua)
-                .map_err(|err| mlua::Error::ExternalError(Arc::new(Error::SerializeParams(err))))?;
+            let params = match next.params(lua) {
+                Ok(params) => params,
+                Err(err) => {
+                    log::error!("Failed serialize request params to Lua: {}", err);
+                    return true;
+                }
+            };
 
             if let Some(params) = &params {
                 log::debug!(
                     "Sending request `{}`: {}",
                     method,
-                    pretty_print_value(params.clone(), 0)?
+                    pretty_print_value(params.clone(), 0)
                 );
             } else {
                 log::debug!("Sending request `{}`", method,);
             }
 
-            let result: LuaTable = callback.call((method.as_str(), params))?;
-            let error: Option<LuaTable> = result.get("error")?;
+            let result: LuaTable = match callback.call((method.as_str(), params)) {
+                Ok(result) => result,
+                Err(err) => {
+                    log::error!("Failed to call next callback: {}", err);
+                    return true;
+                }
+            };
+            let error: Option<LuaTable> = result.get("error").unwrap_or_default();
 
             if let Some(error) = error {
-                let message: String = error.get("message")?;
-                let kind: Option<String> = error.get("type")?;
+                let message: String = error
+                    .get("message")
+                    .unwrap_or_else(|err| format!("<failed to read `error.message`: {}>", err));
+                let kind: Option<String> = error.get("type").unwrap_or_default();
 
                 next.error(message, kind);
-                return Ok(true);
+                return true;
             }
 
-            let res: Value<'_> = result.get("result")?;
-            log::debug!("Receiving: {}", pretty_print_value(res.clone(), 0)?);
+            let res: Value<'_> = match result.get("result") {
+                Ok(res) => res,
+                Err(err) => {
+                    log::error!("Failed to read `result` from Lua response: {}", err);
+                    return true;
+                }
+            };
+            log::debug!("Receiving: {}", pretty_print_value(res.clone(), 0));
 
-            next.success(lua, &res).map_err(|err| {
-                mlua::Error::ExternalError(Arc::new(Error::DeserializeResult {
-                    err,
-                    method,
-                    result: pretty_print_value(res, 0)
-                        .unwrap_or_else(|err| format!("failed to pretty print result: {}", err)),
-                }))
-            })?;
+            if let Err(err) = next.success(lua, &res) {
+                log::error!("failed to pretty print result: {}", err)
+            }
 
-            return Ok(true);
+            return true;
         }
     }
 
-    Ok(false)
+    false
 }
 
 #[no_mangle]
-pub fn event(lua: &Lua, event: Value) -> LuaResult<()> {
+pub fn event(lua: &Lua, event: Value) {
     let start = Instant::now();
 
-    let event: StreamEventsResponse = match lua.from_value(event) {
+    let event: StreamEventsResponse = match lua.from_value(event.clone()) {
         Ok(event) => event,
         Err(err) => {
-            log::error!("failed to deserialize event: {}", err);
-            // In certain cases DCS crashes when we return an error back to Lua here (see
-            // https://github.com/DCS-gRPC/rust-server/issues/19), which we are working around
-            // by intercepting and logging the error instead.
-            return Ok(());
+            log::error!(
+                "failed to deserialize event: {}\n{}",
+                err,
+                pretty_print_value(event, 0)
+            );
+            return;
         }
     };
 
@@ -185,61 +199,40 @@ pub fn event(lua: &Lua, event: Value) -> LuaResult<()> {
         log::debug!("Received event: {:#?}", event);
         server.block_on(server.ipc_mission().event(event));
     }
-
-    Ok(())
 }
 
 #[no_mangle]
-pub fn log_error(_: &Lua, err: String) -> LuaResult<()> {
+pub fn log_error(_: &Lua, err: String) {
     log::error!("{}", err);
-    Ok(())
 }
 
 #[no_mangle]
-pub fn log_warning(_: &Lua, err: String) -> LuaResult<()> {
+pub fn log_warning(_: &Lua, err: String) {
     log::warn!("{}", err);
-    Ok(())
 }
 
 #[no_mangle]
-pub fn log_info(_: &Lua, err: String) -> LuaResult<()> {
+pub fn log_info(_: &Lua, err: String) {
     log::info!("{}", err);
-    Ok(())
 }
 
 #[no_mangle]
-pub fn log_debug(_: &Lua, err: String) -> LuaResult<()> {
+pub fn log_debug(_: &Lua, err: String) {
     log::debug!("{}", err);
-    Ok(())
-}
-
-#[derive(Debug, Error)]
-pub enum Error {
-    #[error("Failed to deserialize params: {0}")]
-    DeserializeParams(#[source] mlua::Error),
-    #[error("Failed to deserialize result for method {method}: {err}\n{result}")]
-    DeserializeResult {
-        #[source]
-        err: mlua::Error,
-        method: String,
-        result: String,
-    },
-    #[error("Failed to serialize params: {0}")]
-    SerializeParams(#[source] mlua::Error),
 }
 
 #[cfg(feature = "hot-reload")]
 #[mlua::lua_module]
 pub fn dcs_grpc_hot_reload(lua: &Lua) -> LuaResult<LuaTable> {
     let exports = lua.create_table()?;
-    exports.set("start", lua.create_function(hot_reload::start)?)?;
-    exports.set("stop", lua.create_function(hot_reload::stop)?)?;
-    exports.set("next", lua.create_function(hot_reload::next)?)?;
-    exports.set("event", lua.create_function(hot_reload::event)?)?;
-    exports.set("logError", lua.create_function(hot_reload::log_error)?)?;
-    exports.set("logWarning", lua.create_function(hot_reload::log_warning)?)?;
-    exports.set("logInfo", lua.create_function(hot_reload::log_info)?)?;
-    exports.set("logDebug", lua.create_function(hot_reload::log_debug)?)?;
+    exports.set("start", infallible(lua, hot_reload::start)?)?;
+    exports.set("stop", infallible(lua, hot_reload::stop)?)?;
+    exports.set("next", infallible(lua, hot_reload::next)?)?;
+    exports.set("event", infallible(lua, hot_reload::event)?)?;
+    exports.set("logError", infallible(lua, hot_reload::log_error)?)?;
+    exports.set("logWarning", infallible(lua, hot_reload::log_warning)?)?;
+    exports.set("logInfo", infallible(lua, hot_reload::log_info)?)?;
+    exports.set("logDebug", infallible(lua, hot_reload::log_debug)?)?;
     Ok(exports)
 }
 
@@ -247,34 +240,52 @@ pub fn dcs_grpc_hot_reload(lua: &Lua) -> LuaResult<LuaTable> {
 #[mlua::lua_module]
 pub fn dcs_grpc(lua: &Lua) -> LuaResult<LuaTable> {
     let exports = lua.create_table()?;
-    exports.set("start", lua.create_function(start)?)?;
-    exports.set("stop", lua.create_function(stop)?)?;
-    exports.set("next", lua.create_function(next)?)?;
-    exports.set("event", lua.create_function(event)?)?;
-    exports.set("logError", lua.create_function(log_error)?)?;
-    exports.set("logWarning", lua.create_function(log_warning)?)?;
-    exports.set("logInfo", lua.create_function(log_info)?)?;
-    exports.set("logDebug", lua.create_function(log_debug)?)?;
+    exports.set("start", infallible(lua, start)?)?;
+    exports.set("stop", infallible(lua, stop)?)?;
+    exports.set("next", infallible(lua, next)?)?;
+    exports.set("event", infallible(lua, event)?)?;
+    exports.set("logError", infallible(lua, log_error)?)?;
+    exports.set("logWarning", infallible(lua, log_warning)?)?;
+    exports.set("logInfo", infallible(lua, log_info)?)?;
+    exports.set("logDebug", infallible(lua, log_debug)?)?;
     Ok(exports)
 }
 
-fn pretty_print_value(val: Value, indent: usize) -> LuaResult<String> {
-    Ok(match val {
+// The combination of DCS and `mlua::Error` is unfortunately not working well together.
+// `mlua::Error`s returned to DCS crash DCS in certain cases. We were unable to figure out the cause
+// and are also unable to reproduce the issue outside of DCS, which is why we simply avoid returning
+// errors (and directly log them instead). The following function is used to make sure that we don't
+// accidentally return errors to DCS.
+fn infallible<'lua, 'callback, A, R, F>(lua: &'lua Lua, func: F) -> LuaResult<Function<'lua>>
+where
+    'lua: 'callback,
+    A: FromLuaMulti<'callback>,
+    R: ToLuaMulti<'callback>,
+    F: 'static + Send + Fn(&'callback Lua, A) -> R,
+{
+    lua.create_function(move |lua, arg| Ok(func(lua, arg)))
+}
+
+fn pretty_print_value(val: Value, indent: usize) -> String {
+    match val {
         Value::Nil => "nil".to_string(),
         Value::Boolean(v) => v.to_string(),
         Value::LightUserData(_) => String::new(),
         Value::Integer(v) => v.to_string(),
         Value::Number(v) => v.to_string(),
-        Value::String(v) => format!("\"{}\"", v.to_str()?),
+        Value::String(v) => format!(
+            "\"{}\"",
+            v.to_str().unwrap_or("<failed to convert to string>")
+        ),
         Value::Table(t) => {
             let mut s = "{\n".to_string();
-            for pair in t.pairs::<Value, Value>() {
-                let (key, value) = pair?;
+            let mut pairs = t.pairs::<Value, Value>();
+            while let Some(Ok((key, value))) = pairs.next() {
                 s += &format!(
                     "{}{} = {},\n",
                     "  ".repeat(indent + 1),
-                    pretty_print_value(key, indent + 1)?,
-                    pretty_print_value(value, indent + 1)?
+                    pretty_print_value(key, indent + 1),
+                    pretty_print_value(value, indent + 1)
                 );
             }
             s += &format!("{}}}", "  ".repeat(indent));
@@ -284,5 +295,5 @@ fn pretty_print_value(val: Value, indent: usize) -> LuaResult<String> {
         Value::Thread(_) => String::new(),
         Value::UserData(_) => String::new(),
         Value::Error(err) => err.to_string(),
-    })
+    }
 }

@@ -223,7 +223,7 @@ if isMissionEnv then
     local _ = self -- make linter happy
 
     if not stopped then
-      local ok, result, err = xpcall(function() return GRPC.onDcsEvent(event) end, debug.traceback)
+      local ok, result = xpcall(function() return GRPC.onDcsEvent(event) end, debug.traceback)
       if ok then
         if result ~= nil then
           grpc.event(result)
@@ -232,7 +232,7 @@ if isMissionEnv then
           end
         end
       else
-        GRPC.logError("Error in event handler: "..tostring(err))
+        GRPC.logError("Error in event handler: "..tostring(result))
       end
     end
   end

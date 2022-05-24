@@ -45,6 +45,30 @@ impl HookService for HookRpc {
         Ok(Response::new(res))
     }
 
+    async fn reload_current_mission(
+        &self,
+        request: Request<hook::v0::ReloadCurrentMissionRequest>,
+    ) -> Result<Response<hook::v0::ReloadCurrentMissionResponse>, Status> {
+        let res = self.request("reloadCurrentMission", request).await?;
+        Ok(Response::new(res))
+    }
+
+    async fn load_next_mission(
+        &self,
+        request: Request<hook::v0::LoadNextMissionRequest>,
+    ) -> Result<Response<hook::v0::LoadNextMissionResponse>, Status> {
+        let res = self.request("loadNextMission", request).await?;
+        Ok(Response::new(res))
+    }
+
+    async fn load_mission(
+        &self,
+        request: Request<hook::v0::LoadMissionRequest>,
+    ) -> Result<Response<hook::v0::LoadMissionResponse>, Status> {
+        let res = self.request("loadMission", request).await?;
+        Ok(Response::new(res))
+    }
+
     async fn stop_mission(
         &self,
         request: Request<hook::v0::StopMissionRequest>,

@@ -3,7 +3,9 @@
 -- Docs: /DCS World/API/DCS_ControlAPI.html
 --
 
+local DCS = DCS
 local GRPC = GRPC
+local net = net
 
 GRPC.methods.getMissionName = function()
   return GRPC.success({name = DCS.getMissionName()})
@@ -15,6 +17,19 @@ end
 
 GRPC.methods.getMissionDescription = function()
   return GRPC.success({description = DCS.getMissionDescription()})
+end
+
+GRPC.methods.reloadCurrentMission = function()
+  net.load_mission(DCS.getMissionFilename())
+  return GRPC.success({})
+end
+
+GRPC.methods.loadNextMission = function()
+  return GRPC.success({loaded = net.load_next_mission()})
+end
+
+GRPC.methods.loadMission = function(params)
+  return GRPC.success({loaded = net.load_mission(params.fileName)})
 end
 
 GRPC.methods.getPaused = function()

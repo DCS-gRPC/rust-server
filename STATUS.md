@@ -110,8 +110,9 @@ should use their independent logging and tracing functions.
 - [ ] <del>`trace`</del> (client applications should use their own logging)
 
 #### GameGUI API
-- [ ] `load_mission`
-- [ ] `load_next_mission`
+- [x] `reload_current_mission` Custom API
+- [x] `load_mission`
+- [x] `load_next_mission`
 
 ### Timer Service
 - [x] `getTime`

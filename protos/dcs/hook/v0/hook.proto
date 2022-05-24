@@ -25,6 +25,21 @@ service HookService {
   // https://wiki.hoggitworld.com/view/DCS_func_stopMission
   rpc StopMission(StopMissionRequest) returns (StopMissionResponse) {}
 
+  // Reload the currently running mission
+  rpc ReloadCurrentMission(ReloadCurrentMissionRequest)
+    returns (ReloadCurrentMissionResponse) {}
+
+  // Load the next mission in the server mission list. Note that it does
+  // not loop back to the first mission once the end of the mission list
+  // has been reached
+  rpc LoadNextMission(LoadNextMissionRequest)
+    returns (LoadNextMissionResponse) {}
+
+  // Load a specific mission file. This does not need to be in the mission
+  // list.
+  rpc LoadMission(LoadMissionRequest)
+    returns (LoadMissionResponse) {}
+
   // Evaluate some Lua inside of the hook environment and return the result as a
   // JSON string. Disabled by default.
   rpc Eval(EvalRequest) returns (EvalResponse) {}
@@ -85,6 +100,30 @@ message SetPausedRequest {
 }
 
 message SetPausedResponse {
+}
+
+message ReloadCurrentMissionRequest {
+}
+
+message ReloadCurrentMissionResponse {
+}
+
+message LoadNextMissionRequest {
+}
+
+message LoadNextMissionResponse {
+  // Was the next mission successfully loaded. SHOULD return false when the
+  // end of the mission list has been reached but DCS appears to always
+  // return true
+  bool loaded = 1;
+}
+
+message LoadMissionRequest {
+  // The full path to the .miz file to be loaded
+  string file_name = 1;
+}
+
+message LoadMissionResponse {
 }
 
 message StopMissionRequest {

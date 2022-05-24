@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `MarkupToCoalition` API
 - `GetTheatre` API
 - `GetUnitType` API
+- `ReloadCurrentMission` API
+- `LoadNextMission` API
+- `LoadMission` API
 
 ### Fixed
 - Fixed event handler error log missing actual error message (contained `nil` instead of the message).

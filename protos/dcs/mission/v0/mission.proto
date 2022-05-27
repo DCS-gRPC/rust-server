@@ -103,7 +103,7 @@ message StreamEventsResponse {
     // The object that has been hit.
     dcs.common.v0.Target target = 3;
     // The weapon the target got hit by.
-    string weapon_name = 4;
+    optional string weapon_name = 4;
   }
 
   // Occurs when an aircraft takes off from an airbase, farp, or ship.
@@ -312,7 +312,7 @@ message StreamEventsResponse {
     dcs.common.v0.Target target = 3;
     // The name of the weapon that killed the target (exists instead of weapon
     // for weapons that trigger the shooting start and end events).
-    string weapon_name = 4;
+    optional string weapon_name = 4;
   }
 
   // A score change (doesn't contain any useful information)

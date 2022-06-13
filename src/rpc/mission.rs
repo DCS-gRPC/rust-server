@@ -5,6 +5,7 @@ use crate::shutdown::AbortableStream;
 use futures_util::{Stream, StreamExt};
 use stubs::mission::v0::mission_service_server::MissionService;
 use stubs::timer::v0::timer_service_server::TimerService;
+use stubs::trigger::v0::trigger_service_server::TriggerService;
 use stubs::*;
 use time::format_description::well_known::Rfc3339;
 use time::{Date, Duration, Month, OffsetDateTime, PrimitiveDateTime, Time, UtcOffset};
@@ -164,6 +165,34 @@ impl MissionService for MissionRpc {
     ) -> Result<Response<mission::v0::RemoveGroupCommandItemResponse>, Status> {
         let res = self.request("removeGroupCommandItem", request).await?;
         Ok(Response::new(res))
+    }
+
+    async fn get_session_id(
+        &self,
+        _request: Request<mission::v0::GetSessionIdRequest>,
+    ) -> Result<Response<mission::v0::GetSessionIdResponse>, Status> {
+        let response = self
+            .get_user_flag(Request::new(trigger::v0::GetUserFlagRequest {
+                flag: String::from("dcs_grpc_session_id"),
+            }))
+            .await?
+            .into_inner();
+        let current_session_id = response.value as i64;
+        if current_session_id == 0 {
+            let ts = OffsetDateTime::now_utc().unix_timestamp();
+            self.set_user_flag(Request::new(trigger::v0::SetUserFlagRequest {
+                flag: String::from("dcs_grpc_session_id"),
+                value: ts as u32,
+            }))
+            .await?;
+            Ok(Response::new(mission::v0::GetSessionIdResponse {
+                session_id: ts,
+            }))
+        } else {
+            Ok(Response::new(mission::v0::GetSessionIdResponse {
+                session_id: current_session_id,
+            }))
+        }
     }
 }
 

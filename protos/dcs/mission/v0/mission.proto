@@ -76,6 +76,11 @@ service MissionService {
   // See https://wiki.hoggitworld.com/view/DCS_func_removeItemForGroup
   rpc RemoveGroupCommandItem(RemoveGroupCommandItemRequest)
       returns (RemoveGroupCommandItemResponse) {}
+
+  // Returns an ID for the current session.
+  // The ID will change upon mission change or server restart.
+  rpc GetSessionId(GetSessionIdRequest)
+      returns (GetSessionIdResponse) {}
 }
 
 message StreamEventsRequest {
@@ -719,4 +724,11 @@ message RemoveGroupCommandItemRequest {
 }
 
 message RemoveGroupCommandItemResponse {
+}
+
+message GetSessionIdRequest {
+}
+
+message GetSessionIdResponse {
+  int64 session_id = 1;
 }

@@ -119,10 +119,13 @@ GRPC.exporters.markPanel = function(markPanel)
   local mp = {
     id = markPanel.idx,
     time = markPanel.time,
-    initiator = GRPC.exporters.unit(markPanel.initiator),
     text = markPanel.text,
-    position = GRPC.exporters.position(markPanel.pos)
+    position = GRPC.exporters.position(markPanel.pos),
   }
+
+  if markPanel.initiator then
+    mp.initiator = GRPC.exporters.unit(markPanel.initiator)
+  end
 
   if (markPanel.coalition >= 0 and markPanel.coalition <= 2) then
     mp["coalition"] = markPanel.coalition + 1; -- Increment for non zero-indexed gRPC enum

@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixes
+- Fixed error when retrieving mark panels (`WorldService.GetMarkPanels`) when the mark panel was created by a game master / JTAC, or when the player who created the mark panel left. `MarkPanel.initiator` is now optional. ([#156](https://github.com/DCS-gRPC/rust-server/issues/156))
+
 ## [0.6.0] - 2022-05-30
 
 ### Added

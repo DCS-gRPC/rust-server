@@ -38,23 +38,23 @@ local function typed_exporter(object)
   local category = object:getCategory()
 
   if category == Object.Category.BASE or object.className_ == 'Airbase' then
-    grpcTable["airbase"] = exporter(object)
+    grpcTable.airbase = exporter(object)
   elseif category == Object.Category.UNIT then
-    grpcTable["unit"] = exporter(object)
+    grpcTable.unit = exporter(object)
   elseif category == Object.Category.WEAPON then
-    grpcTable["weapon"] = exporter(object)
+    grpcTable.weapon = exporter(object)
   elseif category == Object.Category.STATIC then
-    grpcTable["static"] = exporter(object)
+    grpcTable.static = exporter(object)
   elseif category == Object.Category.SCENERY then
-    grpcTable["scenery"] = exporter(object)
+    grpcTable.scenery = exporter(object)
   elseif category == Object.Category.Cargo then
-    grpcTable["cargo"] = exporter(object)
+    grpcTable.cargo = exporter(object)
   else
     GRPC.logWarning(
       "Could not determine object category of object with ID: " .. object:getID()
         .. ", Category: " .. category
     )
-    grpcTable["unknown"] = GRPC.exporters.unknown(object)
+    grpcTable.unknown = GRPC.exporters.unknown(object)
   end
 
   return grpcTable

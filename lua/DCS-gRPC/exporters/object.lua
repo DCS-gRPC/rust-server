@@ -125,11 +125,11 @@ GRPC.exporters.markPanel = function(markPanel)
   }
 
   if (markPanel.coalition >= 0 and markPanel.coalition <= 2) then
-    mp["coalition"] = markPanel.coalition + 1; -- Increment for non zero-indexed gRPC enum
+    mp.coalition = markPanel.coalition + 1; -- Increment for non zero-indexed gRPC enum
   end
 
   if (markPanel.groupID > 0) then
-    mp["groupId"] = markPanel.groupID;
+    mp.groupId = markPanel.groupID;
   end
 
   return mp

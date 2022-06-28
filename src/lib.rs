@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 #![recursion_limit = "256"]
 
+mod fps;
 #[cfg(feature = "hot-reload")]
 mod hot_reload;
 pub mod rpc;
@@ -21,7 +22,7 @@ use server::{Config, Server};
 use stubs::mission::v0::StreamEventsResponse;
 use thiserror::Error;
 
-static INITIALIZED: Lazy<AtomicBool> = Lazy::new(|| AtomicBool::new(false));
+static INITIALIZED: AtomicBool = AtomicBool::new(false);
 static SERVER: Lazy<RwLock<Option<Server>>> = Lazy::new(|| RwLock::new(None));
 
 pub fn init(config: &Config) {
@@ -189,6 +190,15 @@ pub fn event(lua: &Lua, event: Value) -> LuaResult<()> {
     Ok(())
 }
 
+// This method is called on each simulation frame, so make sure to do as few as possible (avoid
+// even getting a lock on [SERVER]).
+#[no_mangle]
+pub fn simulation_frame(_lua: &Lua, time: f64) -> LuaResult<()> {
+    crate::fps::frame(time);
+
+    Ok(())
+}
+
 #[no_mangle]
 pub fn log_error(_: &Lua, err: String) -> LuaResult<()> {
     log::error!("{}", err);
@@ -236,6 +246,10 @@ pub fn dcs_grpc_hot_reload(lua: &Lua) -> LuaResult<LuaTable> {
     exports.set("stop", lua.create_function(hot_reload::stop)?)?;
     exports.set("next", lua.create_function(hot_reload::next)?)?;
     exports.set("event", lua.create_function(hot_reload::event)?)?;
+    exports.set(
+        "simulationFrame",
+        lua.create_function(hot_reload::simulation_frame)?,
+    )?;
     exports.set("logError", lua.create_function(hot_reload::log_error)?)?;
     exports.set("logWarning", lua.create_function(hot_reload::log_warning)?)?;
     exports.set("logInfo", lua.create_function(hot_reload::log_info)?)?;
@@ -251,6 +265,7 @@ pub fn dcs_grpc(lua: &Lua) -> LuaResult<LuaTable> {
     exports.set("stop", lua.create_function(stop)?)?;
     exports.set("next", lua.create_function(next)?)?;
     exports.set("event", lua.create_function(event)?)?;
+    exports.set("simulationFrame", lua.create_function(simulation_frame)?)?;
     exports.set("logError", lua.create_function(log_error)?)?;
     exports.set("logWarning", lua.create_function(log_warning)?)?;
     exports.set("logInfo", lua.create_function(log_info)?)?;

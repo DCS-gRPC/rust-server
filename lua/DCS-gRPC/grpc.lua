@@ -253,6 +253,8 @@ else -- hook env
   local skipFrames = math.ceil(interval / 0.016) -- 0.016 = 16ms = 1 frame at 60fps
   local frame = 0
   function GRPC.onSimulationFrame()
+    grpc.simulationFrame(DCS.getModelTime())
+
     frame = frame + 1
     if frame >= skipFrames then
       frame = 0

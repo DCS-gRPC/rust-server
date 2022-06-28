@@ -42,11 +42,10 @@ GRPC.exporters.unit = function(unit)
     type = unit:getTypeName(),
     position = GRPC.exporters.position(unit:getPoint()),
     playerName = Unit.getPlayerName(unit),
-    groupName = Unit.getGroup(unit):getName(),
+    group = GRPC.exporters.group(Unit.getGroup(unit)),
     numberInGroup = unit:getNumber(),
     heading = heading,
     speed = speed,
-    category = unit:getGroup():getCategory() + 1, -- Increment for non zero-indexed gRPC enum
   }
 end
 

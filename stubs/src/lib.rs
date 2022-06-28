@@ -125,11 +125,9 @@ mod tests {
                                         "time": 0
                                     },
                                     "playerName": "New callsign",
-                                    "groupName": "Group 1",
                                     "numberInGroup": 1,
                                     "heading": 0.5,
-                                    "speed": 0.8,
-                                    "category": 0
+                                    "speed": 0.8
                                 }
                             }
 		                },
@@ -165,11 +163,10 @@ mod tests {
                                 alt: 1.0,
                             }),
                             player_name: Some("New callsign".to_string()),
-                            group_name: "Group 1".to_string(),
+                            group: None,
                             number_in_group: 1,
                             heading: 0.5,
                             speed: 0.8,
-                            category: 0,
                         }))
                     }),
                     visibility: Some(event::mark_add_event::Visibility::Coalition(

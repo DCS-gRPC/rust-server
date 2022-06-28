@@ -6,12 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixes
+### Fixed
 - Fixed error when retrieving mark panels (`WorldService.GetMarkPanels`) when the mark panel was created by a game master / JTAC, or when the player who created the mark panel left. `MarkPanel.initiator` is now optional. ([#156](https://github.com/DCS-gRPC/rust-server/issues/156))
 
 ### Added
 - Added `SimulationFps` event that is fired every second and contains simulation fps information since the last event (i.e. for the past ~1sec).
 - Added `GetSessionId` API
+
+### Changed
+- Unit objects now return the full group object in the `group` field to make event processing easier. This replaces the `group_name` and `group_category` fields and is a backwards incompatible change.
 
 ## [0.6.0] - 2022-05-30
 

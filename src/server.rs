@@ -94,6 +94,11 @@ impl Server {
 
         self.runtime
             .spawn(self.state.stats.clone().run_in_background());
+
+        self.runtime.spawn(crate::fps::run_in_background(
+            self.state.ipc_mission.clone(),
+            self.shutdown.handle().signal(),
+        ));
     }
 
     pub fn stop_blocking(mut self) {

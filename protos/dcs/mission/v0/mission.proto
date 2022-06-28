@@ -377,7 +377,7 @@ message StreamEventsResponse {
     // The slot's identifier
     string slot_id = 3;
   }
-  
+
   /**
    * Fired when a player connected to the server.
    */
@@ -443,6 +443,15 @@ message StreamEventsResponse {
     google.protobuf.Struct details = 2;
   }
 
+  /**
+   * Fired every second containing simulation FPS information since the previous
+   * event.
+   */
+  message SimulationFpsEvent {
+    // The average FPS since the last event.
+    double average = 1;
+  }
+
   // The event's mission time.
   double time = 1;
   oneof event {
@@ -494,6 +503,7 @@ message StreamEventsResponse {
     MissionCommandEvent mission_command = 8196;
     CoalitionCommandEvent coalition_command = 8197;
     GroupCommandEvent group_command = 8198;
+    SimulationFpsEvent simulation_fps = 8199;
   }
 }
 
@@ -604,7 +614,7 @@ message RemoveMissionCommandItemResponse {
 // The emitted event will include the coalition.
 message AddCoalitionCommandRequest {
   // The coalition whose players will be able to see and run the command
-  dcs.common.v0.Coalition coalition = 1; 
+  dcs.common.v0.Coalition coalition = 1;
   // The name of the command that is displayed to the player.
   // It will form the last entry in the returned path.
   string name = 2;
@@ -644,7 +654,7 @@ message AddCoalitionCommandSubMenuResponse {
 
 message RemoveCoalitionCommandItemRequest {
   // The coalition whose players will have the menu item removed
-  dcs.common.v0.Coalition coalition = 1; 
+  dcs.common.v0.Coalition coalition = 1;
   // The full path to the menu item, which can be a submenu or a command, to be
   // removed. Deleting a menu item will delete all children it may have.
   repeated string path = 2;

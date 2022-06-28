@@ -141,8 +141,11 @@ async fn handle_event(
         }) => {
             // if we are monitoring all the categories, let's watch it.
             // otherwise, we need to be selective on the units we are monitoring
-            let unit_category =
-                GroupCategory::from_i32(unit.category).unwrap_or(GroupCategory::Unspecified);
+            let unit_category = unit
+                .group
+                .as_ref()
+                .and_then(|group| GroupCategory::from_i32(group.category))
+                .unwrap_or(GroupCategory::Unspecified);
             if category == unit_category || category == GroupCategory::Unspecified {
                 state.ctx.tx.send(Ok(Update::Unit(unit.clone()))).await?;
                 state.units.insert(unit.name.clone(), UnitState::new(unit));

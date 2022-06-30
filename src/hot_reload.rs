@@ -71,13 +71,13 @@ pub fn event(lua: &Lua, event: Value) -> LuaResult<()> {
     }
 }
 
-pub fn simulation_frame(lua: &Lua, time: f64) -> LuaResult<()> {
+pub fn simulation_frame(lua: &Lua, arg: (f64, f64)) -> LuaResult<()> {
     if let Some(ref lib) = *LIBRARY.read().unwrap() {
-        let f: Symbol<fn(lua: &Lua, time: f64) -> LuaResult<()>> = unsafe {
+        let f: Symbol<fn(lua: &Lua, arg: (f64, f64)) -> LuaResult<()>> = unsafe {
             lib.get(b"simulation_frame")
                 .map_err(|err| mlua::Error::ExternalError(Arc::new(err)))?
         };
-        f(lua, time)
+        f(lua, arg)
     } else {
         Ok(())
     }

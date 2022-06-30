@@ -453,8 +453,16 @@ message StreamEventsResponse {
    * event.
    */
   message SimulationFpsEvent {
-    // The average FPS since the last event.
-    double average = 1;
+    // Time between frames in ms.
+    repeated float frames_in_dcs_time = 1;
+    float average_in_dcs_time = 2;
+    float lowest_in_dcs_time = 3;
+    float highest_in_dcs_time = 4;
+    // Time between frames in ms.
+    repeated float frames_in_rust_time = 5;
+    float average_in_rust_time = 6;
+    float lowest_in_rust_time = 7;
+    float highest_in_rust_time = 8;
   }
 
   // The event's mission time.

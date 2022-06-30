@@ -193,8 +193,8 @@ pub fn event(lua: &Lua, event: Value) -> LuaResult<()> {
 // This method is called on each simulation frame, so make sure to do as few as possible (avoid
 // even getting a lock on [SERVER]).
 #[no_mangle]
-pub fn simulation_frame(_lua: &Lua, time: f64) -> LuaResult<()> {
-    crate::fps::frame(time);
+pub fn simulation_frame(_lua: &Lua, (simulation_time, real_time): (f64, f64)) -> LuaResult<()> {
+    crate::fps::frame(simulation_time, real_time);
 
     Ok(())
 }

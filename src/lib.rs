@@ -117,7 +117,7 @@ pub fn next(lua: &Lua, (env, callback): (i32, Function)) -> LuaResult<bool> {
         };
 
         if let Some(mut next) = next {
-            let _call = server.stats().track_call();
+            server.stats().track_call();
 
             let method = next.method().to_string();
             let params = next
@@ -274,6 +274,8 @@ pub fn dcs_grpc(lua: &Lua) -> LuaResult<LuaTable> {
 }
 
 fn pretty_print_value(val: Value, indent: usize) -> LuaResult<String> {
+    use std::fmt::Write;
+
     Ok(match val {
         Value::Nil => "nil".to_string(),
         Value::Boolean(v) => v.to_string(),
@@ -285,14 +287,15 @@ fn pretty_print_value(val: Value, indent: usize) -> LuaResult<String> {
             let mut s = "{\n".to_string();
             for pair in t.pairs::<Value, Value>() {
                 let (key, value) = pair?;
-                s += &format!(
-                    "{}{} = {},\n",
+                let _ = writeln!(
+                    s,
+                    "{}{} = {},",
                     "  ".repeat(indent + 1),
                     pretty_print_value(key, indent + 1)?,
                     pretty_print_value(value, indent + 1)?
                 );
             }
-            s += &format!("{}}}", "  ".repeat(indent));
+            let _ = write!(s, "{}}}", "  ".repeat(indent));
             s
         }
         Value::Function(_) => "[function]".to_string(),

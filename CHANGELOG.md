@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added `SimulationFps` event that is fired every second and contains simulation fps information since the last event (i.e. for the past ~1sec).
 - Added `GetSessionId` API
+- Added `GetAvaliableSlots` API
 
 ## [0.6.0] - 2022-05-30
 

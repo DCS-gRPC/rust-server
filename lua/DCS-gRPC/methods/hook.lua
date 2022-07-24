@@ -118,3 +118,59 @@ GRPC.methods.getUnitType = function(params)
 
   return GRPC.success({type = unit_type})
 end
+
+GRPC.methods.getAvailableSlotDetails = function()
+  local redForSlots = DCS.getAvailableSlots('red')
+  local blueForSlots = DCS.getAvailableSlots('blue')
+  local slots = {}
+
+  for _, gameSlot in ipairs(redForSlots) do
+    local exportSlot = {
+      unitId = gameSlot.unitId,
+      type = gameSlot.type,
+      role = gameSlot.role,
+      groupName = gameSlot.groupName,
+      groupSize = gameSlot.groupSize,
+      coalition = 1 + 1,  -- Increment for non zero-indexed gRPC enum
+      task = gameSlot.task,
+      onboardNumber = gameSlot.onboard_num,
+     }
+
+     if gameSlot.airdromeId ~= nil then
+      exportSlot.airdromeId = gameSlot.airdromeId
+     end
+
+     if gameSlot.helipadUnitType ~= nil then
+       exportSlot.helipadUnitType = gameSlot.helipadUnitType
+       exportSlot.helipadName = gameSlot.helipadName
+     end
+
+     table.insert(slots, exportSlot)
+  end
+
+  for _, gameSlot in ipairs(blueForSlots) do
+    local exportSlot = {
+      unitId = gameSlot.unitId,
+      type = gameSlot.type,
+      role = gameSlot.role,
+      groupName = gameSlot.groupName,
+      groupSize = gameSlot.groupSize,
+      coalition = 2 + 1,  -- Increment for non zero-indexed gRPC enum
+      task = gameSlot.task,
+      onboardNumber = gameSlot.onboard_num,
+     }
+
+     if gameSlot.airdromeId ~= nil then
+      exportSlot.airdromeId = gameSlot.airdromeId
+     end
+
+     if gameSlot.helipadUnitType ~= nil then
+       exportSlot.helipadUnitType = gameSlot.helipadUnitType
+       exportSlot.helipadName = gameSlot.helipadName
+     end
+
+     table.insert(slots, exportSlot)
+  end
+
+  return GRPC.success({slots = slots})
+end

@@ -152,4 +152,12 @@ impl HookService for HookRpc {
         let res = self.request("getRealTime", request).await?;
         Ok(Response::new(res))
     }
+
+    async fn get_ballistics_count(
+        &self,
+        request: Request<hook::v0::GetBallisticsCountRequest>,
+    ) -> Result<Response<hook::v0::GetBallisticsCountResponse>, Status> {
+        let res = self.request("getBallisticsCount", request).await?;
+        Ok(Response::new(res))
+    }
 }

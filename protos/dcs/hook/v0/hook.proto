@@ -68,6 +68,10 @@ service HookService {
 
   // https://wiki.hoggitworld.com/view/DCS_func_getRealTime
   rpc GetRealTime(GetRealTimeRequest) returns (GetRealTimeResponse) {}
+
+  // Get a count of ballistics objects
+  rpc GetBallisticsCount(GetBallisticsCountRequest)
+    returns (GetBallisticsCountResponse) {}
 }
 
 message GetMissionNameRequest {
@@ -225,4 +229,11 @@ message GetRealTimeRequest {
 message GetRealTimeResponse {
   // The current time in a mission relative to the DCS start time
   double time = 1;
+}
+
+message GetBallisticsCountRequest {
+}
+
+message GetBallisticsCountResponse {
+  uint32 count = 1;
 }

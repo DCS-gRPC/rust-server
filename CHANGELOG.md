@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `GetRealTime` API
 - Added `orientation` and `velocity` to `Weapon` object
 - Added DCS `time` of the update to units stream (`StreamUnitsResponse`)
+- Added `GetBallisticsCount` API
 
 ### Changed
 - Unit objects now return the full group object in the `group` field to make event processing easier. This replaces the `group_name` and `group_category` fields and is a backwards incompatible change.

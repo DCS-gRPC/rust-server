@@ -6,6 +6,7 @@
 local DCS = DCS
 local GRPC = GRPC
 local net = net
+local Export = Export
 
 GRPC.methods.getMissionName = function()
   return GRPC.success({name = DCS.getMissionName()})
@@ -123,3 +124,11 @@ GRPC.methods.getRealTime = function()
   -- https://wiki.hoggitworld.com/view/DCS_func_getRealTime
   return GRPC.success({time = DCS.getRealTime()})
 end
+
+GRPC.methods.getBallisticsCount = function()
+  local ballistics = Export.LoGetWorldObjects("ballistic")
+  local count = 0
+  for _ in pairs(ballistics) do count = count + 1 end
+  return GRPC.success({count = count})
+end
+

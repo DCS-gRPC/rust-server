@@ -17,7 +17,9 @@ folder containing documentation and a `Tools/DCS-gRPC` folder containing client 
 
 ### Prepare DCS
 
-To make the gRPC server available in the mission scripting environment, add the following line to your `DCS World\Scripts\MissionScripting.lua`.
+To make the gRPC server available in the mission scripting environment, add the following line to your `MissionScripting.lua` file that is found by default in the DCS World install folder at `C:\Program Files\Eagle Dynamics\DCS World\Scripts\MissionScripting.lua`. If you installed the server in another location then look for the `Scripts\MissionScripting.lua` file in there.
+
+Note: The following file is in `diff` format to highlight the line that has been added. **Do note include** the `+` symbol when you paste into the `MissionScripting.lua` file.
 
 ```diff
   --Initialization script for the Mission lua Environment (SSE)

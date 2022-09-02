@@ -1,3 +1,7 @@
+// TODO: remove once upgraded to a tonic version that fixed the generated code
+// accordingly
+#![allow(clippy::derive_partial_eq_without_eq)]
+
 mod utils;
 
 pub mod atmosphere {

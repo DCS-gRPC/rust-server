@@ -2,88 +2,25 @@
 // https://github.com/tokio-rs/prost/issues/661#issuecomment-1156606409
 #![allow(clippy::derive_partial_eq_without_eq)]
 
+pub mod atmosphere;
+pub mod coalition;
+pub mod common;
+pub mod controller;
+pub mod custom;
+pub mod group;
+pub mod hook;
+pub mod mission;
+pub mod net;
+pub mod timer;
+pub mod trigger;
+pub mod unit;
 mod utils;
-
-pub mod atmosphere {
-    pub mod v0 {
-        tonic::include_proto!("dcs.atmosphere.v0");
-    }
-}
-
-pub mod coalition {
-    pub mod v0 {
-        tonic::include_proto!("dcs.coalition.v0");
-    }
-}
-
-pub mod common {
-    pub mod v0 {
-        tonic::include_proto!("dcs.common.v0");
-    }
-}
-
-pub mod controller {
-    pub mod v0 {
-        tonic::include_proto!("dcs.controller.v0");
-    }
-}
-
-pub mod custom {
-    pub mod v0 {
-        tonic::include_proto!("dcs.custom.v0");
-    }
-}
-
-pub mod group {
-    pub mod v0 {
-        tonic::include_proto!("dcs.group.v0");
-    }
-}
-
-pub mod hook {
-    pub mod v0 {
-        tonic::include_proto!("dcs.hook.v0");
-    }
-}
-
-pub mod mission {
-    pub mod v0 {
-        tonic::include_proto!("dcs.mission.v0");
-    }
-}
-
-pub mod net {
-    pub mod v0 {
-        tonic::include_proto!("dcs.net.v0");
-    }
-}
-
-pub mod timer {
-    pub mod v0 {
-        tonic::include_proto!("dcs.timer.v0");
-    }
-}
-
-pub mod trigger {
-    pub mod v0 {
-        tonic::include_proto!("dcs.trigger.v0");
-    }
-}
-
-pub mod unit {
-    pub mod v0 {
-        tonic::include_proto!("dcs.unit.v0");
-    }
-}
-
-pub mod world {
-    pub mod v0 {
-        tonic::include_proto!("dcs.world.v0");
-    }
-}
+pub mod world;
 
 #[cfg(test)]
 mod tests {
+    use crate::common::v0::{Orientation, Velocity};
+
     use super::common::v0::{
         initiator, Airbase, AirbaseCategory, Coalition, Initiator, Position, Unit,
     };
@@ -103,7 +40,7 @@ mod tests {
         );
     }
 
-    // Note that this string sumulates the response from Lua. This is important as it is
+    // Note that this string simulates the response from Lua. This is important as it is
     // _after_ increment changes to enums to cater to gRPC enum indexing where 0 is not allowed
     // for responses.
     #[test]
@@ -122,16 +59,8 @@ mod tests {
                                     "callsign": "Enfield11",
                                     "coalition": 3,
                                     "type": "FA-18C_hornet",
-                                    "position": {
-                                        "lat": 3,
-                                        "lon": 2,
-                                        "alt": 1,
-                                        "time": 0
-                                    },
                                     "playerName": "New callsign",
-                                    "numberInGroup": 1,
-                                    "heading": 0.5,
-                                    "speed": 0.8
+                                    "numberInGroup": 1
                                 }
                             }
 		                },
@@ -141,7 +70,8 @@ mod tests {
 			                "lat": 1,
 			                "lon": 2,
 			                "alt": 3,
-                            "time": 4
+                            "u": 4,
+                            "v": 5
 		                },
 		                "text": "Test"
 	                }
@@ -161,16 +91,24 @@ mod tests {
                             callsign: "Enfield11".to_string(),
                             r#type: "FA-18C_hornet".to_string(),
                             coalition: Coalition::Blue.into(),
-                            position: Some(Position {
-                                lat: 3.0,
-                                lon: 2.0,
-                                alt: 1.0,
-                            }),
                             player_name: Some("New callsign".to_string()),
                             group: None,
                             number_in_group: 1,
-                            heading: 0.5,
-                            speed: 0.8,
+                            position: Some(Default::default()),
+                            orientation: Some(Orientation {
+                                heading: Default::default(),
+                                yaw: Default::default(),
+                                pitch: Default::default(),
+                                roll: Default::default(),
+                                forward: Some(Default::default()),
+                                right: Some(Default::default()),
+                                up: Some(Default::default()),
+                            }),
+                            velocity: Some(Velocity {
+                                heading: Default::default(),
+                                speed: Default::default(),
+                                velocity: Some(Default::default())
+                            }),
                         }))
                     }),
                     visibility: Some(event::mark_add_event::Visibility::Coalition(
@@ -181,6 +119,8 @@ mod tests {
                         lat: 1.0,
                         lon: 2.0,
                         alt: 3.0,
+                        u: 4.0,
+                        v: 5.0,
                     }),
                     text: "Test".to_string(),
                 })),
@@ -206,7 +146,8 @@ mod tests {
                                 "lon": 37.35978347755592,
                                 "lat": 45.01317473377168,
                                 "alt": 43.00004196166992,
-                                "time": 0.0
+                                "u": 0,
+                                "v": 0
                             },
                             "category": 1,
                             "displayName": "Anapa-Vityazevo"
@@ -220,7 +161,7 @@ mod tests {
             resp,
             GetAirbasesResponse {
                 airbases: vec![Airbase {
-                    id: None,
+                    unit: None,
                     name: "Anapa-Vityazevo".to_string(),
                     callsign: "Anapa-Vityazevo".to_string(),
                     coalition: Coalition::Neutral.into(),
@@ -228,6 +169,8 @@ mod tests {
                         lon: 37.35978347755592,
                         lat: 45.01317473377168,
                         alt: 43.00004196166992,
+                        u: 0.0,
+                        v: 0.0,
                     }),
                     category: AirbaseCategory::Airdrome.into(),
                     display_name: "Anapa-Vityazevo".to_string(),

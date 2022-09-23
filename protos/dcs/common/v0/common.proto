@@ -171,6 +171,10 @@ message Position {
   double lon = 2;
   // Altitude in Meters above Mean Sea Level (MSL)
   double alt = 3;
+  // Distance between DCS' map origin to object in meters on west-east axis.
+  double u = 4;
+  // Distance between DCS' map origin to object in meters on north-south axis.
+  double v = 5;
 }
 
 /**
@@ -203,18 +207,17 @@ message Unit {
   string type = 5;
   // The position of the unit
   Position position = 6;
+  // The orientation of the unit in both 2D and 3D space
+  Orientation orientation = 7;
+  // The velocity of the unit in both 2D and 3D space
+  Velocity velocity = 8;
   // The name of the player if one is in control of the unit
-  optional string player_name = 7;
+  optional string player_name = 9;
   // The group that the unit belongs to
-  Group group = 8;
+  Group group = 10;
   // The number of this unit in the group. Does not change as units are
   // destroyed
-  uint32 number_in_group = 9;
-  // The horizontal speed of the unit. If it is doing mach one straight up then
-  // the speed will be 0
-  double speed = 10;
-  // The heading of the unit
-  double heading = 11;
+  uint32 number_in_group = 11;
 }
 
 /**
@@ -291,9 +294,9 @@ message Scenery {
  *
  */
 message Airbase {
-  // The DCS generated ID. Only used when the airfield is also a unit
-  // (e.g. an Aicraft Carrier)
-  optional uint32 id = 1;
+  // Information about the unit, if the airbase is one (e.g. in case of a
+  // carrier).
+  optional Unit unit = 1;
   // TODO: Fill this in
   string name = 2;
   // TODO: Fill this in
@@ -378,15 +381,50 @@ message MarkPanel {
 }
 
 /**
- * A vector in a left-handed coordinate system with +z being north, -z south, +x
- * east, -x west, +y up and -y down (as opposed to DCS' unusual right-handed
- * coordinate system where x is north/ south and z is west/east; the underlying
- * conversion is basically swapping `x` and `z` as in `x=z` and `z=x`).
+ * A vector in a right-handed coordinate system where +x is north, -x south, +z
+ * is east, -z west, +y up and -y down.
  */
 message Vector {
   double x = 1;
   double y = 2;
   double z = 3;
+}
+
+/**
+ * The orientation of an object in 3D space.
+ */
+message Orientation {
+  // The heading the nose of the object points to on a flat world.
+  double heading = 1;
+  // Yaw in degrees - clockwise relative to the true north (this is similar to
+  // the heading, just corrected by the projection error when going from a flat
+  // to a spherical world).
+  double yaw = 2;
+  // Pitch in degrees - positive when taking-off.
+  double pitch = 3;
+  // Roll in degrees - positive when rolling the aircraft to the right.
+  double roll = 4;
+  // The normalized direction the object is pointing to.
+  Vector forward = 5;
+  // The normalized direction the three line (right wing) is pointing to.
+  Vector right = 6;
+  // The normalized up vector (orthogonal to forward and right).
+  Vector up = 7;
+}
+
+/**
+ * The orientation of an object in 3D space.
+ */
+message Velocity {
+  // The heading the object is moving to (use `orientation.heading` to get the
+  // heading the nose is pointing to).
+  double heading = 1;
+  // The horizontal speed of the unit. If it is doing mach one straight up then
+  // the speed will be 0
+  double speed = 2;
+  // The direction the object is traveling to, and speed (magnitude of the
+  // vector) the object is traveling with.
+  Vector velocity = 3;
 }
 
 /**

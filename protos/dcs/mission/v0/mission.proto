@@ -538,7 +538,7 @@ message StreamUnitsResponse {
   }
 
   oneof update {
-    // The unit is either new or its position changed.
+    // The unit is either new or its position or attitude changed.
     dcs.common.v0.Unit unit = 1;
 
     // The unit does not exist anymore.

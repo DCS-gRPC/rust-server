@@ -11,6 +11,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "dcs.mission.v0.StreamEventsResponse.event",
             "#[serde(tag = \"type\")]",
         )
+        .type_attribute(
+            "dcs.common.v0.Unit",
+            "#[serde(from = \"UnitIntermediate\")]",
+        )
+        .type_attribute(
+            "dcs.unit.v0.GetTransformResponse",
+            "#[serde(from = \"GetTransformResponseIntermediate\")]",
+        )
+        .type_attribute(
+            "dcs.mission.v0.StreamUnitsResponse.update",
+            "#[allow(clippy::large_enum_variant)]",
+        )
         .field_attribute(
             "dcs.mission.v0.StreamEventsResponse.MarkAddEvent.visibility",
             "#[serde(flatten)]",

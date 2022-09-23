@@ -51,39 +51,15 @@ message GetTransformRequest {
   string name = 1;
 }
 
-/**
- * The orientation of an object in 3D space.
- */
-message Orientation {
-  // The normalized direction the object is pointing to.
-  dcs.common.v0.Vector forward = 1;
-  // The normalized direction the three line (right wing) is pointing to.
-  dcs.common.v0.Vector right = 2;
-  // The normalized up vector (orthogonal to forward and right).
-  dcs.common.v0.Vector up = 3;
-  // Yaw in degrees - clockwise relative to the true north.
-  double yaw = 4;
-  // Pitch in degrees - positive when taking-off.
-  double pitch = 5;
-  // Roll in degrees - positive when rolling the aircraft to the right.
-  double roll = 6;
-}
-
 message GetTransformResponse {
-  dcs.common.v0.Position position = 1;
-  // Distance between DCS' map origin to object in meters on west-east axis.
-  double u = 2;
-  // Distance between DCS' map origin to object in meters on north-south axis.
-  double v = 3;
-  // The heading of the object on a flat world. To get the heading corrected by
-  // the projection error when going from a flat to a spherical world, use
-  // `orientation.yaw` instead.
-  double heading = 4;
-  Orientation orientation = 5;
-  // The direction the object is traveling to, and speed (magnitude of the
-  // vector) the object is traveling with.
-  dcs.common.v0.Vector velocity = 6;
-  double time = 7;  // Time in seconds since the scenario started.
+  // Time in seconds since the scenario started.
+  double time = 1;
+  // The position of the unit
+  dcs.common.v0.Position position = 2;
+  // The orientation of the unit in both 2D and 3D space
+  dcs.common.v0.Orientation orientation = 3;
+  // The velocity of the unit in both 2D and 3D space
+  dcs.common.v0.Velocity velocity = 4;
 }
 
 message GetPlayerNameRequest {

@@ -5,48 +5,42 @@
 -- be kept in sync
 --
 
--- Convert DCS's unusual right-hand coordinate system where +x points north to a more common
--- left-hand coordinate system where +z points north (and +x points east).
-GRPC.exporters.vector = function(v)
-  return {
-    x = v.z,
-    y = v.y,
-    z = v.x
-  }
-end
-
 GRPC.exporters.position = function(pos)
   local lat, lon, alt = coord.LOtoLL(pos)
   return {
     lat = lat,
     lon = lon,
     alt = alt,
+    u = pos.z,
+    v = pos.x,
   }
 end
 
 GRPC.exporters.unit = function(unit)
-  local vector = unit:getVelocity()
-
----@diagnostic disable-next-line: deprecated
-  local heading = math.deg(math.atan2(vector.z, vector.x))
-  if heading < 0 then
-    heading = heading + 360
-  end
-
-  local speed = math.sqrt((vector.x)^2+(vector.z)^2)
-
   return {
     id = tonumber(unit:getID()),
     name = unit:getName(),
     callsign = unit:getCallsign(),
     coalition = unit:getCoalition() + 1, -- Increment for non zero-indexed gRPC enum
     type = unit:getTypeName(),
-    position = GRPC.exporters.position(unit:getPoint()),
     playerName = Unit.getPlayerName(unit),
     group = GRPC.exporters.group(Unit.getGroup(unit)),
     numberInGroup = unit:getNumber(),
-    heading = heading,
-    speed = speed,
+    rawTransform = GRPC.exporters.rawTransform(unit),
+  }
+end
+
+-- Data used to calculate position/orientation/velocity on the Rust side.
+GRPC.exporters.rawTransform = function(object)
+  local p = object:getPosition()
+  local position = GRPC.exporters.position(p.p)
+  return {
+    position = position,
+    positionNorth = coord.LLtoLO(position.lat + 1, position.lon),
+    forward = p.x,
+    right = p.z,
+    up = p.y,
+    velocity = object:getVelocity(),
   }
 end
 
@@ -87,8 +81,9 @@ GRPC.exporters.airbase = function(airbase)
     position = GRPC.exporters.position(airbase:getPoint())
   }
 
-  if airbase:getUnit() then
-    a.id = tonumber(airbase:getUnit():getID())
+  local unit = airbase:getUnit()
+  if unit then
+    a.unit = GRPC.exporters.unit(unit)
   end
 
   return a

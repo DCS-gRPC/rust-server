@@ -6,13 +6,13 @@
 GRPC.methods.getWind = function(params)
   local point = coord.LLtoLO(params.position.lat, params.position.lon, params.position.alt)
 
-  return GRPC.success(GRPC.exporters.vector(atmosphere.getWind(point)))
+  return GRPC.success(atmosphere.getWind(point))
 end
 
 GRPC.methods.getWindWithTurbulence = function(params)
   local point = coord.LLtoLO(params.position.lat, params.position.lon, params.position.alt)
 
-  return GRPC.success(GRPC.exporters.vector(atmosphere.getWindWithTurbulence(point)))
+  return GRPC.success(atmosphere.getWindWithTurbulence(point))
 end
 
 GRPC.methods.getTemperatureAndPressure = function(params)

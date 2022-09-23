@@ -7,14 +7,14 @@ use futures_util::TryFutureExt;
 use stubs::coalition::v0::coalition_service_server::CoalitionService;
 use stubs::coalition::v0::GetGroupsRequest;
 use stubs::common;
-use stubs::common::v0::{Coalition, GroupCategory, Position, Unit};
+use stubs::common::v0::{Coalition, GroupCategory, Orientation, Position, Unit, Vector, Velocity};
 use stubs::group::v0::group_service_server::GroupService;
 use stubs::group::v0::GetUnitsRequest;
-use stubs::mission::v0::stream_events_response::Event;
-use stubs::mission::v0::stream_events_response::{BirthEvent, DeadEvent};
-use stubs::mission::v0::stream_units_response::UnitGone;
-use stubs::mission::v0::stream_units_response::Update;
+use stubs::mission::v0::stream_events_response::{BirthEvent, DeadEvent, Event};
+use stubs::mission::v0::stream_units_response::{UnitGone, Update};
 use stubs::mission::v0::StreamUnitsRequest;
+use stubs::unit::v0::unit_service_server::UnitService;
+use stubs::unit::v0::{GetTransformRequest, GetTransformResponse};
 use tokio::sync::mpsc::error::SendError;
 use tokio::sync::mpsc::Sender;
 use tokio::time::MissedTickBehavior;
@@ -265,60 +265,41 @@ impl UnitState {
     async fn update(&mut self, ctx: &Context) -> Result<bool, Status> {
         let mut changed = false;
 
-        #[derive(serde::Serialize)]
-        struct GetUpdateRequest {
-            name: String,
-        }
+        let res = UnitService::get_transform(
+            &ctx.rpc,
+            Request::new(GetTransformRequest {
+                name: self.unit.name.clone(),
+            }),
+        )
+        .await?;
+        let GetTransformResponse {
+            time: _,
+            position,
+            orientation,
+            velocity,
+        } = res.into_inner();
 
-        #[derive(Debug, serde::Deserialize)]
-        struct Velocity {
-            x: f64,
-            y: f64,
-            z: f64,
-        }
-
-        #[derive(Debug, serde::Deserialize)]
-        struct Update {
-            position: Position,
-            velocity: Velocity,
-        }
-
-        let res: Update = ctx
-            .rpc
-            .request(
-                "getUnitUpdate",
-                Request::new(GetUpdateRequest {
-                    name: self.unit.name.clone(),
-                }),
-            )
-            .await?;
-
-        // update position
-        if let Some(position) = &self.unit.position {
-            if !eq(&res.position, position) {
+        if let Some((before, after)) = self.unit.position.as_mut().zip(position) {
+            if !position_equalish(before, &after) {
+                *before = after;
                 changed = true;
-                self.unit.position = Some(res.position);
             }
-        } else {
-            changed = true;
-            self.unit.position = Some(res.position);
         }
-
-        // update heading
-        let mut heading = res.velocity.x.atan2(res.velocity.z).to_degrees().round();
-        if heading < 0.0 {
-            heading += 360.0;
+        if !changed {
+            if let Some((before, after)) = self.unit.orientation.as_mut().zip(orientation) {
+                if !orientation_equalish(before, &after) {
+                    *before = after;
+                    changed = true;
+                }
+            }
         }
-        if self.unit.heading != heading {
-            changed = true;
-            self.unit.heading = heading;
-        }
-
-        // update speed
-        let speed = (res.velocity.z.powi(2) + res.velocity.x.powi(2)).sqrt();
-        if (self.unit.speed - speed).abs() >= 0.01 {
-            changed = true;
-            self.unit.speed = speed;
+        if !changed {
+            if let Some((before, after)) = self.unit.velocity.as_mut().zip(velocity) {
+                if !velocity_equalish(before, &after) {
+                    *before = after;
+                    changed = true;
+                }
+            }
         }
 
         // keep track of when it was last checked and changed and determine a corresponding backoff
@@ -338,20 +319,112 @@ impl UnitState {
     }
 }
 
-/// Check whether two positions are equal, taking an epsilon into account.
-fn eq(a: &Position, b: &Position) -> bool {
-    const LL_EPSILON: f64 = 0.000001;
-    const ALT_EPSILON: f64 = 0.001;
-
-    (a.lat - b.lat).abs() < LL_EPSILON
-        && (a.lon - b.lon).abs() < LL_EPSILON
-        && (a.alt - b.alt).abs() < ALT_EPSILON
-}
-
 #[derive(Debug, thiserror::Error)]
+#[allow(clippy::large_enum_variant)]
 pub enum Error {
     #[error(transparent)]
     Status(#[from] Status),
-    #[error("the cannel got closed")]
+    #[error("the channel got closed")]
     Send(#[from] SendError<Result<Update, Status>>),
+}
+
+/// Check whether two positions are equal, taking an epsilon into account.
+fn position_equalish(l: &Position, r: &Position) -> bool {
+    const LL_EPSILON: f64 = 0.000001;
+    const ALT_EPSILON: f64 = 0.001;
+    (l.lat - r.lat).abs() < LL_EPSILON
+        && (l.lon - r.lon).abs() < LL_EPSILON
+        && (l.alt - r.alt).abs() < ALT_EPSILON
+        && meters_equalish(l.u, r.u)
+        && meters_equalish(l.v, r.v)
+}
+
+/// Check whether two orientations are equal, taking an epsilon into account.
+fn orientation_equalish(l: &Orientation, r: &Orientation) -> bool {
+    let Orientation {
+        heading,
+        yaw,
+        pitch,
+        roll,
+        forward,
+        right,
+        up,
+    } = l;
+
+    if let Some((l, r)) = forward.as_ref().zip(r.forward.as_ref()) {
+        if !vector_equalish(l, r) {
+            return false;
+        }
+    }
+
+    if let Some((l, r)) = right.as_ref().zip(r.right.as_ref()) {
+        if !vector_equalish(l, r) {
+            return false;
+        }
+    }
+
+    if let Some((l, r)) = up.as_ref().zip(r.up.as_ref()) {
+        if !vector_equalish(l, r) {
+            return false;
+        }
+    }
+
+    if !degrees_equalish(*heading, r.heading)
+        || !degrees_equalish(*yaw, r.yaw)
+        || !degrees_equalish(*pitch, r.pitch)
+        || !degrees_equalish(*roll, r.roll)
+    {
+        return false;
+    }
+
+    true
+}
+
+/// Check whether two velocities are equal, taking an epsilon into account.
+fn velocity_equalish(l: &Velocity, r: &Velocity) -> bool {
+    let Velocity {
+        heading,
+        speed,
+        velocity,
+    } = l;
+
+    if let Some((l, r)) = velocity.as_ref().zip(r.velocity.as_ref()) {
+        if !vector_equalish(l, r) {
+            return false;
+        }
+    }
+
+    if !degrees_equalish(*heading, r.heading) {
+        return false;
+    }
+
+    if !speed_equalish(*speed, r.speed) {
+        return false;
+    }
+
+    true
+}
+
+/// Check whether two vectors are equal, taking an epsilon into account.
+fn vector_equalish(a: &Vector, b: &Vector) -> bool {
+    const EPSILON: f64 = 0.000001;
+    (a.x - b.x).abs() < EPSILON && (a.y - b.y).abs() < EPSILON && (a.z - b.z).abs() < EPSILON
+}
+
+/// Check whether two distances in meter are equal, taking an epsilon into account.
+fn meters_equalish(a: f64, b: f64) -> bool {
+    const EPSILON: f64 = 0.001;
+    (a - b).abs() < EPSILON
+}
+
+/// Check whether two angles in degrees are equal, taking an epsilon into account.
+fn degrees_equalish(a: f64, b: f64) -> bool {
+    const EPSILON: f64 = 0.01;
+    (a - b).abs() < EPSILON
+}
+
+/// Check whether two speeds are equal, taking an epsilon into account.
+fn speed_equalish(a: f64, b: f64) -> bool {
+    const EPSILON: f64 = 0.001;
+    (a - b).abs() < EPSILON
 }

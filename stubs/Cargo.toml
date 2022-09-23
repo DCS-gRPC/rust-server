@@ -1,23 +1,23 @@
 [package]
 name = "dcs-grpc-stubs"
-version = "0.1.0"
-authors = ["Markus Ast <m@rkusa.st>"]
-license = "AGPL-3.0-or-later"
-edition = "2021"
-rust-version = "1.56"
+version.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+edition.workspace = true
 
 [dependencies]
 prost = "0.11"
 prost-types = "0.11"
-serde = { version = "1.0", features = ["derive"] }
-tonic = "0.8"
+serde.workspace = true
+tonic.workspace = true
 
 [build-dependencies]
 tonic-build = "0.8"
 protoc-bundled = { git = "https://github.com/rkusa/protoc-bundled.git", rev = "3.21.6" }
 
 [dev-dependencies]
-serde_json = "1.0"
+serde_json.workspace = true
 
 [features]
 default = []

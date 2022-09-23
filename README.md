@@ -144,7 +144,7 @@ The following section is only applicable to people who want to developer the DCS
 
 ### Build Dependencies
 
-- Rust `>=1.56`
+- Rust `>=1.64`
 - `rustfmt` (`rustup component add rustfmt`)
 
 ### Build

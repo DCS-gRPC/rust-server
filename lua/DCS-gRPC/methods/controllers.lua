@@ -50,7 +50,7 @@ GRPC.methods.getDetectedTargets = function(params)
 
   for i, contact in ipairs(targets) do
     contact.name = Unit.getName({["id_"] = contact.object.id_})
-    
+
     local contact_unit = Unit.getByName(contact.name)
 
     local descriptor
@@ -59,7 +59,7 @@ GRPC.methods.getDetectedTargets = function(params)
     end
 
     contact.id = tonumber(contact_unit:getID())
-    contact.descriptor = descriptor
+    contact.descriptors = descriptor
     contact.velocity = GRPC.exporters.vector(contact_unit:getVelocity())
     contact.position = GRPC.exporters.position(contact_unit:getPoint())
 

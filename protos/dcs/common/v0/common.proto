@@ -272,7 +272,7 @@ message Contact {
   // The contact's velocity
   Vector velocity = 4;
   // The contact's descriptors
-  repeated string descriptor = 5;
+  repeated string descriptors = 5;
   // Can the sensor see the contact
   bool visible = 6;
   // Does the controller know the distance to the contact?

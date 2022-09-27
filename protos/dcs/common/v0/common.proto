@@ -256,6 +256,32 @@ message Weapon {
 }
 
 /**
+ * An instance of a contact in a DCS AI controller's detection table
+ *
+ * This is a target that the AI controller has detected and is actively tracking
+ *
+ */
+
+message Contact {
+  // The contact's name
+  string name = 1;
+  // The DCS generated ID
+  uint32 id = 2;
+  // The contact's position
+  Position position = 3;
+  // The contact's velocity
+  Vector velocity = 4;
+  // The contact's descriptors
+  repeated string descriptor = 5;
+  // Can the sensor see the contact
+  bool visible = 6;
+  // Does the controller know the distance to the contact?
+  bool distance = 7;
+  // Does the controller know the unit type of the contact?
+  bool type = 8;
+}
+
+/**
  * An instance of a DCS static object
  *
  * These objects are often buildings but can also be vehicles that have no AI or

@@ -30,3 +30,43 @@ GRPC.methods.setAlarmState = function(params)
 
   return GRPC.success({})
 end
+
+GRPC.methods.getDetectedTargets = function(params)
+  local unit = Unit.getByName(params.unitName)
+  if unit == nil then
+    return GRPC.errorNotFound("Could not find unit with name '" .. params.unitName .. "'")
+  end
+
+  local controller = Unit.getController(unit)
+  local targets = controller:getDetectedTargets()
+
+  if targets == nil then
+    return GRPC.success({
+      contacts = targets
+    })
+  end
+
+  local results = {}
+
+  for i, contact in ipairs(targets) do
+    contact.name = Unit.getName({["id_"] = contact.object.id_})
+    
+    local contact_unit = Unit.getByName(contact.name)
+
+    local descriptor
+    if params.includeDescriptors then
+      descriptor = GRPC.methods.getUnitDescriptor({ ["name"] = contact.name }).result.attributes
+    end
+
+    contact.id = tonumber(contact_unit:getID())
+    contact.descriptor = descriptor
+    contact.velocity = GRPC.exporters.vector(contact_unit:getVelocity())
+    contact.position = GRPC.exporters.position(contact_unit:getPoint())
+
+    results[i] = GRPC.exporters.detectedTarget(contact)
+  end
+
+  return GRPC.success({
+    contacts = results
+  })
+end

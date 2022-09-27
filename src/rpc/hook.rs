@@ -144,4 +144,12 @@ impl HookService for HookRpc {
         let res = self.request("getUnitType", request).await?;
         Ok(Response::new(res))
     }
+
+    async fn get_available_slot_details(
+        &self,
+        request: Request<hook::v0::GetAvailableSlotDetailsRequest>,
+    ) -> Result<Response<hook::v0::GetAvailableSlotDetailsResponse>, Status> {
+        let res = self.request("getAvailableSlotDetails", request).await?;
+        Ok(Response::new(res))
+    }
 }

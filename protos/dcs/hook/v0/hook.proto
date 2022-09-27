@@ -1,5 +1,6 @@
 syntax = "proto3";
 package dcs.hook.v0;
+import "dcs/common/v0/common.proto";
 option csharp_namespace = "RurouniJones.Dcs.Grpc.V0.Hook";
 option go_package = "github.com/DCS-gRPC/go-bindings/dcs/v0/hook";
 
@@ -65,6 +66,10 @@ service HookService {
 
   // https://wiki.hoggitworld.com/view/DCS_func_getUnitType
   rpc GetUnitType(GetUnitTypeRequest) returns (GetUnitTypeResponse) {}
+
+  // Should only be called once per session until ED implement dynamic spawning
+  // https://wiki.hoggitworld.com/view/DCS_func_getAvailableSlots
+  rpc GetAvailableSlotDetails(GetAvailableSlotDetailsRequest) returns (GetAvailableSlotDetailsResponse) {}
 }
 
 message GetMissionNameRequest {
@@ -214,4 +219,40 @@ message GetUnitTypeRequest {
 message GetUnitTypeResponse {
   // Type of unit (e.g. "F-14B")
   string type = 1;
+}
+
+message GetAvailableSlotDetailsRequest {
+}
+
+message GetAvailableSlotDetailsResponse {
+  repeated AvailableSlotDetails slots = 1;
+}
+
+message AvailableSlotDetails {
+  // the unitId of the slot. For multi-crew it is two strings
+  // joined by an underscore for non-pilot slots.
+  string unit_ud = 1;
+  // The aiframe type associated with the slot
+  string type = 2;
+  // The place number of the slot on an aircraft
+  string multicrew_place = 3;
+  // The role of the slot (Pilot, Radar Intercept Officer etc.)
+  string role = 4;
+  // The group name associated with the slot
+  string group_name = 6;
+  // The size of the group associated with the slot
+  string group_size = 7;
+  // The task of the slot (CAP, CAS, SEAD etc.)
+  string task = 8;
+  // Coalition associated with the slot
+  dcs.common.v0.Coalition coalition = 9;
+  // Visual Number of the aircaft (e.g. MODEX on US aircraft).
+  // String to preserve leading zeroes
+  string onboard_number = 10;
+  // The ID of the airdrome associated with the slot, if any.
+  optional int32 airdrome_id = 11;
+  // The type of the unit that owns the helipad associated with this slot, if any.
+  optional string helipad_unit_type = 12;
+  // The name of the unit that owns the helipad associated with this slot, if any.
+  optional string helipad_unit_name = 13;
 }

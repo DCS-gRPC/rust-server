@@ -40,6 +40,7 @@ end
 GRPC.exporters.unit = function(unit)
   local vector = unit:getVelocity()
 
+---@diagnostic disable-next-line: deprecated
   local heading = math.deg(math.atan2(vector.z, vector.x))
   if heading < 0 then
     heading = heading + 360

@@ -24,19 +24,6 @@ GRPC.exporters.position = function(pos)
   }
 end
 
-GRPC.exporters.detectedTarget = function(contact)
-  return {
-    id = contact.id,
-    distance = contact.distance,
-    velocity = contact.velocity,
-    type = contact.type,
-    visible = contact.visible,
-    position = contact.position,
-    name = contact.name,
-    descriptor = contact.descriptor,
-  }
-end
-
 GRPC.exporters.unit = function(unit)
   local vector = unit:getVelocity()
 

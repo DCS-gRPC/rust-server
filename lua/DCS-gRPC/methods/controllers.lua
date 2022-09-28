@@ -49,21 +49,41 @@ GRPC.methods.getDetectedTargets = function(params)
   local results = {}
 
   for i, contact in ipairs(targets) do
-    contact.name = Unit.getName({["id_"] = contact.object.id_})
+    local category = Object.getCategory(contact.object)
 
-    local contact_unit = Unit.getByName(contact.name)
+    contact.id = contact.object.id_
+    contact.target = {}
 
-    local descriptor
-    if params.includeDescriptors then
-      descriptor = GRPC.methods.getUnitDescriptor({ ["name"] = contact.name }).result.attributes
+    if category == 1 then
+      contact.name = Unit.getName(contact.object)
+      contact.type = 1
+      if params.includeObject == true then
+        contact.unit = GRPC.exporters.unit( contact.object )
+      end
+    end
+    if category == 2 then
+      contact.name = Weapon.getName(contact.object)
+      contact.type = 2
+      if params.includeObject == true then
+        contact.weapon = GRPC.exporters.weapon( contact.object )
+      end
     end
 
-    contact.id = tonumber(contact_unit:getID())
-    contact.descriptors = descriptor
-    contact.velocity = GRPC.exporters.vector(contact_unit:getVelocity())
-    contact.position = GRPC.exporters.position(contact_unit:getPoint())
+    if contact.type == nil then
+      return GRPC.errorNotFound("Could not find target with id '" .. contact.object.id_ .. "' as a Unit or Weapon")
+    end
 
-    results[i] = GRPC.exporters.detectedTarget(contact)
+    local result = {
+      distance = contact.distance,
+      name = tostring(contact.name),
+      id = contact.id,
+      type = contact.type,
+      visible = contact.visible,
+      unit = contact.unit,
+      weapon = contact.weapon,
+    }
+
+    results[i] = result
   end
 
   return GRPC.success({

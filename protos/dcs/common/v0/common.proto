@@ -256,32 +256,6 @@ message Weapon {
 }
 
 /**
- * An instance of a contact in a DCS AI controller's detection table
- *
- * This is a target that the AI controller has detected and is actively tracking
- *
- */
-
-message Contact {
-  // The contact's name
-  string name = 1;
-  // The DCS generated ID
-  uint32 id = 2;
-  // The contact's position
-  Position position = 3;
-  // The contact's velocity
-  Vector velocity = 4;
-  // The contact's descriptors
-  repeated string descriptors = 5;
-  // Can the sensor see the contact
-  bool visible = 6;
-  // Does the controller know the distance to the contact?
-  bool distance = 7;
-  // Does the controller know the unit type of the contact?
-  bool type = 8;
-}
-
-/**
  * An instance of a DCS static object
  *
  * These objects are often buildings but can also be vehicles that have no AI or
@@ -401,7 +375,7 @@ message MarkPanel {
   optional string text = 6;
   // The position of the mark.
   Position position = 7;
-}
+} 
 
 /**
  * A vector in a left-handed coordinate system with +z being north, -z south, +x
@@ -413,4 +387,27 @@ message Vector {
   double x = 1;
   double y = 2;
   double z = 3;
+}
+
+/**
+ * An instance of a contact in a DCS AI controller's detection table
+ *
+ * This is a target that the AI controller has detected and is actively tracking
+ *
+ */
+message Contact {
+  // The contact's name
+  string name = 1;
+  // The DCS generated ID
+  uint32 id = 2;
+  // Can the sensor see the contact
+  bool visible = 3;
+  // Does the controller know the distance to the contact?
+  bool distance = 4;
+  // The type of unit the contact is
+  uint32 type = 5;
+  // optional: The contact object
+  optional Unit unit = 6;
+  // optional: The contact object
+  optional Weapon weapon = 7;
 }

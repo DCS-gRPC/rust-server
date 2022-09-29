@@ -396,14 +396,6 @@ message Vector {
  *
  */
 message Contact {
-  message BasicInformation {
-    // The contact's name
-    string name = 1;
-    // The type of unit the contact is
-    uint32 type = 2;
-    // optional: The contact object
-  }
-
   // The DCS generated ID
   uint32 id = 1;
   // Can the sensor see the contact
@@ -413,7 +405,7 @@ message Contact {
 
   // Either the basic information, or Unit or Weapon export object
   oneof target {
-    BasicInformation basic_information = 4;
+    Unknown object = 4;
     Unit unit = 5;
     Weapon weapon = 6;
   }

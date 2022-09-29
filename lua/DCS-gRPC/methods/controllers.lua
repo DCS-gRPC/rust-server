@@ -34,11 +34,17 @@ end
 GRPC.methods.getDetectedTargets = function(params)
   local unit = Unit.getByName(params.unitName)
   if unit == nil then
-    return GRPC.errorNotFound("Could not find unit with name '" .. params.unitName .. "'")
+    return GRPC.errorNotFound("Could not find radar unit with name '" .. params.unitName .. "'")
   end
 
   local controller = Unit.getController(unit)
-  local targets = controller:getDetectedTargets()
+  local targets
+  if params.detectionType == 0 or params.detectionType == nil then
+    targets = controller:getDetectedTargets()
+  else
+    -- int value from https://wiki.hoggitworld.com/view/DCS_func_getDetectedTargets
+    targets = controller:getDetectedTargets(params.detectionType)
+  end
 
   if targets == nil then
     return GRPC.success({
@@ -67,9 +73,7 @@ GRPC.methods.getDetectedTargets = function(params)
       if params.includeObject == true then
         result.target.unit = GRPC.exporters.unit( contact.object )
       else
-        result.target.basicInformation = {}
-        result.target.basicInformation.name = tostring( Unit.getName(contact.object) )
-        result.target.basicInformation.type = 1
+        result.target.object = GRPC.exporters.unknown( contact.object )
       end
     end
     --If target is a weapon
@@ -77,9 +81,7 @@ GRPC.methods.getDetectedTargets = function(params)
       if params.includeObject == true then
         result.target.weapon = GRPC.exporters.weapon( contact.object )
       else
-        result.target.basicInformation = {}
-        result.target.basicInformation.name = tostring( Weapon.getName(contact.object) )
-        result.target.basicInformation.type = 2
+        result.target.object = GRPC.exporters.unknown( contact.object )
       end
     end
 

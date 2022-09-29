@@ -32,8 +32,18 @@ message SetAlarmStateResponse {
 }
 
 message GetDetectedTargetsRequest {
+  enum DetectionType {
+    DETECTION_TYPE_UNSPECIFIED = 0;
+    DETECTION_TYPE_VISUAL = 1;
+    DETECTION_TYPE_OPTIC = 2;
+    DETECTION_TYPE_RADAR = 4;
+    DETECTION_TYPE_IRST = 8;
+    DETECTION_TYPE_RWR = 16;
+    DETECTION_TYPE_DLINK = 32;
+  }
   string unit_name = 1;
   optional bool include_object = 2;
+  optional DetectionType detection_type = 3;
 }
 
 message GetDetectedTargetsResponse {

@@ -51,37 +51,37 @@ GRPC.methods.getDetectedTargets = function(params)
   for i, contact in ipairs(targets) do
     local category = Object.getCategory(contact.object)
 
-    contact.id = contact.object.id_
-    contact.target = {}
-
-    if category == 1 then
-      contact.name = Unit.getName(contact.object)
-      contact.type = 1
-      if params.includeObject == true then
-        contact.unit = GRPC.exporters.unit( contact.object )
-      end
-    end
-    if category == 2 then
-      contact.name = Weapon.getName(contact.object)
-      contact.type = 2
-      if params.includeObject == true then
-        contact.weapon = GRPC.exporters.weapon( contact.object )
-      end
-    end
-
-    if contact.type == nil then
-      return GRPC.errorNotFound("Could not find target with id '" .. contact.object.id_ .. "' as a Unit or Weapon")
+    if category == nil then
+      return GRPC.errorNotFound("Could not find target with id '" .. contact.object:getID() .. "'")
     end
 
     local result = {
       distance = contact.distance,
-      name = tostring(contact.name),
-      id = contact.id,
-      type = contact.type,
+      id = contact.object.id_,
       visible = contact.visible,
-      unit = contact.unit,
-      weapon = contact.weapon,
+      target = {}
     }
+
+    --If target is a unit
+    if category == 1 then
+      if params.includeObject == true then
+        result.target.unit = GRPC.exporters.unit( contact.object )
+      else
+        result.target.basicInformation = {}
+        result.target.basicInformation.name = tostring( Unit.getName(contact.object) )
+        result.target.basicInformation.type = 1
+      end
+    end
+    --If target is a weapon
+    if category == 2 then
+      if params.includeObject == true then
+        result.target.weapon = GRPC.exporters.weapon( contact.object )
+      else
+        result.target.basicInformation = {}
+        result.target.basicInformation.name = tostring( Weapon.getName(contact.object) )
+        result.target.basicInformation.type = 2
+      end
+    end
 
     results[i] = result
   end

@@ -375,7 +375,7 @@ message MarkPanel {
   optional string text = 6;
   // The position of the mark.
   Position position = 7;
-} 
+}
 
 /**
  * A vector in a left-handed coordinate system with +z being north, -z south, +x

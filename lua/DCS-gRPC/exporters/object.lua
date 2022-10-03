@@ -54,10 +54,22 @@ GRPC.exporters.group = function(group)
 end
 
 GRPC.exporters.weapon = function(weapon)
+  local vector = weapon:getVelocity()
+
+---@diagnostic disable-next-line: deprecated
+  local heading = math.deg(math.atan2(vector.z, vector.x))
+  if heading < 0 then
+    heading = heading + 360
+  end
+
+  local speed = math.sqrt((vector.x)^2+(vector.z)^2)
+
   return {
     id = tonumber(weapon:getName()),
     type = weapon:getTypeName(),
     position = GRPC.exporters.position(weapon:getPoint()),
+    heading = heading,
+    speed = speed,
   }
 end
 

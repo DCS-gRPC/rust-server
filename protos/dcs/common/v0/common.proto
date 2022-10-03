@@ -256,6 +256,10 @@ message Weapon {
   string type = 2;
   // The position of the Weapon
   Position position = 3;
+  // The heading of the weapon
+  double heading = 4;
+  // The speed of the weapon
+  double speed = 5;
 }
 
 /**

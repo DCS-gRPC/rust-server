@@ -1,6 +1,7 @@
 // Current recommendation as of
 // https://github.com/tokio-rs/prost/issues/661#issuecomment-1156606409
 #![allow(clippy::derive_partial_eq_without_eq)]
+#![allow(clippy::large_enum_variant)]
 
 pub mod atmosphere;
 pub mod coalition;

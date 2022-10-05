@@ -91,8 +91,8 @@ end
 
 GRPC.exporters.scenery = function(scenery)
   return {
+    id = tonumber(scenery:getName()),
     type = scenery:getTypeName(),
-    name = scenery:getName(),
     position = GRPC.exporters.position(scenery:getPoint()),
   }
 end
@@ -106,7 +106,7 @@ end
 -- https://wiki.hoggitworld.com/view/DCS_Class_Object
 GRPC.exporters.unknown = function(object)
   return {
-    name = object:getName(),
+    name = tostring(object:getName()),
   }
 end
 

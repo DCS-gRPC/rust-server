@@ -118,3 +118,8 @@ GRPC.methods.getUnitType = function(params)
 
   return GRPC.success({type = unit_type})
 end
+
+GRPC.methods.getRealTime = function()
+  -- https://wiki.hoggitworld.com/view/DCS_func_getRealTime
+  return GRPC.success({time = DCS.getRealTime()})
+end

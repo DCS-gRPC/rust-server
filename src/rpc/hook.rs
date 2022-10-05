@@ -144,4 +144,12 @@ impl HookService for HookRpc {
         let res = self.request("getUnitType", request).await?;
         Ok(Response::new(res))
     }
+
+    async fn get_real_time(
+        &self,
+        request: Request<hook::v0::GetRealTimeRequest>,
+    ) -> Result<Response<hook::v0::GetRealTimeResponse>, Status> {
+        let res = self.request("getRealTime", request).await?;
+        Ok(Response::new(res))
+    }
 }

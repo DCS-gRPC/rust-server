@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `GetDetectedTargets` API. Method follows the DCS implementation of controller's getDetectedTargets. Can optionally also return the unit or weapon objects tracked by the radar.
 - Added `orientation` and `velocity` to `Unit` object
 - Added `u`/`v` coordinates (offset from DCS map origin in meters) to `Position`s
+- `GetRealTime` API
 - Added `orientation` and `velocity` to `Weapon` object
 
 ### Changed

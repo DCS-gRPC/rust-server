@@ -122,4 +122,30 @@ pub mod v0 {
             }
         }
     }
+
+    #[derive(serde::Deserialize)]
+    #[serde(rename_all = "camelCase")]
+    struct WeaponIntermediate {
+        id: u32,
+        r#type: String,
+        raw_transform: Option<RawTransform>,
+    }
+
+    impl From<WeaponIntermediate> for Weapon {
+        fn from(i: WeaponIntermediate) -> Self {
+            let WeaponIntermediate {
+                id,
+                r#type,
+                raw_transform,
+            } = i;
+            let transform = Transform::from(raw_transform.unwrap_or_default());
+            Weapon {
+                id,
+                r#type,
+                position: Some(transform.position),
+                orientation: Some(transform.orientation),
+                velocity: Some(transform.velocity),
+            }
+        }
+    }
 }

@@ -267,7 +267,7 @@ should use their independent logging and tracing functions.
 - [x] `isMultiplayer`
 - [x] `isServer`
 - [ ] `getModelTime`
-- [ ] `getRealTime`
+- [x] `getRealTime`
 - [ ] `getMissionOptions`
 - [ ] `getAvailableCoalitions`
 - [ ] `getAvailableSlots`

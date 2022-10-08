@@ -17,11 +17,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `orientation` and `velocity` to `Unit` object
 - Added `u`/`v` coordinates (offset from DCS map origin in meters) to `Position`s
 - `GetRealTime` API
-- Added `orientation` and `velocity` to `Weapon` object
 
 ### Changed
 - Unit objects now return the full group object in the `group` field to make event processing easier. This replaces the `group_name` and `group_category` fields and is a backwards incompatible change.
 - Updated all vectors to be in DCS' coordinate system (+x north, -x south, +z is east, -z west, +y up and -y down)
+- Scenery objects now have an `id` instead of a `name`, since dcs associates them with a number.
 
 ## [0.6.0] - 2022-05-30
 

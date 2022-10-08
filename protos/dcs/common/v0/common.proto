@@ -285,10 +285,10 @@ message Static {
  * An instance of a DCS scenery object
  */
 message Scenery {
+  // The id of the scenery
+  uint32 id = 1;
   // The DCS type-name of the scenery
-  string type = 1;
-  // The name of the scenery
-  string name = 2;
+  string type = 2;
   // The position of the scenery
   Position position = 3;
 }

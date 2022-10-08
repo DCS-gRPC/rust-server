@@ -65,6 +65,9 @@ service HookService {
 
   // https://wiki.hoggitworld.com/view/DCS_func_getUnitType
   rpc GetUnitType(GetUnitTypeRequest) returns (GetUnitTypeResponse) {}
+
+  // https://wiki.hoggitworld.com/view/DCS_func_getRealTime
+  rpc GetRealTime(GetRealTimeRequest) returns (GetRealTimeResponse) {}
 }
 
 message GetMissionNameRequest {
@@ -214,4 +217,12 @@ message GetUnitTypeRequest {
 message GetUnitTypeResponse {
   // Type of unit (e.g. "F-14B")
   string type = 1;
+}
+
+message GetRealTimeRequest {
+}
+
+message GetRealTimeResponse {
+  // The current time in a mission relative to the DCS start time
+  double time = 1;
 }

@@ -57,7 +57,7 @@ GRPC.exporters.weapon = function(weapon)
   return {
     id = tonumber(weapon:getName()),
     type = weapon:getTypeName(),
-    position = GRPC.exporters.position(weapon:getPoint()),
+    rawTransform = GRPC.exporters.rawTransform(weapon),
   }
 end
 

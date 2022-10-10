@@ -12,7 +12,7 @@ use stubs::group::v0::group_service_server::GroupService;
 use stubs::group::v0::GetUnitsRequest;
 use stubs::mission::v0::stream_events_response::{BirthEvent, DeadEvent, Event};
 use stubs::mission::v0::stream_units_response::{UnitGone, Update};
-use stubs::mission::v0::StreamUnitsRequest;
+use stubs::mission::v0::{StreamUnitsRequest, StreamUnitsResponse};
 use stubs::unit::v0::unit_service_server::UnitService;
 use stubs::unit::v0::{GetTransformRequest, GetTransformResponse};
 use tokio::sync::mpsc::error::SendError;
@@ -24,7 +24,7 @@ use tonic::{Code, Request, Status};
 pub async fn stream_units(
     opts: StreamUnitsRequest,
     rpc: MissionRpc,
-    tx: Sender<Result<Update, Status>>,
+    tx: Sender<Result<StreamUnitsResponse, Status>>,
 ) -> Result<(), Error> {
     // initialize the state for the current units stream instance
     let poll_rate = opts.poll_rate.unwrap_or(5);
@@ -83,7 +83,10 @@ pub async fn stream_units(
         state
             .ctx
             .tx
-            .send(Ok(Update::Unit(unit_state.unit.clone())))
+            .send(Ok(StreamUnitsResponse {
+                time: unit_state.update_time,
+                update: Some(Update::Unit(unit_state.unit.clone())),
+            }))
             .await?;
     }
 
@@ -98,8 +101,10 @@ pub async fn stream_units(
         // wait for either the next event or the next tick, whatever happens first
         tokio::select! {
             // listen to events that update the current state
-            Some(stubs::mission::v0::StreamEventsResponse { event: Some(event), .. }) = events.next() => {
-                handle_event(&mut state, event, category).await?;
+            Some(stubs::mission::v0::StreamEventsResponse { time, event: Some(event), .. })
+                = events.next() =>
+            {
+                handle_event(&mut state, time, event, category).await?;
             }
 
             // poll units for updates
@@ -120,7 +125,7 @@ struct State {
 /// Various structs and options used to handle unit updates.
 struct Context {
     rpc: MissionRpc,
-    tx: Sender<Result<Update, Status>>,
+    tx: Sender<Result<StreamUnitsResponse, Status>>,
     poll_rate: Duration,
     max_backoff: Duration,
 }
@@ -128,6 +133,7 @@ struct Context {
 /// Update the given [State] based on the given [Event].
 async fn handle_event(
     state: &mut State,
+    time: f64,
     event: Event,
     category: GroupCategory,
 ) -> Result<(), Error> {
@@ -147,7 +153,14 @@ async fn handle_event(
                 .and_then(|group| GroupCategory::from_i32(group.category))
                 .unwrap_or(GroupCategory::Unspecified);
             if category == unit_category || category == GroupCategory::Unspecified {
-                state.ctx.tx.send(Ok(Update::Unit(unit.clone()))).await?;
+                state
+                    .ctx
+                    .tx
+                    .send(Ok(StreamUnitsResponse {
+                        time,
+                        update: Some(Update::Unit(unit.clone())),
+                    }))
+                    .await?;
                 state.units.insert(unit.name.clone(), UnitState::new(unit));
             }
         }
@@ -165,10 +178,13 @@ async fn handle_event(
                 state
                     .ctx
                     .tx
-                    .send(Ok(Update::Gone(UnitGone {
-                        id: unit_state.unit.id,
-                        name: unit_state.unit.name.clone(),
-                    })))
+                    .send(Ok(StreamUnitsResponse {
+                        time,
+                        update: Some(Update::Gone(UnitGone {
+                            id: unit_state.unit.id,
+                            name: unit_state.unit.name.clone(),
+                        })),
+                    }))
                     .await?;
             }
         }
@@ -207,7 +223,10 @@ async fn update_unit(ctx: &Context, unit_state: &mut UnitState) -> Result<(), Er
         Ok(changed) => {
             if changed {
                 ctx.tx
-                    .send(Ok(Update::Unit(unit_state.unit.clone())))
+                    .send(Ok(StreamUnitsResponse {
+                        time: unit_state.update_time,
+                        update: Some(Update::Unit(unit_state.unit.clone())),
+                    }))
                     .await?;
                 unit_state.backoff = Duration::ZERO;
                 unit_state.last_changed = Instant::now();
@@ -220,10 +239,17 @@ async fn update_unit(ctx: &Context, unit_state: &mut UnitState) -> Result<(), Er
         // if the unit was not found, flag it as gone, and continue with the next unit for now
         Err(err) if err.code() == Code::NotFound => {
             ctx.tx
-                .send(Ok(Update::Gone(UnitGone {
-                    id: unit_state.unit.id,
-                    name: unit_state.unit.name.clone(),
-                })))
+                .send(Ok(StreamUnitsResponse {
+                    // The time provided here is just the last time an update was received for the
+                    // unit. It is not exactly the time the unit got destroyed. Since this not-found
+                    // handling is just a safeguard if a `Dead` event was missed / not fired by DCS,
+                    // it should be ok that it is not the exact time of death.
+                    time: unit_state.update_time,
+                    update: Some(Update::Gone(UnitGone {
+                        id: unit_state.unit.id,
+                        name: unit_state.unit.name.clone(),
+                    })),
+                }))
                 .await?;
 
             unit_state.is_gone = true;
@@ -239,6 +265,8 @@ async fn update_unit(ctx: &Context, unit_state: &mut UnitState) -> Result<(), Er
 struct UnitState {
     unit: Unit,
     backoff: Duration,
+    /// Time of the update in seconds relative to the mission start.
+    update_time: f64,
     last_checked: Instant,
     last_changed: Instant,
     is_gone: bool,
@@ -249,6 +277,7 @@ impl UnitState {
         Self {
             unit,
             backoff: Duration::ZERO,
+            update_time: 0.0,
             last_checked: Instant::now(),
             last_changed: Instant::now(),
             is_gone: false,
@@ -273,11 +302,13 @@ impl UnitState {
         )
         .await?;
         let GetTransformResponse {
-            time: _,
+            time,
             position,
             orientation,
             velocity,
         } = res.into_inner();
+
+        self.update_time = time;
 
         if let Some((before, after)) = self.unit.position.as_mut().zip(position) {
             if !position_equalish(before, &after) {
@@ -325,7 +356,7 @@ pub enum Error {
     #[error(transparent)]
     Status(#[from] Status),
     #[error("the channel got closed")]
-    Send(#[from] SendError<Result<Update, Status>>),
+    Send(#[from] SendError<Result<StreamUnitsResponse, Status>>),
 }
 
 /// Check whether two positions are equal, taking an epsilon into account.

@@ -537,12 +537,14 @@ message StreamUnitsResponse {
     string name = 2;
   }
 
+  double time = 1;
+
   oneof update {
     // The unit is either new or its position or attitude changed.
-    dcs.common.v0.Unit unit = 1;
+    dcs.common.v0.Unit unit = 2;
 
     // The unit does not exist anymore.
-    UnitGone gone = 2;
+    UnitGone gone = 3;
   }
 }
 

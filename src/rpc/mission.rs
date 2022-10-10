@@ -56,14 +56,7 @@ impl MissionService for MissionRpc {
             }
         });
 
-        let stream = AbortableStream::new(
-            self.shutdown_signal.signal(),
-            ReceiverStream::new(rx).map(|result| {
-                result.map(|update| mission::v0::StreamUnitsResponse {
-                    update: Some(update),
-                })
-            }),
-        );
+        let stream = AbortableStream::new(self.shutdown_signal.signal(), ReceiverStream::new(rx));
         Ok(Response::new(Box::pin(stream)))
     }
 

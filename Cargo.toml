@@ -1,6 +1,7 @@
 [workspace]
 members = [
   "repl",
+  "srs",
   "stubs",
   "tts",
 ]
@@ -13,12 +14,16 @@ rust-version = "1.64"
 edition = "2021"
 
 [workspace.dependencies]
+base64 = "0.13"
+bytes = "1.2"
+futures-util = { version = "0.3", features = ["sink"] }
 log = "0.4"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 thiserror = "1.0"
+tokio = { version = "1.0", features = ["rt-multi-thread", "io-util", "net", "sync", "time"] }
+tokio-stream = { version = "0.1", features = ["sync"] }
 tonic = "0.8"
-tokio = { version = "1.0", features = ["rt-multi-thread", "time", "sync"] }
 
 [package]
 name = "dcs-grpc"
@@ -33,7 +38,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 dcs-module-ipc = "0.7"
-futures-util = "0.3"
+futures-util.workspace = true
 igrf = "0.2"
 libloading = { version = "0.7", optional = true }
 log4rs = "1.0"
@@ -47,7 +52,7 @@ stubs = { package = "dcs-grpc-stubs", path = "./stubs", features = ["server"] }
 thiserror.workspace = true
 time = { version = "0.3", features = ["formatting", "parsing"] }
 tokio.workspace = true
-tokio-stream = { version = "0.1", features = ["sync"] }
+tokio-stream.workspace = true
 tonic.workspace = true
 
 [features]

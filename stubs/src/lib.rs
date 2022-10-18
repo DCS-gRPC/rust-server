@@ -14,6 +14,7 @@ pub mod mission;
 pub mod net;
 pub mod timer;
 pub mod trigger;
+pub mod tts;
 pub mod unit;
 mod utils;
 pub mod world;

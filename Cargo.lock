@@ -299,7 +299,9 @@ dependencies = [
 name = "dcs-grpc"
 version = "0.6.0"
 dependencies = [
+ "dcs-grpc-srs",
  "dcs-grpc-stubs",
+ "dcs-grpc-tts",
  "dcs-module-ipc",
  "futures-util",
  "igrf",

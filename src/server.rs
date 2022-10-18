@@ -2,7 +2,7 @@ use std::future::Future;
 use std::net::SocketAddr;
 use std::time::Duration;
 
-use crate::rpc::{HookRpc, MissionRpc};
+use crate::rpc::{HookRpc, MissionRpc, Tts};
 use crate::shutdown::{Shutdown, ShutdownHandle};
 use crate::stats::Stats;
 use dcs_module_ipc::IPC;
@@ -19,6 +19,7 @@ use stubs::mission::v0::StreamEventsResponse;
 use stubs::net::v0::net_service_server::NetServiceServer;
 use stubs::timer::v0::timer_service_server::TimerServiceServer;
 use stubs::trigger::v0::trigger_service_server::TriggerServiceServer;
+use stubs::tts::v0::tts_service_server::TtsServiceServer;
 use stubs::unit::v0::unit_service_server::UnitServiceServer;
 use stubs::world::v0::world_service_server::WorldServiceServer;
 use tokio::runtime::Runtime;
@@ -181,6 +182,7 @@ async fn try_run(
         .add_service(NetServiceServer::new(mission_rpc.clone()))
         .add_service(TimerServiceServer::new(mission_rpc.clone()))
         .add_service(TriggerServiceServer::new(mission_rpc.clone()))
+        .add_service(TtsServiceServer::new(Tts::new(shutdown_signal.clone())))
         .add_service(UnitServiceServer::new(mission_rpc.clone()))
         .add_service(WorldServiceServer::new(mission_rpc))
         .serve_with_shutdown(addr, after_shutdown.map(|_| ()))

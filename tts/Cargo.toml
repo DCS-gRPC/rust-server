@@ -1,0 +1,31 @@
+[package]
+name = "dcs-grpc-tts"
+version.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+edition.workspace = true
+
+[dependencies]
+audiopus = "0.2"
+base64 = "0.13"
+bytes = "1.2"
+log.workspace = true
+ogg = "0.9"
+reqwest = { version = "0.11", default-features = false, features = ["rustls-tls", "json"] }
+rusoto_core = "0.48"
+rusoto_credential = "0.48"
+rusoto_polly = "0.48"
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+
+[target.'cfg(target_os = "windows")'.dependencies.windows]
+version = "0.40"
+features = [
+  "Foundation",
+  "Foundation_Collections",
+  "Storage_Streams",
+  "Media_SpeechSynthesis",
+]

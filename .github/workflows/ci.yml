@@ -10,7 +10,7 @@ jobs:
 
   rust:
     name: Rust
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     env:
       CARGO_TERM_COLOR: always
@@ -47,7 +47,7 @@ jobs:
         run: cargo test --workspace
 
       - name: Lint
-        run: cargo clippy -- -D warnings
+        run: cargo clippy --workspace -- -D warnings
 
       - name: Check formatting
         run: cargo fmt -- --check
@@ -85,3 +85,35 @@ jobs:
 
       - name: Lint
         run: protolint lint protos/.
+
+  linux:
+    name: Linux
+    runs-on: ubuntu-latest
+
+    env:
+      CARGO_TERM_COLOR: always
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy
+
+      - name: Builds on Linux
+        run: cargo clippy --workspace -- -D warnings

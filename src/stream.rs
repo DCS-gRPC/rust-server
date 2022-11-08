@@ -303,6 +303,7 @@ impl UnitState {
         .await?;
         let GetTransformResponse {
             time,
+            id: _,
             position,
             orientation,
             velocity,

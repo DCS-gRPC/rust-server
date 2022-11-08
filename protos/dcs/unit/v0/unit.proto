@@ -60,6 +60,9 @@ message GetTransformResponse {
   dcs.common.v0.Orientation orientation = 3;
   // The velocity of the unit in both 2D and 3D space
   dcs.common.v0.Velocity velocity = 4;
+  // The DCS generated ID for the unit. Useful to detect if the underlying unit
+  // for the transform changed (could be a respawned unit with the same name).
+  uint32 id = 5;
 }
 
 message GetPlayerNameRequest {

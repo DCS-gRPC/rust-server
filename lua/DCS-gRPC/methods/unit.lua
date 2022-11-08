@@ -68,6 +68,7 @@ GRPC.methods.getUnitTransform = function(params)
 
   return GRPC.success({
     time = timer.getTime(),
+    id = tonumber(unit:getID()),
     rawTransform = GRPC.exporters.rawTransform(unit),
   })
 end

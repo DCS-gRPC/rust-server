@@ -7,6 +7,7 @@ pub mod v0 {
     #[serde(rename_all = "camelCase")]
     struct GetTransformResponseIntermediate {
         time: f64,
+        id: u32,
         raw_transform: Option<RawTransform>,
     }
 
@@ -14,11 +15,13 @@ pub mod v0 {
         fn from(i: GetTransformResponseIntermediate) -> Self {
             let GetTransformResponseIntermediate {
                 time,
+                id,
                 raw_transform,
             } = i;
             let transform = Transform::from(raw_transform.unwrap_or_default());
             GetTransformResponse {
                 time,
+                id,
                 position: Some(transform.position),
                 orientation: Some(transform.orientation),
                 velocity: Some(transform.velocity),

@@ -14,15 +14,20 @@ use stubs::{common::v0::Coalition, tts};
 use tokio::time::sleep;
 use tonic::{Request, Response, Status};
 
+use crate::config::TtsProvider;
 use crate::shutdown::ShutdownHandle;
 
 pub struct Tts {
+    config: crate::config::TtsConfig,
     shutdown_signal: ShutdownHandle,
 }
 
 impl Tts {
-    pub fn new(shutdown_signal: ShutdownHandle) -> Self {
-        Self { shutdown_signal }
+    pub fn new(config: crate::config::TtsConfig, shutdown_signal: ShutdownHandle) -> Self {
+        Self {
+            config,
+            shutdown_signal,
+        }
     }
 }
 
@@ -58,31 +63,124 @@ impl TtsService for Tts {
             .await
             .map_err(|err| Status::internal(err.to_string()))?;
 
-        let config = match request.provider {
-            Some(transmit_request::Provider::Aws(transmit_request::Aws {
-                voice,
-                key,
-                secret,
-                region,
-            })) => TtsConfig::Aws(AwsConfig {
-                voice,
-                key,
-                secret,
-                region: AwsRegion::from_str(&region)
+        let config = match request
+            .provider
+            .unwrap_or(match self.config.default_provider {
+                TtsProvider::Aws => {
+                    transmit_request::Provider::Aws(transmit_request::Aws { voice: None })
+                }
+                TtsProvider::Azure => {
+                    transmit_request::Provider::Azure(transmit_request::Azure { voice: None })
+                }
+                TtsProvider::GCloud => {
+                    transmit_request::Provider::Gcloud(transmit_request::GCloud { voice: None })
+                }
+                TtsProvider::Win => {
+                    transmit_request::Provider::Win(transmit_request::Windows { voice: None })
+                }
+            }) {
+            transmit_request::Provider::Aws(transmit_request::Aws { voice }) => {
+                TtsConfig::Aws(AwsConfig {
+                    voice: voice.or_else(|| {
+                        self.config
+                            .provider
+                            .as_ref()
+                            .and_then(|p| p.aws.as_ref())
+                            .and_then(|p| p.default_voice.clone())
+                    }),
+                    key: self
+                        .config
+                        .provider
+                        .as_ref()
+                        .and_then(|p| p.aws.as_ref())
+                        .and_then(|p| p.key.clone())
+                        .ok_or_else(|| {
+                            Status::failed_precondition("tts.provider.aws.key config not set")
+                        })?,
+                    secret: self
+                        .config
+                        .provider
+                        .as_ref()
+                        .and_then(|p| p.aws.as_ref())
+                        .and_then(|p| p.secret.clone())
+                        .ok_or_else(|| {
+                            Status::failed_precondition("tts.provider.aws.secret config not set")
+                        })?,
+                    region: AwsRegion::from_str(
+                        self.config
+                            .provider
+                            .as_ref()
+                            .and_then(|p| p.aws.as_ref())
+                            .and_then(|p| p.region.as_deref())
+                            .ok_or_else(|| {
+                                Status::failed_precondition(
+                                    "tts.provider.aws.region config not set",
+                                )
+                            })?,
+                    )
                     .map_err(|err| Status::internal(err.to_string()))?,
-            }),
-            Some(transmit_request::Provider::Azure(transmit_request::Azure {
-                voice,
-                key,
-                region,
-            })) => TtsConfig::Azure(AzureConfig { voice, key, region }),
-            Some(transmit_request::Provider::Gcloud(transmit_request::GCloud { voice, key })) => {
-                TtsConfig::GCloud(GCloudConfig { voice, key })
+                })
             }
-            Some(transmit_request::Provider::Win(transmit_request::Windows { voice })) => {
-                TtsConfig::Win(WinConfig { voice })
+            transmit_request::Provider::Azure(transmit_request::Azure { voice }) => {
+                TtsConfig::Azure(AzureConfig {
+                    voice: voice.or_else(|| {
+                        self.config
+                            .provider
+                            .as_ref()
+                            .and_then(|p| p.azure.as_ref())
+                            .and_then(|p| p.default_voice.clone())
+                    }),
+                    key: self
+                        .config
+                        .provider
+                        .as_ref()
+                        .and_then(|p| p.azure.as_ref())
+                        .and_then(|p| p.key.clone())
+                        .ok_or_else(|| {
+                            Status::failed_precondition("tts.provider.azure.key config not set")
+                        })?,
+                    region: self
+                        .config
+                        .provider
+                        .as_ref()
+                        .and_then(|p| p.azure.as_ref())
+                        .and_then(|p| p.region.clone())
+                        .ok_or_else(|| {
+                            Status::failed_precondition("tts.provider.azure.region config not set")
+                        })?,
+                })
             }
-            None => TtsConfig::Win(WinConfig { voice: None }),
+            transmit_request::Provider::Gcloud(transmit_request::GCloud { voice }) => {
+                TtsConfig::GCloud(GCloudConfig {
+                    voice: voice.or_else(|| {
+                        self.config
+                            .provider
+                            .as_ref()
+                            .and_then(|p| p.gcloud.as_ref())
+                            .and_then(|p| p.default_voice.clone())
+                    }),
+                    key: self
+                        .config
+                        .provider
+                        .as_ref()
+                        .and_then(|p| p.gcloud.as_ref())
+                        .and_then(|p| p.key.clone())
+                        .ok_or_else(|| {
+                            Status::failed_precondition("tts.provider.gcloud.key config not set")
+                        })?,
+                })
+            }
+            transmit_request::Provider::Win(transmit_request::Windows { voice }) => {
+                TtsConfig::Win(WinConfig {
+                    voice: voice.or_else(|| {
+                        self.config
+                            .provider
+                            .as_ref()
+                            .and_then(|p| p.win.as_ref())
+                            .and_then(|p| p.default_voice.clone())
+                    }),
+                })
+            }
         };
 
         if request.wait {

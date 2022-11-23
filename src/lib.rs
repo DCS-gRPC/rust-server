@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 #![recursion_limit = "256"]
 
+mod config;
 mod fps;
 #[cfg(feature = "hot-reload")]
 mod hot_reload;
@@ -15,10 +16,11 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, RwLock};
 use std::time::Instant;
 
+use config::Config;
 use mlua::{prelude::*, LuaSerdeExt};
 use mlua::{Function, Value};
 use once_cell::sync::Lazy;
-use server::{Config, Server};
+use server::Server;
 use stubs::mission::v0::StreamEventsResponse;
 use thiserror::Error;
 

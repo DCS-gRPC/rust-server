@@ -15,7 +15,8 @@ if isMissionEnv then
     host = GRPC.host,
     port = GRPC.port,
     debug = GRPC.debug,
-    evalEnabled = GRPC.evalEnabled
+    evalEnabled = GRPC.evalEnabled,
+    tts = GRPC.tts,
   })
 end
 

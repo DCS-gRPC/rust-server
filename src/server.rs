@@ -2,12 +2,12 @@ use std::future::Future;
 use std::net::SocketAddr;
 use std::time::Duration;
 
+use crate::config::{Config, TtsConfig};
 use crate::rpc::{HookRpc, MissionRpc, Tts};
 use crate::shutdown::{Shutdown, ShutdownHandle};
 use crate::stats::Stats;
 use dcs_module_ipc::IPC;
 use futures_util::FutureExt;
-use serde::{Deserialize, Serialize};
 use stubs::atmosphere::v0::atmosphere_service_server::AtmosphereServiceServer;
 use stubs::coalition::v0::coalition_service_server::CoalitionServiceServer;
 use stubs::controller::v0::controller_service_server::ControllerServiceServer;
@@ -41,21 +41,7 @@ struct ServerState {
     ipc_mission: IPC<StreamEventsResponse>,
     ipc_hook: IPC<()>,
     stats: Stats,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Config {
-    pub write_dir: String,
-    pub dll_path: String,
-    #[serde(default = "default_host")]
-    pub host: String,
-    #[serde(default = "default_port")]
-    pub port: u16,
-    #[serde(default)]
-    pub debug: bool,
-    #[serde(default)]
-    pub eval_enabled: bool,
+    tts_config: TtsConfig,
 }
 
 impl Server {
@@ -73,6 +59,7 @@ impl Server {
                 ipc_mission,
                 ipc_hook,
                 stats: Stats::new(shutdown.handle()),
+                tts_config: config.tts.clone().unwrap_or_default(),
             },
             shutdown,
         })
@@ -161,6 +148,7 @@ async fn try_run(
         ipc_mission,
         ipc_hook,
         stats,
+        tts_config,
     } = state;
 
     let mut mission_rpc = MissionRpc::new(ipc_mission, stats.clone(), shutdown_signal.clone());
@@ -182,7 +170,10 @@ async fn try_run(
         .add_service(NetServiceServer::new(mission_rpc.clone()))
         .add_service(TimerServiceServer::new(mission_rpc.clone()))
         .add_service(TriggerServiceServer::new(mission_rpc.clone()))
-        .add_service(TtsServiceServer::new(Tts::new(shutdown_signal.clone())))
+        .add_service(TtsServiceServer::new(Tts::new(
+            tts_config,
+            shutdown_signal.clone(),
+        )))
         .add_service(UnitServiceServer::new(mission_rpc.clone()))
         .add_service(WorldServiceServer::new(mission_rpc))
         .serve_with_shutdown(addr, after_shutdown.map(|_| ()))
@@ -199,20 +190,4 @@ pub enum StartError {
     Io(#[from] std::io::Error),
     #[error(transparent)]
     AddrParse(#[from] std::net::AddrParseError),
-}
-
-fn default_host() -> String {
-    String::from("127.0.0.1")
-}
-
-fn default_port() -> u16 {
-    50051
-}
-
-impl<'lua> mlua::FromLua<'lua> for Config {
-    fn from_lua(lua_value: mlua::Value<'lua>, lua: &'lua mlua::Lua) -> mlua::Result<Self> {
-        use mlua::LuaSerdeExt;
-        let config: Config = lua.from_value(lua_value)?;
-        Ok(config)
-    }
 }

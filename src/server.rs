@@ -2,7 +2,7 @@ use std::future::Future;
 use std::net::SocketAddr;
 use std::time::Duration;
 
-use crate::config::{Config, TtsConfig};
+use crate::config::{Config, SrsConfig, TtsConfig};
 use crate::rpc::{HookRpc, MissionRpc, Tts};
 use crate::shutdown::{Shutdown, ShutdownHandle};
 use crate::stats::Stats;
@@ -42,6 +42,7 @@ struct ServerState {
     ipc_hook: IPC<()>,
     stats: Stats,
     tts_config: TtsConfig,
+    srs_config: SrsConfig,
 }
 
 impl Server {
@@ -60,6 +61,7 @@ impl Server {
                 ipc_hook,
                 stats: Stats::new(shutdown.handle()),
                 tts_config: config.tts.clone().unwrap_or_default(),
+                srs_config: config.srs.clone().unwrap_or_default(),
             },
             shutdown,
         })
@@ -149,6 +151,7 @@ async fn try_run(
         ipc_hook,
         stats,
         tts_config,
+        srs_config,
     } = state;
 
     let mut mission_rpc =
@@ -173,6 +176,7 @@ async fn try_run(
         .add_service(TriggerServiceServer::new(mission_rpc.clone()))
         .add_service(TtsServiceServer::new(Tts::new(
             tts_config,
+            srs_config,
             ipc_mission,
             shutdown_signal.clone(),
         )))

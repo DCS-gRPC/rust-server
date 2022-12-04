@@ -17,6 +17,7 @@ if isMissionEnv then
     debug = GRPC.debug,
     evalEnabled = GRPC.evalEnabled,
     tts = GRPC.tts,
+    srs = GRPC.srs,
   })
 end
 

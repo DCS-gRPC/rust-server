@@ -35,17 +35,13 @@ message TransmitRequest {
   // values will fallback to Blue.
   dcs.common.v0.Coalition coalition = 6;
 
-  // The socket (hostname:port) of the SRS server to connect to. Defaults to
-  // 127.0.0.1:5002 if not specified.
-  optional string srs_addr = 7;
-
   // Whether to keep the request open until the whole transmission was sent. If
   // enabled, you can send the next transmission after you've received the
   // response for the previous one and be sure that they don't overlap (talk
   // over each other). If disabled, you'll receive a response right away (kind
   // of fire and forget). You can use the returned duration as a spacing between
   // TTS requests to prevent the overlap of multiple playbacks yourself.
-  bool async = 8;
+  bool async =7;
 
   message Aws {
     // The voice the text is synthesized in, see:
@@ -73,10 +69,10 @@ message TransmitRequest {
   // Optional TTS provider to be use. Defaults to the one configured in your
   // config or to Windows' built-in TTS.
   oneof provider {
-    Aws aws = 9;
-    Azure azure = 10;
-    GCloud gcloud = 11;
-    Windows win = 12;
+    Aws aws = 8;
+    Azure azure = 9;
+    GCloud gcloud = 10;
+    Windows win = 11;
   }
 }
 

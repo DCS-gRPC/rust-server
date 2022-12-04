@@ -1,6 +1,6 @@
 use std::error;
 use std::future::Future;
-use std::net::SocketAddr;
+use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 use std::str::FromStr;
 use std::time::{Duration, Instant};
 
@@ -24,19 +24,22 @@ use crate::fps::event_time;
 use crate::shutdown::ShutdownHandle;
 
 pub struct Tts {
-    config: crate::config::TtsConfig,
+    tts_config: crate::config::TtsConfig,
+    srs_config: crate::config::SrsConfig,
     ipc: IPC<StreamEventsResponse>,
     shutdown_signal: ShutdownHandle,
 }
 
 impl Tts {
     pub fn new(
-        config: crate::config::TtsConfig,
+        tts_config: crate::config::TtsConfig,
+        srs_config: crate::config::SrsConfig,
         ipc: IPC<StreamEventsResponse>,
         shutdown_signal: ShutdownHandle,
     ) -> Self {
         Self {
-            config,
+            tts_config,
+            srs_config,
             ipc,
             shutdown_signal,
         }
@@ -68,16 +71,18 @@ impl TtsService for Tts {
             })
             .await;
 
-        let addr = SocketAddr::from_str(request.srs_addr.as_deref().unwrap_or("127.0.0.1:5002"))
-            .map_err(|_| Status::invalid_argument("`srs_addr` is not a valid socket address"))?;
+        let addr = self
+            .srs_config
+            .addr
+            .unwrap_or_else(|| SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 5002));
         let stream = client
             .start(addr, self.shutdown_signal.signal())
             .await
-            .map_err(|err| Status::internal(err.to_string()))?;
+            .map_err(|err| Status::internal(format!("Failed to establish SRS connection: {}", err)))?;
 
         let config = match request
             .provider
-            .unwrap_or(match self.config.default_provider {
+            .unwrap_or(match self.tts_config.default_provider {
                 TtsProvider::Aws => {
                     transmit_request::Provider::Aws(transmit_request::Aws { voice: None })
                 }
@@ -94,14 +99,14 @@ impl TtsService for Tts {
             transmit_request::Provider::Aws(transmit_request::Aws { voice }) => {
                 TtsConfig::Aws(AwsConfig {
                     voice: voice.or_else(|| {
-                        self.config
+                        self.tts_config
                             .provider
                             .as_ref()
                             .and_then(|p| p.aws.as_ref())
                             .and_then(|p| p.default_voice.clone())
                     }),
                     key: self
-                        .config
+                        .tts_config
                         .provider
                         .as_ref()
                         .and_then(|p| p.aws.as_ref())
@@ -110,7 +115,7 @@ impl TtsService for Tts {
                             Status::failed_precondition("tts.provider.aws.key config not set")
                         })?,
                     secret: self
-                        .config
+                        .tts_config
                         .provider
                         .as_ref()
                         .and_then(|p| p.aws.as_ref())
@@ -119,7 +124,7 @@ impl TtsService for Tts {
                             Status::failed_precondition("tts.provider.aws.secret config not set")
                         })?,
                     region: AwsRegion::from_str(
-                        self.config
+                        self.tts_config
                             .provider
                             .as_ref()
                             .and_then(|p| p.aws.as_ref())
@@ -136,14 +141,14 @@ impl TtsService for Tts {
             transmit_request::Provider::Azure(transmit_request::Azure { voice }) => {
                 TtsConfig::Azure(AzureConfig {
                     voice: voice.or_else(|| {
-                        self.config
+                        self.tts_config
                             .provider
                             .as_ref()
                             .and_then(|p| p.azure.as_ref())
                             .and_then(|p| p.default_voice.clone())
                     }),
                     key: self
-                        .config
+                        .tts_config
                         .provider
                         .as_ref()
                         .and_then(|p| p.azure.as_ref())
@@ -152,7 +157,7 @@ impl TtsService for Tts {
                             Status::failed_precondition("tts.provider.azure.key config not set")
                         })?,
                     region: self
-                        .config
+                        .tts_config
                         .provider
                         .as_ref()
                         .and_then(|p| p.azure.as_ref())
@@ -165,14 +170,14 @@ impl TtsService for Tts {
             transmit_request::Provider::Gcloud(transmit_request::GCloud { voice }) => {
                 TtsConfig::GCloud(GCloudConfig {
                     voice: voice.or_else(|| {
-                        self.config
+                        self.tts_config
                             .provider
                             .as_ref()
                             .and_then(|p| p.gcloud.as_ref())
                             .and_then(|p| p.default_voice.clone())
                     }),
                     key: self
-                        .config
+                        .tts_config
                         .provider
                         .as_ref()
                         .and_then(|p| p.gcloud.as_ref())
@@ -184,11 +189,13 @@ impl TtsService for Tts {
             }
             transmit_request::Provider::Win(transmit_request::Windows { voice }) => {
                 #[cfg(not(target_os = "windows"))]
-                return Err(Status::unavailable("Windows TTS is only available on Windows"));
+                return Err(Status::unavailable(
+                    "Windows TTS is only available on Windows",
+                ));
                 #[cfg(target_os = "windows")]
                 TtsConfig::Win(WinConfig {
                     voice: voice.or_else(|| {
-                        self.config
+                        self.tts_config
                             .provider
                             .as_ref()
                             .and_then(|p| p.win.as_ref())

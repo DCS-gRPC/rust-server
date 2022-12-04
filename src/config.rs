@@ -1,3 +1,5 @@
+use std::net::SocketAddr;
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -14,6 +16,7 @@ pub struct Config {
     #[serde(default)]
     pub eval_enabled: bool,
     pub tts: Option<TtsConfig>,
+    pub srs: Option<SrsConfig>,
 }
 
 #[derive(Debug, Clone, Default, Deserialize, Serialize)]
@@ -71,6 +74,13 @@ pub struct GCloudConfig {
 #[serde(rename_all = "camelCase")]
 pub struct WinConfig {
     pub default_voice: Option<String>,
+}
+
+#[derive(Debug, Clone, Default, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SrsConfig {
+    #[serde(default)]
+    pub addr: Option<SocketAddr>,
 }
 
 fn default_host() -> String {

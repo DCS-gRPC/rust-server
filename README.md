@@ -110,6 +110,9 @@ tts.provider.gcloud.defaultVoice = "en-GB-Neural2-A"
 
 -- The default Windows voice to use (see https://support.microsoft.com/en-us/windows/appendix-a-supported-languages-and-voices-4486e345-7730-53da-fcfe-55cc64300f01).
 tts.provider.win.defaultVoice = "David"
+
+-- Your SRS server's address.
+srs.addr = "127.0.0.1:5002"
 ```
 
 Once you have done this start the DCS server and skip to the "Confirming that DCS-gRPC is running" section of this

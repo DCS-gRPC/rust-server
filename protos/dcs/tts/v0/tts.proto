@@ -5,6 +5,12 @@ option csharp_namespace = "RurouniJones.Dcs.Grpc.V0.Tts";
 option go_package = "github.com/DCS-gRPC/go-bindings/dcs/v0/tts";
 
 service TtsService {
+  // Synthesize text to speech and transmit it over SRS. By default, this blocks until a
+  // transmission completed (unless `async` is set to `true`). This can be used to prevent
+  // transmission to overlap each other, by not sending another transmission on the same frequency
+  // until you've received the response from the previous transmission on that frequency. However,
+  // it does not block or prevent any other client from transmitting over the same frequency at the
+  // same time.
   rpc Transmit(TransmitRequest) returns (TransmitResponse) {}
 }
 

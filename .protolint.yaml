@@ -1,7 +1,4 @@
 lint:
-  rules:
-    all_default: true
-
   rules_option:
     # MAX_LINE_LENGTH rule option.
     max_line_length:

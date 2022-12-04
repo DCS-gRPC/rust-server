@@ -4,7 +4,9 @@ use std::net::SocketAddr;
 use std::str::FromStr;
 use std::time::{Duration, Instant};
 
-use ::tts::{AwsConfig, AwsRegion, AzureConfig, GCloudConfig, TtsConfig, WinConfig};
+#[cfg(target_os = "windows")]
+use ::tts::WinConfig;
+use ::tts::{AwsConfig, AwsRegion, AzureConfig, GCloudConfig, TtsConfig};
 use dcs_module_ipc::IPC;
 use futures_util::stream::{SplitSink, StreamExt};
 use futures_util::SinkExt;
@@ -181,6 +183,9 @@ impl TtsService for Tts {
                 })
             }
             transmit_request::Provider::Win(transmit_request::Windows { voice }) => {
+                #[cfg(not(target_os = "windows"))]
+                return Err(Status::unavailable("Windows TTS is only available on Windows"));
+                #[cfg(target_os = "windows")]
                 TtsConfig::Win(WinConfig {
                     voice: voice.or_else(|| {
                         self.config

@@ -209,12 +209,12 @@ impl TtsService for Tts {
             }
         };
 
-        let frames = ::tts::synthesize(&request.text_ssml, &config)
+        let frames = ::tts::synthesize(&request.ssml, &config)
             .await
             .map_err(|err| Status::internal(err.to_string()))?;
         let duration_ms = Duration::from_millis(frames.len() as u64 * 20); // ~20m per frame count
 
-        if let Some(text) = request.text_plain {
+        if let Some(text) = request.plaintext {
             self.ipc
                 .event(StreamEventsResponse {
                     time: event_time(),

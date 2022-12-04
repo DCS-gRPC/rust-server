@@ -11,13 +11,13 @@ service TtsService {
 message TransmitRequest {
   // The text that is synthesized to speech and transmitted to SRS. Supports SSML tags (you should
   // not wrap the text in the root `<speak>` tag though).
-  string text_ssml = 1;
+  string ssml = 1;
 
   // The plain text without any transformations made to it for the purpose of getting it spoken out
   // as desired (no SSML tags, no FOUR NINER instead of 49, ...). Even though this field is
   // optional, please consider providing it as it can be used to display the spoken text to players
   // with hearing impairments.
-  optional string text_plain = 2;
+  optional string plaintext = 2;
 
   // The radio frequency in Hz the transmission is send to. Example: 251000000
   // for 251.00MHz.

@@ -67,7 +67,7 @@ As well as this you can set other options in this file. These are listed below:
 evalEnabled = false
 
 -- The host the gRPC listens on (use "0.0.0.0" to listen on all IP addresses of the host).
-host = '127.0.0.1'
+host = "127.0.0.1"
 
 -- The port to listen on.
 port = 50051
@@ -77,6 +77,39 @@ debug = false
 
 -- Limit of calls per second that are executed inside of the mission scripting environment.
 throughputLimit = 600
+
+-- The default TTS provider to use if a TTS request does not explicitly specify another one.
+tts.defaultProvider = "win"
+
+-- Your Azure access key.
+tts.provider.azure.key = "..."
+
+-- The Azure region to use (see https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/regions).
+tts.provider.azure.region = "westeurope"
+
+-- The default Azure voice to use (see https://learn.microsoft.com/azure/cognitive-services/speech-service/language-support).
+tts.provider.azure.defaultVoice = "en-US-AriaNeural"
+
+-- Your AWS key.
+tts.provider.aws.key = "..."
+
+-- Your AWS secret key.
+tts.provider.aws.secret = "..."
+
+-- Your AWS region (see https://docs.aws.amazon.com/general/latest/gr/pol.html).
+tts.provider.aws.region = "eu-central-1"
+
+-- The default AWS voice to use (see https://docs.aws.amazon.com/polly/latest/dg/voicelist.html).
+tts.provider.aws.defaultVoice = "Brian"
+
+-- Your Google Cloudd access key.
+tts.provider.gcloud.key = "..."
+
+-- The default Google Cloud voice to use (see https://cloud.google.com/text-to-speech/docs/voices).
+tts.provider.gcloud.defaultVoice = "en-GB-Neural2-A"
+
+-- The default Windows voice to use (see https://support.microsoft.com/en-us/windows/appendix-a-supported-languages-and-voices-4486e345-7730-53da-fcfe-55cc64300f01).
+tts.provider.win.defaultVoice = "David"
 ```
 
 Once you have done this start the DCS server and skip to the "Confirming that DCS-gRPC is running" section of this

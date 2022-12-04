@@ -13,7 +13,7 @@ pub struct GCloudConfig {
 
 /// Synthesize the `text` using AWS Polly. Returns a vec of opus frames.
 pub async fn synthesize(text: &str, config: &GCloudConfig) -> Result<Vec<Vec<u8>>, GcloudError> {
-    let voice = config.voice.as_deref().unwrap_or("en-AU-Standard-C");
+    let voice = config.voice.as_deref().unwrap_or("en-GB-Neural2-A");
     let (language_code, _) = voice.split_at(5);
 
     let payload = TextToSpeechRequest {

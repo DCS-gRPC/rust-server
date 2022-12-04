@@ -208,9 +208,9 @@ mainly intended for development and is disabled by default. You can enable it vi
 To build and run the repl run the following commands
 
 ```bash
-cargo build --bin repl
+cargo build -p dcs-grpc-repl
 # Make sure your DCS mission is running
-cargo run --bin repl
+cargo run -p dcs-grpc-repl
 ```
 
 Note that the REPL is hardcoded to connect to localhost on the default port

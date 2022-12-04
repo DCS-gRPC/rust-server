@@ -222,6 +222,7 @@ impl TtsService for Tts {
                         text,
                         frequency: request.frequency,
                         coalition: request.coalition,
+                        srs_client_name: request.srs_client_name,
                     })),
                 })
                 .await;

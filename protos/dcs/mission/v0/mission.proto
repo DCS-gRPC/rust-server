@@ -470,6 +470,9 @@ message StreamEventsResponse {
 
     // The coalition of the transmission.
     dcs.common.v0.Coalition coalition = 3;
+
+    // Custom name of the SRS client used for the transmission.
+    optional string srs_client_name = 4;
   }
 
   // The event's mission time.

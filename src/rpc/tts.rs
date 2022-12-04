@@ -5,9 +5,12 @@ use std::str::FromStr;
 use std::time::{Duration, Instant};
 
 use ::tts::{AwsConfig, AwsRegion, AzureConfig, GCloudConfig, TtsConfig, WinConfig};
+use dcs_module_ipc::IPC;
 use futures_util::stream::{SplitSink, StreamExt};
 use futures_util::SinkExt;
 use srs::VoiceStream;
+use stubs::mission::v0::stream_events_response::{Event, TtsEvent};
+use stubs::mission::v0::StreamEventsResponse;
 use stubs::tts::v0::transmit_request;
 use stubs::tts::v0::tts_service_server::TtsService;
 use stubs::{common::v0::Coalition, tts};
@@ -15,17 +18,24 @@ use tokio::time::sleep;
 use tonic::{Request, Response, Status};
 
 use crate::config::TtsProvider;
+use crate::fps::event_time;
 use crate::shutdown::ShutdownHandle;
 
 pub struct Tts {
     config: crate::config::TtsConfig,
+    ipc: IPC<StreamEventsResponse>,
     shutdown_signal: ShutdownHandle,
 }
 
 impl Tts {
-    pub fn new(config: crate::config::TtsConfig, shutdown_signal: ShutdownHandle) -> Self {
+    pub fn new(
+        config: crate::config::TtsConfig,
+        ipc: IPC<StreamEventsResponse>,
+        shutdown_signal: ShutdownHandle,
+    ) -> Self {
         Self {
             config,
+            ipc,
             shutdown_signal,
         }
     }
@@ -183,10 +193,23 @@ impl TtsService for Tts {
             }
         };
 
-        let frames = ::tts::synthesize(&request.text, &config)
+        let frames = ::tts::synthesize(&request.text_ssml, &config)
             .await
             .map_err(|err| Status::internal(err.to_string()))?;
         let duration_ms = Duration::from_millis(frames.len() as u64 * 20); // ~20m per frame count
+
+        if let Some(text) = request.text_plain {
+            self.ipc
+                .event(StreamEventsResponse {
+                    time: event_time(),
+                    event: Some(Event::Tts(TtsEvent {
+                        text,
+                        frequency: request.frequency,
+                        coalition: request.coalition,
+                    })),
+                })
+                .await;
+        }
 
         if request.r#async {
             let signal = self.shutdown_signal.signal();

@@ -151,7 +151,8 @@ async fn try_run(
         tts_config,
     } = state;
 
-    let mut mission_rpc = MissionRpc::new(ipc_mission, stats.clone(), shutdown_signal.clone());
+    let mut mission_rpc =
+        MissionRpc::new(ipc_mission.clone(), stats.clone(), shutdown_signal.clone());
     let mut hook_rpc = HookRpc::new(ipc_hook, stats, shutdown_signal.clone());
 
     if eval_enabled {
@@ -172,6 +173,7 @@ async fn try_run(
         .add_service(TriggerServiceServer::new(mission_rpc.clone()))
         .add_service(TtsServiceServer::new(Tts::new(
             tts_config,
+            ipc_mission,
             shutdown_signal.clone(),
         )))
         .add_service(UnitServiceServer::new(mission_rpc.clone()))

@@ -36,8 +36,9 @@ message TransmitRequest {
   // enabled, you can send the next transmission after you've received the
   // response for the previous one and be sure that they don't overlap (talk
   // over each other). If disabled, you'll receive a response right away (kind
-  // of fire and forget).
-  bool wait = 7;
+  // of fire and forget). You can use the returned duration as a spacing between
+  // TTS requests to prevent the overlap of multiple playbacks yourself.
+  bool async = 7;
 
   message Aws {
     // The voice the text is synthesized in, see:

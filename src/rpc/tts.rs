@@ -188,17 +188,17 @@ impl TtsService for Tts {
             .map_err(|err| Status::internal(err.to_string()))?;
         let duration_ms = Duration::from_millis(frames.len() as u64 * 20); // ~20m per frame count
 
-        if request.wait {
-            transmit(frames, stream, self.shutdown_signal.signal())
-                .await
-                .map_err(|err| Status::internal(err.to_string()))?;
-        } else {
+        if request.r#async {
             let signal = self.shutdown_signal.signal();
             tokio::task::spawn(async move {
                 if let Err(err) = transmit(frames, stream, signal).await {
                     log::error!("TTS transmission failed: {}", err);
                 }
             });
+        } else {
+            transmit(frames, stream, self.shutdown_signal.signal())
+                .await
+                .map_err(|err| Status::internal(err.to_string()))?;
         }
 
         Ok(Response::new(tts::v0::TransmitResponse {

@@ -53,7 +53,7 @@ impl TtsService for Tts {
         request: Request<tts::v0::TransmitRequest>,
     ) -> Result<Response<tts::v0::TransmitResponse>, Status> {
         let request = request.into_inner();
-        let name = request.name.as_deref().unwrap_or("DCS-gRPC");
+        let name = request.srs_client_name.as_deref().unwrap_or("DCS-gRPC");
         let mut client = srs::Client::new(
             name,
             request.frequency,

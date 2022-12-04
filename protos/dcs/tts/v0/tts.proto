@@ -30,7 +30,7 @@ message TransmitRequest {
   uint64 frequency = 3;
 
   // Name of the SRS client. Defaults to "DCS-gRPC".
-  optional string name = 4;
+  optional string srs_client_name = 4;
 
   // The origin of the transmission. Relevant if the SRS server has "Line of
   // Sight" and/or "Distance Limit" enabled.

@@ -42,16 +42,20 @@ pub async fn run_in_background(
         // `time` so that `time` already receives a newer value. However, this should be rare and
         // shouldn't really matter for the resolution measured here.
         let frame_count = FPS.swap(0, Ordering::Relaxed);
-        let time = TIME.load(Ordering::Relaxed);
 
         let elapsed = instant - previous;
         previous = instant;
         let average = (frame_count as f64) / elapsed.as_secs_f64();
 
         ipc.event(StreamEventsResponse {
-            time: f64::from(time) / 1000.0,
+            time: event_time(),
             event: Some(Event::SimulationFps(SimulationFpsEvent { average })),
         })
         .await;
     }
+}
+
+pub fn event_time() -> f64 {
+    let time = TIME.load(Ordering::Relaxed);
+    f64::from(time) / 1000.0
 }

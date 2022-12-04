@@ -3,6 +3,7 @@
 !.github
 !.cargo
 !.luacheckrc
+!.protolint.yaml
 /target
 scratchpad.txt
 grpcurl.exe

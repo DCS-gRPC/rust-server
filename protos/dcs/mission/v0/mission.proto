@@ -457,6 +457,24 @@ message StreamEventsResponse {
     double average = 1;
   }
 
+  /**
+   * Fired for every TTS request that contains the `text_plain` field, for other clients to use e.g.
+   * for accessibility use-cases.
+   */
+  message TtsEvent {
+    // The plain text that got transmitted.
+    string text = 1;
+
+    // The radio frequency in Hz the transmission got send to.
+    uint64 frequency = 2;
+
+    // The coalition of the transmission.
+    dcs.common.v0.Coalition coalition = 3;
+
+    // Custom name of the SRS client used for the transmission.
+    optional string srs_client_name = 4;
+  }
+
   // The event's mission time.
   double time = 1;
   oneof event {
@@ -509,6 +527,7 @@ message StreamEventsResponse {
     CoalitionCommandEvent coalition_command = 8197;
     GroupCommandEvent group_command = 8198;
     SimulationFpsEvent simulation_fps = 8199;
+    TtsEvent tts = 8200;
   }
 }
 

@@ -48,8 +48,10 @@ once_cell = "1.4.0"
 pin-project = "1.0"
 serde.workspace = true
 serde_json.workspace = true
+srs = { package = "dcs-grpc-srs", path = "./srs" }
 stubs = { package = "dcs-grpc-stubs", path = "./stubs", features = ["server"] }
 thiserror.workspace = true
+tts = { package = "dcs-grpc-tts", path = "./tts" }
 time = { version = "0.3", features = ["formatting", "parsing"] }
 tokio.workspace = true
 tokio-stream.workspace = true

@@ -1,6 +1,6 @@
 use std::error;
 
-pub use aws::AwsConfig;
+pub use aws::{AwsConfig, Region as AwsRegion};
 pub use azure::AzureConfig;
 pub use gcloud::GCloudConfig;
 #[cfg(target_os = "windows")]

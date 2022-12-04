@@ -5,7 +5,11 @@ local function init()
   log.write("[GRPC-Hook]", log.INFO, "Initializing ...")
 
   if not GRPC then
-    _G.GRPC = {}
+    _G.GRPC = {
+      -- scaffold nested tables to allow direct assignment in config file
+      tts = { provider = { gcloud = {}, aws = {}, azure = {}, win = {} } },
+      srs = {},
+    }
   end
 
   -- load settings from `Saved Games/DCS/Config/dcs-grpc.lua`

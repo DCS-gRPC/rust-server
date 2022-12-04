@@ -37,7 +37,7 @@ pub async fn synthesize(text: &str, config: &AzureConfig) -> Result<Vec<Vec<u8>>
     let voice = config
         .voice
         .as_deref()
-        .unwrap_or("en-US-AriaRUS")
+        .unwrap_or("en-US-AriaNeural")
         .to_string();
     let (lang, _) = voice.split_at(5);
 

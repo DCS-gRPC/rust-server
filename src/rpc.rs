@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+pub use self::tts::Tts;
 use crate::shutdown::ShutdownHandle;
 use crate::stats::Stats;
 use dcs_module_ipc::IPC;
@@ -18,6 +19,7 @@ mod mission;
 mod net;
 mod timer;
 mod trigger;
+mod tts;
 mod unit;
 mod world;
 

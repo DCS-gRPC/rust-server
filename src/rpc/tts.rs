@@ -183,36 +183,36 @@ impl TtsService for Tts {
             }
         };
 
-        if request.wait {
-            transmit(
-                &request.text,
-                &config,
-                stream,
-                self.shutdown_signal.signal(),
-            )
+        let frames = ::tts::synthesize(&request.text, &config)
             .await
             .map_err(|err| Status::internal(err.to_string()))?;
+        let duration_ms = Duration::from_millis(frames.len() as u64 * 20); // ~20m per frame count
+
+        if request.wait {
+            transmit(frames, stream, self.shutdown_signal.signal())
+                .await
+                .map_err(|err| Status::internal(err.to_string()))?;
         } else {
             let signal = self.shutdown_signal.signal();
             tokio::task::spawn(async move {
-                if let Err(err) = transmit(&request.text, &config, stream, signal).await {
+                if let Err(err) = transmit(frames, stream, signal).await {
                     log::error!("TTS transmission failed: {}", err);
                 }
             });
         }
 
-        Ok(Response::new(tts::v0::TransmitResponse {}))
+        Ok(Response::new(tts::v0::TransmitResponse {
+            duration_ms: duration_ms.as_millis() as u32,
+        }))
     }
 }
 
 async fn transmit(
-    text: &str,
-    config: &TtsConfig,
+    frames: Vec<Vec<u8>>,
     stream: VoiceStream,
     mut shutdown_signal: impl Future<Output = ()> + Unpin,
 ) -> Result<(), Box<dyn error::Error + Send + Sync + 'static>> {
     let (sink, mut stream) = stream.split::<Vec<u8>>();
-    let frames = ::tts::synthesize(text, config).await?;
     let mut transmission = Box::pin(transmit_frames(frames, sink));
 
     loop {

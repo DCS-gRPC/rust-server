@@ -73,4 +73,6 @@ message TransmitRequest {
 }
 
 message TransmitResponse {
+  // The duration in milliseconds it roughly takes to speak the transmission.
+  uint32 duration_ms = 1;
 }

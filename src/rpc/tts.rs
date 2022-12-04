@@ -189,12 +189,8 @@ impl TtsService for Tts {
                         })?,
                 })
             }
+            #[cfg(target_os = "windows")]
             transmit_request::Provider::Win(transmit_request::Windows { voice }) => {
-                #[cfg(not(target_os = "windows"))]
-                return Err(Status::unavailable(
-                    "Windows TTS is only available on Windows",
-                ));
-                #[cfg(target_os = "windows")]
                 TtsConfig::Win(WinConfig {
                     voice: voice.or_else(|| {
                         self.tts_config
@@ -204,6 +200,12 @@ impl TtsService for Tts {
                             .and_then(|p| p.default_voice.clone())
                     }),
                 })
+            }
+            #[cfg(not(target_os = "windows"))]
+            transmit_request::Provider::Win(transmit_request::Windows { .. }) => {
+                return Err(Status::unavailable(
+                    "Windows TTS is only available on Windows",
+                ));
             }
         };
 

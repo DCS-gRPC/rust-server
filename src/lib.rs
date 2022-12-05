@@ -60,6 +60,7 @@ pub fn init(config: &Config) {
     let log_config = Config::builder()
         .appender(Appender::builder().build("file", Box::new(requests)))
         .logger(Logger::builder().build("dcs_grpc", level))
+        .logger(Logger::builder().build("dcs_grpc_srs", level))
         .logger(Logger::builder().build("dcs_grpc_tts", level))
         .logger(Logger::builder().build("tokio", level))
         .logger(Logger::builder().build("tonic", level))

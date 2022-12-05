@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added DCS `time` of the update to units stream (`StreamUnitsResponse`)
 - Added `GetBallisticsCount` API
 - Added `TtsService/Transmit` to synthesize text to speech and transmit it over SRS
+- Added `GRPC.tts(ssml, frequency[, options])` Lua API
 
 ### Changed
 - Unit objects now return the full group object in the `group` field to make event processing easier. This replaces the `group_name` and `group_category` fields and is a backwards incompatible change.

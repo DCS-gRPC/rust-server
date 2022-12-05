@@ -163,6 +163,45 @@ You can also check for the present of a `\Logs\grpc.log` file.
 
 The server will be running on port 50051 by default.
 
+## Lua API
+
+`DCS-gRPC` provides the following Lua APIs to interact with the server from within Lua.
+
+- `GRPC.tts(ssml, frequency[, options])` - Synthesize text (`ssml`; SSML tags supported) to speech and transmit it over SRS on the `frequency` with the following optional `options` (and their defaults):
+    ```lua
+    {
+        -- The plain text without any transformations made to it for the purpose of getting it spoken out
+        -- as desired (no SSML tags, no FOUR NINER instead of 49, ...). Even though this field is
+        -- optional, please consider providing it as it can be used to display the spoken text to players
+        -- with hearing impairments.
+        plaintext = null, -- e.g. `= "Hello Pilot"`
+
+        -- Name of the SRS client.
+        srsClientName = "DCS-gRPC",
+
+        -- The origin of the transmission. Relevant if the SRS server has "Line of
+        -- Sight" and/or "Distance Limit" enabled.
+        position = {
+            lat = 0.0,
+            lon = 0.0,
+            alt = 0.0, -- in meters
+        },
+
+        -- The coalition of the transmission. Relevant if the SRS server has "Secure
+        -- Coalition Radios" enabled. Supported values are: `blue` and `red`. Defaults
+        -- to being spectator if not specified.
+        coalition = null,
+
+        -- TTS provider to be use. Defaults to the one configured in your config or to Windows'
+        -- built-in TTS. Examples:
+        -- `= { aws = {} }` / `= { aws = { voice = "..." } }` enable AWS TTS
+        -- `= { azure = {} }` / `= { azure = { voice = "..." } }` enable Azure TTS
+        -- `= { gcloud = {} }` / `= { gcloud = { voice = "..." } }` enable Google Cloud TTS
+        -- `= { win = {} }` / `= { win = { voice = "..." } }` enable Windows TTS
+        provider = null,
+    }
+    ```
+
 ## Client Development
 
 `DCS-gRPC`, as the name implies, uses the [gRPC](https://grpc.io/) framework to handle communication between clients

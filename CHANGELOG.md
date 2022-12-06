@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `GetSessionId` API
 - Added `GetDetectedTargets` API. Method follows the DCS implementation of controller's getDetectedTargets. Can optionally also return the unit or weapon objects tracked by the radar.
 - Added `orientation` and `velocity` to `Unit` object
-- Added `u`/`v` coordinates (offset from DCS map origin in meters) to `Position`s
+- Added `u`/`v` coordinates (offset from DCS map origin in meters) to `Position`s used in responses. To not require them in requests, all positions provided in requests got changed to a new `InputPosition` type (you'll have to update your requests, simply replace `Position` with `InputPosition` in them).
 - `GetRealTime` API
 - Added `orientation` and `velocity` to `Weapon` object
 - Added DCS `time` of the update to units stream (`StreamUnitsResponse`)

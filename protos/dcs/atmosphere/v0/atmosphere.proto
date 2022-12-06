@@ -22,7 +22,7 @@ message GetWindRequest {
   // The position on the map we want the wind information for.
   // Requires lat/lon/alt fields to be populated, there are
   // no default values
-  dcs.common.v0.Position position = 1;
+  dcs.common.v0.InputPosition position = 1;
 }
 
 message GetWindResponse {
@@ -36,7 +36,7 @@ message GetWindWithTurbulenceRequest {
   // The position on the map we want the wind information for.
   // Requires lat/lon/alt fields to be populated, there are
   // no default values
-  dcs.common.v0.Position position = 1;
+  dcs.common.v0.InputPosition position = 1;
 }
 
 message GetWindWithTurbulenceResponse {
@@ -50,7 +50,7 @@ message GetTemperatureAndPressureRequest {
   // The position on the map we want the wind information for.
   // Requires lat/lon/alt fields to be populated, there are
   // no default values
-  dcs.common.v0.Position position = 1;
+  dcs.common.v0.InputPosition position = 1;
 }
 
 message GetTemperatureAndPressureResponse {

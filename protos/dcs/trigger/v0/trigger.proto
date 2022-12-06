@@ -119,7 +119,7 @@ message SetUserFlagResponse {
 
 message MarkToAllRequest {
   string text = 2;
-  dcs.common.v0.Position position = 3;
+  dcs.common.v0.InputPosition position = 3;
   bool read_only = 4;
   string message = 5;
 }
@@ -131,7 +131,7 @@ message MarkToAllResponse {
 message MarkToCoalitionRequest {
   uint32 id = 1;
   string text = 2;
-  dcs.common.v0.Position position = 3;
+  dcs.common.v0.InputPosition position = 3;
   dcs.common.v0.Coalition coalition = 4;
   bool read_only = 5;
   string message = 6;
@@ -144,7 +144,7 @@ message MarkToCoalitionResponse {
 message MarkToGroupRequest {
   uint32 id = 1;
   string text = 2;
-  dcs.common.v0.Position position = 3;
+  dcs.common.v0.InputPosition position = 3;
   uint32 group_id = 4;
   bool read_only = 5;
   string message = 6;
@@ -162,7 +162,7 @@ message RemoveMarkResponse {
 }
 
 message ExplosionRequest {
-  dcs.common.v0.Position position = 1;
+  dcs.common.v0.InputPosition position = 1;
   uint32 power = 2;
 }
 
@@ -181,7 +181,7 @@ message SmokeRequest {
 
   // Altitude parameter will be ignored. Smoke always eminates from ground
   // level which will be calculated server-side
-  dcs.common.v0.Position position = 1;
+  dcs.common.v0.InputPosition position = 1;
   SmokeColor color = 2;
 }
 
@@ -191,7 +191,7 @@ message SmokeResponse {
 message IlluminationBombRequest {
   // The altitude of Illumination Bombs is meters above ground. Ground level
   // will be calculated server-side
-  dcs.common.v0.Position position = 1;
+  dcs.common.v0.InputPosition position = 1;
   uint32 power = 2;
 }
 
@@ -209,7 +209,7 @@ message SignalFlareRequest {
 
   // Altitude parameter will be ignored. Signal flares always fire from
   // ground level which will be calculated server-side
-  dcs.common.v0.Position position = 1;
+  dcs.common.v0.InputPosition position = 1;
   FlareColor color = 2;
   uint32 azimuth = 3;
 }
@@ -251,7 +251,7 @@ enum Shape {
 
 message MarkupToAllRequest {
   Shape shape = 1;
-  repeated dcs.common.v0.Position points = 2;
+  repeated dcs.common.v0.InputPosition points = 2;
   Color border_color = 3;
   Color fill_color = 4;
   LineType line_type = 5;
@@ -266,7 +266,7 @@ message MarkupToAllResponse {
 message MarkupToCoalitionRequest {
   Shape shape = 1;
   dcs.common.v0.Coalition coalition = 2;
-  repeated dcs.common.v0.Position points = 3;
+  repeated dcs.common.v0.InputPosition points = 3;
   Color border_color = 4;
   Color fill_color = 5;
   LineType line_type = 6;

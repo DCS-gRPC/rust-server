@@ -34,7 +34,7 @@ message TransmitRequest {
 
   // The origin of the transmission. Relevant if the SRS server has "Line of
   // Sight" and/or "Distance Limit" enabled.
-  Position position = 5;
+  dcs.common.v0.InputPosition position = 5;
 
   // The coalition of the transmission. Relevant if the SRS server has "Secure
   // Coalition Radios" enabled. Only Blue and Red are supported, all other
@@ -85,22 +85,4 @@ message TransmitRequest {
 message TransmitResponse {
   // The duration in milliseconds it roughly takes to speak the transmission.
   uint32 duration_ms = 1;
-}
-
-/**
- * Position of an object in DCS
- *
- * Latitude and Longitude are in Decimal Degrees format (e.g. 41.33 / 37.21).
- * Negative values are used for West of the meridian and south of the equator
- *
- * Altitude is given in meters above Mean Sea Level (MSL) and can be a decimal
- * value.
- */
-message Position {
-  // Latitude in Decimal Degrees format
-  double lat = 1;
-  // Longitude in Decimal Degrees format
-  double lon = 2;
-  // Altitude in Meters above Mean Sea Level (MSL)
-  double alt = 3;
 }

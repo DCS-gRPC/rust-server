@@ -58,7 +58,7 @@ message AddGroupRequest {
     bool hidden = 2;
     bool late_activation = 3;
     string name = 4;
-    dcs.common.v0.Position position = 5;
+    dcs.common.v0.InputPosition position = 5;
     repeated Point waypoints = 6;
     uint32 start_time = 7;
     string task = 8;
@@ -71,7 +71,7 @@ message AddGroupRequest {
   message GroundUnitTemplate {
     string name = 1;
     string type = 2;
-    dcs.common.v0.Position position = 3;
+    dcs.common.v0.InputPosition position = 3;
     optional uint32 unit_id = 4;
     optional uint32 heading = 5;
     Skill skill = 6;
@@ -109,7 +109,7 @@ message AddGroupRequest {
       POINT_TYPE_LAND = 5;
     }
 
-    dcs.common.v0.Position position = 1;
+    dcs.common.v0.InputPosition position = 1;
     AltitudeType altitude_type = 2;
     PointType type = 3;
     string action = 4;
@@ -160,7 +160,7 @@ message AddStaticObjectRequest {
   optional uint32 rate = 6;
 
   double heading = 7;
-  dcs.common.v0.Position position = 8;
+  dcs.common.v0.InputPosition position = 8;
   // cargo mass in kilograms
   uint32 cargo_mass = 9;
 }

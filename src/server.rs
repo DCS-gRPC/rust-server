@@ -163,7 +163,7 @@ impl Server {
 pub struct TtsOptions {
     plaintext: Option<String>,
     srs_client_name: Option<String>,
-    position: Option<stubs::tts::v0::Position>,
+    position: Option<stubs::common::v0::InputPosition>,
     coalition: Option<stubs::common::v0::Coalition>,
     provider: Option<stubs::tts::v0::transmit_request::Provider>,
 }

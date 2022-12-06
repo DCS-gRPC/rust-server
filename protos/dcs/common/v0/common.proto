@@ -178,6 +178,24 @@ message Position {
 }
 
 /**
+ * Position used in requests to DCS-gRPC.
+ *
+ * Latitude and Longitude are in Decimal Degrees format (e.g. 41.33 / 37.21).
+ * Negative values are used for West of the meridian and south of the equator.
+ *
+ * Altitude is given in meters above Mean Sea Level (MSL) and can be a decimal
+ * value.
+ */
+message InputPosition {
+  // Latitude in Decimal Degrees format
+  double lat = 1;
+  // Longitude in Decimal Degrees format
+  double lon = 2;
+  // Altitude in Meters above Mean Sea Level (MSL)
+  double alt = 3;
+}
+
+/**
  * This type is returned if an object category cannot be determined
  *
  * The base object includes the `getName()` function so even for an unknown type

@@ -20,7 +20,7 @@ use config::Config;
 use mlua::{prelude::*, LuaSerdeExt};
 use mlua::{Function, Value};
 use once_cell::sync::Lazy;
-use server::Server;
+use server::{Server, TtsOptions};
 use stubs::mission::v0::StreamEventsResponse;
 use thiserror::Error;
 
@@ -168,6 +168,17 @@ pub fn next(lua: &Lua, (env, callback): (i32, Function)) -> LuaResult<bool> {
 }
 
 #[no_mangle]
+pub fn tts(_lua: &Lua, (ssml, freq, opts): (String, u64, Option<TtsOptions>)) -> LuaResult<()> {
+    let start = Instant::now();
+    if let Some(server) = &*SERVER.read().unwrap() {
+        let _guard = server.stats().track_block_time(start);
+        server.tts(ssml, freq, opts);
+    }
+
+    Ok(())
+}
+
+#[no_mangle]
 pub fn event(lua: &Lua, event: Value) -> LuaResult<()> {
     let start = Instant::now();
 
@@ -253,6 +264,7 @@ pub fn dcs_grpc_hot_reload(lua: &Lua) -> LuaResult<LuaTable> {
         "simulationFrame",
         lua.create_function(hot_reload::simulation_frame)?,
     )?;
+    exports.set("tts", lua.create_function(hot_reload::tts)?)?;
     exports.set("logError", lua.create_function(hot_reload::log_error)?)?;
     exports.set("logWarning", lua.create_function(hot_reload::log_warning)?)?;
     exports.set("logInfo", lua.create_function(hot_reload::log_info)?)?;
@@ -269,6 +281,7 @@ pub fn dcs_grpc(lua: &Lua) -> LuaResult<LuaTable> {
     exports.set("next", lua.create_function(next)?)?;
     exports.set("event", lua.create_function(event)?)?;
     exports.set("simulationFrame", lua.create_function(simulation_frame)?)?;
+    exports.set("tts", lua.create_function(tts)?)?;
     exports.set("logError", lua.create_function(log_error)?)?;
     exports.set("logWarning", lua.create_function(log_warning)?)?;
     exports.set("logInfo", lua.create_function(log_info)?)?;

@@ -47,6 +47,11 @@ GRPC.error = function(msg)
 end
 
 --
+-- APIs exposed to Lua
+--
+GRPC.tts = grpc.tts
+
+--
 -- Logging methods
 --
 

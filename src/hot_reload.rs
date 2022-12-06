@@ -6,6 +6,7 @@ use std::path::PathBuf;
 use std::sync::{Arc, RwLock};
 use std::{error, fmt};
 
+use crate::server::TtsOptions;
 use crate::Config;
 use libloading::{Library, Symbol};
 use mlua::prelude::*;
@@ -56,6 +57,18 @@ pub fn next(lua: &Lua, arg: (i32, Function)) -> LuaResult<bool> {
         f(lua, arg).map_err(take_error_ownership)
     } else {
         Ok(false)
+    }
+}
+
+pub fn tts(lua: &Lua, arg: (String, u64, Option<TtsOptions>)) -> LuaResult<()> {
+    if let Some(ref lib) = *LIBRARY.read().unwrap() {
+        let f: Symbol<fn(lua: &Lua, arg: (String, u64, Option<TtsOptions>)) -> LuaResult<()>> = unsafe {
+            lib.get(b"tts")
+                .map_err(|err| mlua::Error::ExternalError(Arc::new(err)))?
+        };
+        f(lua, arg).map_err(take_error_ownership)
+    } else {
+        Ok(())
     }
 }
 

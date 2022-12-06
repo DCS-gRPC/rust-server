@@ -34,11 +34,11 @@ message TransmitRequest {
 
   // The origin of the transmission. Relevant if the SRS server has "Line of
   // Sight" and/or "Distance Limit" enabled.
-  dcs.common.v0.Position position = 5;
+  dcs.common.v0.InputPosition position = 5;
 
   // The coalition of the transmission. Relevant if the SRS server has "Secure
   // Coalition Radios" enabled. Only Blue and Red are supported, all other
-  // values will fallback to Blue.
+  // values will fallback to Spectator.
   dcs.common.v0.Coalition coalition = 6;
 
   // Whether to keep the request open until the whole transmission was sent. If

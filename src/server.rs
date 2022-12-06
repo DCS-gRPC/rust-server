@@ -1,5 +1,6 @@
 use std::future::Future;
 use std::net::SocketAddr;
+use std::sync::Arc;
 use std::time::Duration;
 
 use crate::config::{Config, SrsConfig, TtsConfig};
@@ -19,7 +20,7 @@ use stubs::mission::v0::StreamEventsResponse;
 use stubs::net::v0::net_service_server::NetServiceServer;
 use stubs::timer::v0::timer_service_server::TimerServiceServer;
 use stubs::trigger::v0::trigger_service_server::TriggerServiceServer;
-use stubs::tts::v0::tts_service_server::TtsServiceServer;
+use stubs::tts::v0::tts_service_server::{TtsService, TtsServiceServer};
 use stubs::unit::v0::unit_service_server::UnitServiceServer;
 use stubs::world::v0::world_service_server::WorldServiceServer;
 use tokio::runtime::Runtime;
@@ -32,6 +33,7 @@ pub struct Server {
     shutdown: Shutdown,
     after_shutdown: Option<oneshot::Sender<()>>,
     state: ServerState,
+    tts: Arc<Tts>,
 }
 
 #[derive(Clone)]
@@ -57,12 +59,18 @@ impl Server {
             state: ServerState {
                 addr: format!("{}:{}", config.host, config.port).parse()?,
                 eval_enabled: config.eval_enabled,
-                ipc_mission,
+                ipc_mission: ipc_mission.clone(),
                 ipc_hook,
                 stats: Stats::new(shutdown.handle()),
                 tts_config: config.tts.clone().unwrap_or_default(),
                 srs_config: config.srs.clone().unwrap_or_default(),
             },
+            tts: Arc::new(Tts::new(
+                config.tts.clone().unwrap_or_default(),
+                config.srs.clone().unwrap_or_default(),
+                ipc_mission,
+                shutdown.handle(),
+            )),
             shutdown,
         })
     }
@@ -118,6 +126,46 @@ impl Server {
     pub fn block_on<F: Future>(&self, future: F) -> F::Output {
         self.runtime.block_on(future)
     }
+
+    pub fn tts(&self, ssml: String, frequency: u64, opts: Option<TtsOptions>) {
+        let tts = self.tts.clone();
+        let opts = opts.unwrap_or_default();
+        log::debug!("TTS from Lua: `{}` @ {} ({:?})", ssml, frequency, opts);
+
+        self.runtime.spawn(async move {
+            let result = tts
+                .transmit(tonic::Request::new(stubs::tts::v0::TransmitRequest {
+                    ssml,
+                    plaintext: opts.plaintext,
+                    frequency,
+                    srs_client_name: opts.srs_client_name,
+                    position: opts.position,
+                    coalition: opts
+                        .coalition
+                        .unwrap_or(stubs::common::v0::Coalition::Neutral)
+                        .into(),
+                    r#async: false,
+                    provider: opts.provider,
+                }))
+                .await;
+            match result {
+                Ok(_) => {}
+                Err(err) => {
+                    log::error!("Error in TTS transmission from Lua: {}", err);
+                }
+            }
+        });
+    }
+}
+
+#[derive(Debug, Default, serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TtsOptions {
+    plaintext: Option<String>,
+    srs_client_name: Option<String>,
+    position: Option<stubs::common::v0::InputPosition>,
+    coalition: Option<stubs::common::v0::Coalition>,
+    provider: Option<stubs::tts::v0::transmit_request::Provider>,
 }
 
 async fn run(
@@ -196,4 +244,12 @@ pub enum StartError {
     Io(#[from] std::io::Error),
     #[error(transparent)]
     AddrParse(#[from] std::net::AddrParseError),
+}
+
+impl<'lua> mlua::FromLua<'lua> for TtsOptions {
+    fn from_lua(lua_value: mlua::Value<'lua>, lua: &'lua mlua::Lua) -> mlua::Result<Self> {
+        use mlua::LuaSerdeExt;
+        let opts: TtsOptions = lua.from_value(lua_value)?;
+        Ok(opts)
+    }
 }

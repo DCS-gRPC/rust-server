@@ -44,7 +44,7 @@ pub async fn synthesize(text: &str, config: &GCloudConfig) -> Result<Vec<Vec<u8>
 
     // Convert ogg audio data to opus frames
     let data: TextToSpeechResponse = res.json().await?;
-    let data = base64::decode(&data.audio_content)?;
+    let data = base64::decode(data.audio_content)?;
     let data = Cursor::new(data);
     let mut frames = Vec::new();
     let mut audio = PacketReader::new(data);

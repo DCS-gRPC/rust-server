@@ -91,7 +91,7 @@ impl Decoder for VoiceCodec {
 
             assert_eq!(
                 len,
-                4 + len_audio_part as u64 + len_frequencies + 4 + 8 + 1 + 22 + 22
+                4 + len_audio_part + len_frequencies + 4 + 8 + 1 + 22 + 22
             );
 
             let mut audio_part = vec![0u8; len_audio_part as usize];

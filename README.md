@@ -109,6 +109,7 @@ tts.provider.gcloud.key = "..."
 tts.provider.gcloud.defaultVoice = "en-GB-Neural2-A"
 
 -- The default Windows voice to use (see https://support.microsoft.com/en-us/windows/appendix-a-supported-languages-and-voices-4486e345-7730-53da-fcfe-55cc64300f01).
+-- Requires at least Windows Server 2019 to work properly.
 tts.provider.win.defaultVoice = "David"
 
 -- Your SRS server's address.

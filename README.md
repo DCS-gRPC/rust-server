@@ -60,7 +60,7 @@ Create the file `Saved Games\DCS\Config\dcs-grpc.lua` and add the line below
 autostart = true
 ```
 
-As well as this you can set other options in this file. These are listed below:
+As well as this you can set other options in this file. All options and the config file itself are optional – you only have to create the config file and set an option if you want to change any of the default values (the list below shows the default values). The available options are:
 
 ```lua
 -- Whether the `Eval` method is enabled or not.

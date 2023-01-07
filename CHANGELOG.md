@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Fixed velocity and orientation not getting updated in units stream
+
 ## [0.7.0] - 2023-01-02
 
 ### Fixed

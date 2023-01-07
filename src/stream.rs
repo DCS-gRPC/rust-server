@@ -199,7 +199,7 @@ async fn handle_event(
 async fn update_units(state: &mut State) -> Result<(), Error> {
     let mut units = std::mem::take(&mut state.units);
     // Update all units in parallel (will queue a request for each unit, but the execution will
-    // still be thottled by the throughputLimit setting).
+    // still be throttled by the throughputLimit setting).
     futures_util::future::try_join_all(
         units
             .values_mut()
@@ -316,20 +316,16 @@ impl UnitState {
                 changed = true;
             }
         }
-        if !changed {
-            if let Some((before, after)) = self.unit.orientation.as_mut().zip(orientation) {
-                if !orientation_equalish(before, &after) {
-                    *before = after;
-                    changed = true;
-                }
+        if let Some((before, after)) = self.unit.orientation.as_mut().zip(orientation) {
+            if !orientation_equalish(before, &after) {
+                *before = after;
+                changed = true;
             }
         }
-        if !changed {
-            if let Some((before, after)) = self.unit.velocity.as_mut().zip(velocity) {
-                if !velocity_equalish(before, &after) {
-                    *before = after;
-                    changed = true;
-                }
+        if let Some((before, after)) = self.unit.velocity.as_mut().zip(velocity) {
+            if !velocity_equalish(before, &after) {
+                *before = after;
+                changed = true;
             }
         }
 

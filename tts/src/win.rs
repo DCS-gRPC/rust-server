@@ -99,9 +99,9 @@ pub async fn synthesize(text: &str, config: &WinConfig) -> Result<Vec<Vec<u8>>, 
 pub enum WinError {
     #[error("Calling WinRT API failed with error code {0}: {1}")]
     Win(i32, String),
-    #[error("Runtime error")]
+    #[error("Runtime error: {0}")]
     Io(#[from] std::io::Error),
-    #[error("failed to encode audio data as opus")]
+    #[error("failed to encode audio data as opus: {0}")]
     Opus(#[from] audiopus::Error),
 }
 

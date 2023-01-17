@@ -94,10 +94,10 @@ struct TextToSpeechResponse {
 pub enum GcloudError {
     #[error(transparent)]
     Request(#[from] reqwest::Error),
-    #[error("received error from GCloud TTS API")]
+    #[error("received error from GCloud TTS API: {0}")]
     Gcloud(String),
-    #[error("error reading ogg packet")]
+    #[error("error reading ogg packet: {0}")]
     Ogg(#[from] ogg::OggReadError),
-    #[error("failed to base64 decode audio data")]
+    #[error("failed to base64 decode audio data: {0}")]
     Base64(#[from] base64::DecodeError),
 }

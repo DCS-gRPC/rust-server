@@ -28,7 +28,7 @@ pub async fn synthesize(text: &str, config: &AzureConfig) -> Result<Vec<Vec<u8>>
 
     if res.status() != StatusCode::OK {
         let err = res.text().await?;
-        return Err(AzureError::Azure(format!("Azure error: {}", err)));
+        return Err(AzureError::Azure(err.to_string()));
     }
 
     let token = res.text().await?;
@@ -63,7 +63,7 @@ pub async fn synthesize(text: &str, config: &AzureConfig) -> Result<Vec<Vec<u8>>
 
     if res.status() != StatusCode::OK {
         let err = res.text().await?;
-        return Err(AzureError::Azure(format!("Azure error: {}", err)));
+        return Err(AzureError::Azure(err.to_string()));
     }
 
     // Convert ogg audio data to opus frames
@@ -82,8 +82,8 @@ pub async fn synthesize(text: &str, config: &AzureConfig) -> Result<Vec<Vec<u8>>
 pub enum AzureError {
     #[error(transparent)]
     Request(#[from] reqwest::Error),
-    #[error("received error from Azure API")]
+    #[error("received error from Azure API: {0}")]
     Azure(String),
-    #[error("error reading ogg packet")]
+    #[error("error reading ogg packet: {0}")]
     Ogg(#[from] ogg::OggReadError),
 }

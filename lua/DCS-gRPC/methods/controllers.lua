@@ -92,3 +92,97 @@ GRPC.methods.getDetectedTargets = function(params)
     contacts = results
   })
 end
+
+GRPC.methods.performOrbitTask = function(params)
+
+  local obj
+  if params.name.groupName then
+    obj = Group.getByName(params.name.groupName)
+  elseif  params.name.unitName then
+    obj = Unit.getByName(params.name.unitName)
+  else
+    return GRPC.errorInvalidArgument("No Group or Unit name provided")
+  end
+
+  if obj == nil then
+    return GRPC.errorNotFound("Could not find group or unit with provided name")
+  end
+
+  local controller = obj:getController()
+
+  local point = coord.LLtoLO(params.orbitPoint.lat, params.orbitPoint.lon, params.orbitPoint.alt)
+  point = {x = point.x, y = point.z} -- Convert to Vec2
+
+  local orbit = {
+    id = 'Orbit', 
+    params = { 
+      pattern = 'Circle',
+      point = point,
+    } 
+  }
+
+  if params.speed then
+    orbit.params.speed = params.speed
+  end
+
+  if params.altitude then
+    orbit.params.altitude = params.altitude
+  end
+  
+  if params.priority = 0 then
+    controller:setTask(orbit)
+  else
+    controller:pushTask(orbit)
+  end
+
+  return GRPC.success({})
+end
+
+GRPC.methods.performRacetrackTask = function(params)
+
+  local obj
+  if params.name.groupName then
+    obj = Group.getByName(params.name.groupName)
+  elseif  params.name.unitName then
+    obj = Unit.getByName(params.name.unitName)
+  else
+    return GRPC.errorInvalidArgument("No Group or Unit name provided")
+  end
+
+  if obj == nil then
+    return GRPC.errorNotFound("Could not find group or unit with provided name")
+  end
+
+  local controller = obj:getController()
+
+  local startPoint = coord.LLtoLO(params.startPoint.lat, params.startPoint.lon, params.startPoint.alt)
+  startPoint = {x = startPoint.x, y = startPoint.z} -- Convert to Vec2
+
+  local endPoint = coord.LLtoLO(params.endPoint.lat, params.endPoint.lon, params.endPoint.alt)
+  endPoint = {x = endPoint.x, y = endPoint.z} -- Convert to Vec2
+
+  local racetrack = {
+    id = 'Orbit', 
+    params = { 
+      pattern = 'Race-Track',
+      point = startPoint,
+      point2 = endPoint,
+    } 
+  }
+
+  if params.speed then
+    racetrack.params.speed = params.speed
+  end
+
+  if params.altitude then
+    racetrack.params.altitude = params.altitude
+  end
+  
+  if params.priority = 0 then
+    controller:setTask(racetrack)
+  else
+    controller:pushTask(racetrack)
+  end
+
+  return GRPC.success({})
+end

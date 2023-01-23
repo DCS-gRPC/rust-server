@@ -478,7 +478,7 @@ Primarily enhanced with `GRPC.exporters.unit`
   - [ ] `CarpetBombing`
   - [ ] `AttackMapObject`
   - [ ] `BombingRunway`
-  - [ ] `orbit`
+  - [x] `orbit` (Orbit and Racetrack APIs separated)
   - [ ] `refueling`
   - [ ] `land`
   - [ ] `follow`

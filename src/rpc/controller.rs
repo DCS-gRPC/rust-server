@@ -19,4 +19,18 @@ impl ControllerService for MissionRpc {
         let res = self.request("getDetectedTargets", request).await?;
         Ok(Response::new(res))
     }
+    async fn perform_orbit_task(
+        &self,
+        request: Request<controller::v0::PerformOrbitTaskRequest>,
+    ) -> Result<Response<controller::v0::PerformOrbitTaskResponse>, Status> {
+        let res = self.request("performOrbitTask", request).await?;
+        Ok(Response::new(res))
+    }
+    async fn perform_racetrack_task(
+        &self,
+        request: Request<controller::v0::PerformRacetrackTaskRequest>,
+    ) -> Result<Response<controller::v0::PerformRacetrackTaskResponse>, Status> {
+        let res = self.request("performRacetrackTask", request).await?;
+        Ok(Response::new(res))
+    }
 }

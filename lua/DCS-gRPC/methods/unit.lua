@@ -118,3 +118,13 @@ GRPC.methods.getUnit = function(params)
 
   return GRPC.success({unit = GRPC.exporters.unit(unit)})
 end
+
+GRPC.methods.unitDestroy = function(params)
+  local unit = Unit.getByName(params.name)
+  if unit == nil then
+    return GRPC.errorNotFound("unit `" .. tostring(params.name) .. "` does not exist")
+  end
+
+  unit:destroy()
+  return GRPC.success({})
+end

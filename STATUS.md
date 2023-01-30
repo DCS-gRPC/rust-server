@@ -351,7 +351,7 @@ Primarily enhanced with `GRPC.exporters.unit`
 
 - [ ] `Object` class members
   - [ ] Category
-  - [ ] `destroy`
+  - [x] `destroy`
   - [ ] `isExists`
   - [x] `getCategory`
   - [x] `getTypeName`
@@ -446,8 +446,8 @@ Primarily enhanced with `GRPC.exporters.unit`
 ### Group
 - [ ] (static) `getByName`
 - [ ] `isExist`
-- [ ] `activate`
-- [ ] `destroy`
+- [x] `activate`
+- [x] `destroy`
 - [x] `getCategory`
 - [x] `getCoalition`
 - [x] `getName`

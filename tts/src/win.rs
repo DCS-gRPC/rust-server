@@ -80,8 +80,7 @@ pub async fn synthesize(text: &str, config: &WinConfig) -> Result<Vec<Vec<u8>>, 
     // the DataReader is !Send, which is why we have to process it in a local set
     let stream = synth
         .SynthesizeSsmlToStreamAsync(&HSTRING::from(&format!(
-            r#"<speak version="1.0" xml:lang="{}">{}</speak>"#,
-            lang, text
+            r#"<speak version="1.0" xml:lang="{lang}">{text}</speak>"#
         )))?
         .await?;
     let size = stream.Size()?;

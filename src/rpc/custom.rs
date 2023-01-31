@@ -66,8 +66,7 @@ impl CustomService for MissionRpc {
             .or_else(|err| match err {
                 igrf::Error::DateOutOfRange(f) => Ok(f.d),
                 err => Err(Status::internal(format!(
-                    "failed to estimate magnetic declination: {}",
-                    err
+                    "failed to estimate magnetic declination: {err}"
                 ))),
             })?;
 

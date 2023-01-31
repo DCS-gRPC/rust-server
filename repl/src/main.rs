@@ -52,16 +52,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     return Err(err.into());
                 }
                 Err(err) => {
-                    eprintln!("{}", err);
+                    eprintln!("{err}");
                     continue;
                 }
             };
 
             if let Some(s) = json.as_str() {
-                println!("= {}", s);
+                println!("= {s}");
             } else {
                 let json = serde_json::to_string_pretty(&json)?;
-                println!("= {}", json);
+                println!("= {json}");
             }
         }
     }

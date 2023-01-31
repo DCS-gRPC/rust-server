@@ -23,7 +23,7 @@ pub async fn synthesize(text: &str, config: &GCloudConfig) -> Result<Vec<Vec<u8>
             speaking_rate: 0.9,
         },
         input: Input {
-            ssml: &format!(r#"<speak version="1.0" xml:lang="en">{}</speak>"#, text),
+            ssml: &format!(r#"<speak version="1.0" xml:lang="en">{text}</speak>"#),
         },
         voice: Voice {
             language_code,

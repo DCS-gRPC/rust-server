@@ -79,7 +79,7 @@ impl TtsService for Tts {
             .start(addr, self.shutdown_signal.signal())
             .await
             .map_err(|err| {
-                Status::internal(format!("Failed to establish SRS connection: {}", err))
+                Status::internal(format!("Failed to establish SRS connection: {err}"))
             })?;
 
         let config = match request

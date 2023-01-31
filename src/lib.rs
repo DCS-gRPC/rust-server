@@ -156,7 +156,7 @@ pub fn next(lua: &Lua, (env, callback): (i32, Function)) -> LuaResult<bool> {
                     err,
                     method,
                     result: pretty_print_value(res, 0)
-                        .unwrap_or_else(|err| format!("failed to pretty print result: {}", err)),
+                        .unwrap_or_else(|err| format!("failed to pretty print result: {err}")),
                 }))
             })?;
 

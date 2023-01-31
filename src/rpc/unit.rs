@@ -60,4 +60,12 @@ impl UnitService for MissionRpc {
         let res = self.request("getUnitTransform", request).await?;
         Ok(Response::new(res))
     }
+
+    async fn destroy(
+        &self,
+        request: Request<unit::v0::DestroyRequest>,
+    ) -> Result<Response<unit::v0::DestroyResponse>, Status> {
+        let res = self.request("unitDestroy", request).await?;
+        Ok(Response::new(res))
+    }
 }

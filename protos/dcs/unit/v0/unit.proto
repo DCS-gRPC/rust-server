@@ -28,6 +28,9 @@ service UnitService {
    * orientation and velocity.
    */
   rpc GetTransform(GetTransformRequest) returns (GetTransformResponse) {}
+
+  // https://wiki.hoggitworld.com/view/DCS_func_destroy
+  rpc Destroy(DestroyRequest) returns (DestroyResponse) {}
 }
 
 message GetRadarRequest {
@@ -93,4 +96,11 @@ message GetRequest {
 
 message GetResponse {
   dcs.common.v0.Unit unit = 1;
+}
+
+message DestroyRequest {
+  string name = 1;
+}
+
+message DestroyResponse {
 }

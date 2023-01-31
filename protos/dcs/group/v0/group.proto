@@ -8,6 +8,12 @@ option go_package = "github.com/DCS-gRPC/go-bindings/dcs/v0/group";
 service GroupService {
   // https://wiki.hoggitworld.com/view/DCS_func_getUnits
   rpc GetUnits(GetUnitsRequest) returns (GetUnitsResponse) {}
+
+  // https://wiki.hoggitworld.com/view/DCS_func_activate
+  rpc Activate(ActivateRequest) returns (ActivateResponse) {}
+
+  // https://wiki.hoggitworld.com/view/DCS_func_destroy
+  rpc Destroy(DestroyRequest) returns (DestroyResponse) {}
 }
 
 message GetUnitsRequest {
@@ -19,4 +25,18 @@ message GetUnitsRequest {
 
 message GetUnitsResponse {
   repeated dcs.common.v0.Unit units = 1;
+}
+
+message ActivateRequest {
+  string group_name = 1;
+}
+
+message ActivateResponse {
+}
+
+message DestroyRequest {
+  string group_name = 1;
+}
+
+message DestroyResponse {
 }

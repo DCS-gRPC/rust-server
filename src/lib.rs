@@ -84,6 +84,10 @@ pub fn start(_: &Lua, config: Config) -> LuaResult<(bool, Option<String>)> {
     log::debug!("Config: {:#?}", config);
 
     if !config.integrity_check_disabled {
+        if env!("CARGO_PKG_VERSION") != config.version {
+            return Ok((false, Some("dcs_grpc.dll version does not match version of DCS-gRPC Lua files; please check your installation!".to_string())));
+        }
+
         if let Err(err) = integrity::check(&config) {
             return Ok((false, Some(err.to_string())));
         }

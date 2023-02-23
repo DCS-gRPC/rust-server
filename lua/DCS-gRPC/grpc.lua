@@ -10,6 +10,7 @@ end
 
 if isMissionEnv then
   assert(grpc.start({
+    version = GRPC.version,
     writeDir = lfs.writedir(),
     dllPath = GRPC.dllPath,
     luaPath = GRPC.luaPath,

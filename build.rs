@@ -7,6 +7,23 @@ use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 
 fn main() {
+    write_version_to_lua();
+    embed_lua_file_hashes();
+}
+
+/// Write the current version into `lua/DCS-gRPC/version.lua` to be picked up by the Lua side of the
+/// server.
+fn write_version_to_lua() {
+    println!("cargo:rerun-if-env-changed=CARGO_PKG_VERSION");
+
+    let path = PathBuf::from("./lua/DCS-gRPC/version.lua");
+    let mut out = File::create(path).unwrap();
+    writeln!(out, r#"-- this file is auto-generated on `cargo build`"#).unwrap();
+    writeln!(out, r#"GRPC.version = "{}""#, env!("CARGO_PKG_VERSION")).unwrap();
+}
+
+/// Embed the hash of each Lua file into the binary to allow a runtime integrity check.
+fn embed_lua_file_hashes() {
     println!("cargo:rerun-if-changed=lua/DCS-gRPC");
     println!("cargo:rerun-if-changed=lua/Hooks");
 

@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Config {
+    pub version: String,
     pub write_dir: String,
     pub dll_path: String,
     pub lua_path: String,

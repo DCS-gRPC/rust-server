@@ -31,6 +31,9 @@ if GRPC.throughputLimit == nil or GRPC.throughputLimit == 0 or not type(GRPC.thr
   GRPC.throughputLimit = 600
 end
 
+-- load version
+dofile(GRPC.luaPath .. [[version.lua]])
+
 -- Let DCS know where to find the DLLs
 if not string.find(package.cpath, GRPC.dllPath) then
   package.cpath = package.cpath .. [[;]] .. GRPC.dllPath .. [[?.dll;]]

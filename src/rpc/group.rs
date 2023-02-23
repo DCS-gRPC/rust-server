@@ -1,7 +1,8 @@
-use super::MissionRpc;
 use stubs::group::v0::group_service_server::GroupService;
 use stubs::*;
 use tonic::{Request, Response, Status};
+
+use super::MissionRpc;
 
 #[tonic::async_trait]
 impl GroupService for MissionRpc {

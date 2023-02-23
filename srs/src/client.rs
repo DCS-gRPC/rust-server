@@ -2,10 +2,10 @@ use std::future::Future;
 use std::net::SocketAddr;
 use std::sync::Arc;
 
+use tokio::sync::RwLock;
+
 use crate::message::{create_sguid, Coalition, Position};
 use crate::voice_stream::{VoiceStream, VoiceStreamError};
-
-use tokio::sync::RwLock;
 
 #[derive(Debug, Clone)]
 pub struct UnitInfo {

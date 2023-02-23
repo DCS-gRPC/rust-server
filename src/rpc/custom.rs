@@ -1,9 +1,10 @@
 use std::ops::Neg;
 
-use super::MissionRpc;
 use stubs::custom::v0::custom_service_server::CustomService;
 use stubs::*;
 use tonic::{Request, Response, Status};
+
+use super::MissionRpc;
 
 #[tonic::async_trait]
 impl CustomService for MissionRpc {

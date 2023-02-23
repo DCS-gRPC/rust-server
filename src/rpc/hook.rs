@@ -1,7 +1,8 @@
-use super::HookRpc;
 use stubs::hook::v0::hook_service_server::HookService;
 use stubs::*;
 use tonic::{Request, Response, Status};
+
+use super::HookRpc;
 
 #[tonic::async_trait]
 impl HookService for HookRpc {

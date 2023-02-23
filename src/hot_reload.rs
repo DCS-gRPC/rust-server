@@ -6,12 +6,13 @@ use std::path::PathBuf;
 use std::sync::{Arc, RwLock};
 use std::{error, fmt};
 
-use crate::server::TtsOptions;
-use crate::Config;
 use libloading::{Library, Symbol};
 use mlua::prelude::*;
 use mlua::{Function, Value};
 use once_cell::sync::Lazy;
+
+use crate::server::TtsOptions;
+use crate::Config;
 
 static LIBRARY: Lazy<RwLock<Option<Library>>> = Lazy::new(|| RwLock::new(None));
 

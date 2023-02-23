@@ -1,7 +1,8 @@
-use super::MissionRpc;
 use stubs::trigger;
 use stubs::trigger::v0::trigger_service_server::TriggerService;
 use tonic::{Request, Response, Status};
+
+use super::MissionRpc;
 
 #[tonic::async_trait]
 impl TriggerService for MissionRpc {

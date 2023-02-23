@@ -17,8 +17,8 @@ use std::sync::{Arc, RwLock};
 use std::time::Instant;
 
 use config::Config;
-use mlua::{prelude::*, LuaSerdeExt};
-use mlua::{Function, Value};
+use mlua::prelude::*;
+use mlua::{Function, LuaSerdeExt, Value};
 use once_cell::sync::Lazy;
 use server::{Server, TtsOptions};
 use stubs::mission::v0::StreamEventsResponse;

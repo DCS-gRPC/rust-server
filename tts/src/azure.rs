@@ -1,6 +1,7 @@
+use std::io::Cursor;
+
 use ogg::reading::PacketReader;
 use reqwest::StatusCode;
-use std::io::Cursor;
 
 #[derive(Debug)]
 pub struct AzureConfig {

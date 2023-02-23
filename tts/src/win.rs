@@ -1,8 +1,8 @@
 use std::borrow::Cow;
 
-use windows::{
-    core::HSTRING, Media::SpeechSynthesis::SpeechSynthesizer, Storage::Streams::DataReader,
-};
+use windows::core::HSTRING;
+use windows::Media::SpeechSynthesis::SpeechSynthesizer;
+use windows::Storage::Streams::DataReader;
 
 #[derive(Debug)]
 pub struct WinConfig {

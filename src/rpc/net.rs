@@ -1,7 +1,8 @@
-use super::MissionRpc;
 use stubs::net::v0::net_service_server::NetService;
 use stubs::*;
 use tonic::{Request, Response, Status};
+
+use super::MissionRpc;
 
 #[tonic::async_trait]
 impl NetService for MissionRpc {

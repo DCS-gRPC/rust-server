@@ -1,7 +1,8 @@
-use super::MissionRpc;
 use stubs::unit;
 use stubs::unit::v0::unit_service_server::UnitService;
 use tonic::{Request, Response, Status};
+
+use super::MissionRpc;
 
 #[tonic::async_trait]
 impl UnitService for MissionRpc {

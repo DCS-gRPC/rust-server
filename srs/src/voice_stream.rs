@@ -7,10 +7,6 @@ use std::sync::Arc;
 use std::task::{Context, Poll};
 use std::time::Duration;
 
-use crate::client::Client;
-use crate::message::{Client as MsgClient, Message, MsgType, Radio, RadioInfo};
-use crate::messages_codec::{self, MessagesCodec};
-use crate::voice_codec::*;
 use futures_util::future::FutureExt;
 use futures_util::sink::{Sink, SinkExt};
 use futures_util::stream::{SplitStream, Stream, StreamExt};
@@ -22,6 +18,11 @@ use tokio_stream::wrappers::ReceiverStream;
 use tokio_util::codec::{FramedRead, FramedWrite};
 use tokio_util::sync::{PollSendError, PollSender};
 use tokio_util::udp::UdpFramed;
+
+use crate::client::Client;
+use crate::message::{Client as MsgClient, Message, MsgType, Radio, RadioInfo};
+use crate::messages_codec::{self, MessagesCodec};
+use crate::voice_codec::*;
 
 const SRS_VERSION: &str = "1.9.0.0";
 

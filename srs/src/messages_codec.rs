@@ -1,7 +1,9 @@
-use crate::message::Message;
-use bytes::BytesMut;
 use std::{error, fmt, io};
+
+use bytes::BytesMut;
 use tokio_util::codec::{Decoder, Encoder, LinesCodec, LinesCodecError};
+
+use crate::message::Message;
 
 pub struct MessagesCodec {
     lines_codec: LinesCodec,

@@ -1,7 +1,8 @@
-use super::MissionRpc;
 use stubs::coalition::v0::coalition_service_server::CoalitionService;
 use stubs::*;
 use tonic::{Request, Response, Status};
+
+use super::MissionRpc;
 
 #[tonic::async_trait]
 impl CoalitionService for MissionRpc {

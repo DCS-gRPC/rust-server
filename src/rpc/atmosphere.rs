@@ -1,7 +1,8 @@
-use super::MissionRpc;
 use stubs::atmosphere::v0::atmosphere_service_server::AtmosphereService;
 use stubs::*;
 use tonic::{Request, Response, Status};
+
+use super::MissionRpc;
 
 #[tonic::async_trait]
 impl AtmosphereService for MissionRpc {

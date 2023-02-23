@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 pub struct Config {
     pub write_dir: String,
     pub dll_path: String,
+    pub lua_path: String,
     #[serde(default = "default_host")]
     pub host: String,
     #[serde(default = "default_port")]
@@ -15,6 +16,8 @@ pub struct Config {
     pub debug: bool,
     #[serde(default)]
     pub eval_enabled: bool,
+    #[serde(default)]
+    pub integrity_check_disabled: bool,
     pub tts: Option<TtsConfig>,
     pub srs: Option<SrsConfig>,
 }

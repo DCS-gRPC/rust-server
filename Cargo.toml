@@ -57,6 +57,9 @@ tokio.workspace = true
 tokio-stream.workspace = true
 tonic.workspace = true
 
+[build-dependencies]
+walkdir = "2.3"
+
 [features]
 default = []
 hot-reload = ["libloading"]

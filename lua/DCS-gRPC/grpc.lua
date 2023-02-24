@@ -9,17 +9,21 @@ end
 --
 
 if isMissionEnv then
-  grpc.start({
+  assert(grpc.start({
+    version = GRPC.version,
     writeDir = lfs.writedir(),
     dllPath = GRPC.dllPath,
+    luaPath = GRPC.luaPath,
     host = GRPC.host,
     port = GRPC.port,
     debug = GRPC.debug,
     evalEnabled = GRPC.evalEnabled,
+    integrityCheckDisabled = GRPC.integrityCheckDisabled,
     tts = GRPC.tts,
     srs = GRPC.srs,
-  })
+  }))
 end
+
 
 --
 -- Export methods

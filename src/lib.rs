@@ -5,6 +5,7 @@ mod config;
 mod fps;
 #[cfg(feature = "hot-reload")]
 mod hot_reload;
+mod integrity;
 pub mod rpc;
 mod server;
 mod shutdown;
@@ -71,16 +72,28 @@ pub fn init(config: &Config) {
 }
 
 #[no_mangle]
-pub fn start(_: &Lua, config: Config) -> LuaResult<()> {
+pub fn start(_: &Lua, config: Config) -> LuaResult<(bool, Option<String>)> {
     {
         if SERVER.read().unwrap().is_some() {
-            return Ok(());
+            return Ok((true, None));
         }
     }
 
     init(&config);
 
     log::debug!("Config: {:#?}", config);
+
+    if !config.integrity_check_disabled {
+        if env!("CARGO_PKG_VERSION") != config.version {
+            return Ok((false, Some("dcs_grpc.dll version does not match version of DCS-gRPC Lua files; please check your installation!".to_string())));
+        }
+
+        if let Err(err) = integrity::check(&config) {
+            return Ok((false, Some(err.to_string())));
+        }
+        log::info!("integrity check successful");
+    }
+
     log::info!("Starting ...");
 
     let mut server =
@@ -90,7 +103,7 @@ pub fn start(_: &Lua, config: Config) -> LuaResult<()> {
 
     log::info!("Started");
 
-    Ok(())
+    Ok((true, None))
 }
 
 #[no_mangle]

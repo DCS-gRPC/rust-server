@@ -16,7 +16,7 @@ use crate::Config;
 
 static LIBRARY: Lazy<RwLock<Option<Library>>> = Lazy::new(|| RwLock::new(None));
 
-pub fn start(lua: &Lua, config: Config) -> LuaResult<()> {
+pub fn start(lua: &Lua, config: Config) -> LuaResult<(bool, Option<String>)> {
     let lib_path = {
         let mut lib_path = PathBuf::from(&config.dll_path);
         lib_path.push("dcs_grpc.dll");
@@ -30,7 +30,7 @@ pub fn start(lua: &Lua, config: Config) -> LuaResult<()> {
     let mut lib = LIBRARY.write().unwrap();
     let lib = lib.get_or_insert(new_lib);
 
-    let f: Symbol<fn(lua: &Lua, config: Config) -> LuaResult<()>> = unsafe {
+    let f: Symbol<fn(lua: &Lua, config: Config) -> LuaResult<(bool, Option<String>)>> = unsafe {
         lib.get(b"start")
             .map_err(|err| mlua::Error::ExternalError(Arc::new(err)))?
     };

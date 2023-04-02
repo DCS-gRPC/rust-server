@@ -282,7 +282,7 @@ GRPC.onDcsEvent = function(event)
       type = "markAdd",
       initiator = {initiator = typed_exporter(event.initiator)},
       id = event.idx,
-      pos = GRPC.exporters.position(event.pos),
+      position = GRPC.exporters.position(event.pos),
       text = event.text,
     }
     if event.groupID > -1 and event.groupID then
@@ -300,7 +300,7 @@ GRPC.onDcsEvent = function(event)
       type = "markChange",
       initiator = {initiator = typed_exporter(event.initiator)},
       id = event.idx,
-      pos = GRPC.exporters.position(event.pos),
+      position = GRPC.exporters.position(event.pos),
       text = event.text,
     }
     if event.groupID > -1 and event.groupID then
@@ -318,7 +318,7 @@ GRPC.onDcsEvent = function(event)
       type = "markRemove",
       initiator = {initiator = typed_exporter(event.initiator)},
       id = event.idx,
-      pos = GRPC.exporters.position(event.pos),
+      position = GRPC.exporters.position(event.pos),
       text = event.text,
     }
     if event.groupID > -1 and event.groupID then

@@ -10,7 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `ActivateGroup` API which allows to activate groups with late activation.
 - Added `DestroyGroup` API which removes the entire group from the game world.
 - `DestroyUnit` API
+
+### Fixed
 - Fixed `MarkAddEvent`, `MarkChangeEvent` and `MarkRemoveEvent` position
+- Fixed crash of concurrent Windows TTS synthesis ([#223](https://github.com/DCS-gRPC/rust-server/issues/223))
 
 ## [0.7.1] - 2023-01-08
 

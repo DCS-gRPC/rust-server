@@ -1,5 +1,6 @@
 use std::borrow::Cow;
 
+use tokio::sync::Mutex;
 use windows::core::HSTRING;
 use windows::Media::SpeechSynthesis::SpeechSynthesizer;
 use windows::Storage::Streams::DataReader;
@@ -9,9 +10,14 @@ pub struct WinConfig {
     pub voice: Option<String>,
 }
 
+static MUTEX: Mutex<()> = Mutex::const_new(());
+
 pub async fn synthesize(text: &str, config: &WinConfig) -> Result<Vec<Vec<u8>>, WinError> {
     // Note, there does not seem to be a way to explicitly set 16000kHz, 16 audio bits per
     // sample and mono channel.
+
+    // Prevent concurrent Windows TTS synthesis, as this might cause a crash.
+    let lock = MUTEX.lock().await;
 
     let mut voice_info = None;
     if let Some(voice) = &config.voice {
@@ -90,6 +96,8 @@ pub async fn synthesize(text: &str, config: &WinConfig) -> Result<Vec<Vec<u8>>, 
 
     let mut wav = vec![0u8; size as usize];
     rd.ReadBytes(wav.as_mut_slice())?;
+
+    drop(lock);
 
     Ok(crate::wav_to_opus(wav.into()).await?)
 }

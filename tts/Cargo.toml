@@ -13,9 +13,9 @@ bytes.workspace = true
 log.workspace = true
 ogg = "0.9"
 reqwest = { version = "0.11", default-features = false, features = ["rustls-tls", "json"] }
-rusoto_core = "0.48"
+rusoto_core = { version="0.48", default_features = false, features = ["rustls"] }
 rusoto_credential = "0.48"
-rusoto_polly = "0.48"
+rusoto_polly = { version="0.48", default_features = false, features = ["rustls"] }
 serde.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true

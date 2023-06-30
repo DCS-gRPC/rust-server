@@ -4,68 +4,75 @@ use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 use std::str::FromStr;
 use std::time::{Duration, Instant};
 
+use ::srs::Sender;
 #[cfg(target_os = "windows")]
 use ::tts::WinConfig;
 use ::tts::{AwsConfig, AwsRegion, AzureConfig, GCloudConfig, TtsConfig};
-use dcs_module_ipc::IPC;
-use futures_util::stream::{SplitSink, StreamExt};
-use futures_util::SinkExt;
-use srs::VoiceStream;
-use stubs::common::v0::Coalition;
+use futures_util::FutureExt;
+use stubs::common::v0::{Coalition, Unit};
 use stubs::mission::v0::stream_events_response::{Event, TtsEvent};
 use stubs::mission::v0::StreamEventsResponse;
-use stubs::tts;
-use stubs::tts::v0::transmit_request;
-use stubs::tts::v0::tts_service_server::TtsService;
+use stubs::srs;
+use stubs::srs::v0::srs_service_server::SrsService;
+use stubs::srs::v0::transmit_request;
 use tokio::time::sleep;
 use tonic::{Request, Response, Status};
 
+use super::MissionRpc;
 use crate::config::TtsProvider;
 use crate::fps::event_time;
 use crate::shutdown::ShutdownHandle;
+use crate::srs::SrsClients;
 
-pub struct Tts {
+pub struct Srs {
     tts_config: crate::config::TtsConfig,
     srs_config: crate::config::SrsConfig,
-    ipc: IPC<StreamEventsResponse>,
+    rpc: MissionRpc,
+    srs_clients: SrsClients,
     shutdown_signal: ShutdownHandle,
 }
 
-impl Tts {
+impl Srs {
     pub fn new(
         tts_config: crate::config::TtsConfig,
         srs_config: crate::config::SrsConfig,
-        ipc: IPC<StreamEventsResponse>,
+        rpc: MissionRpc,
+        srs_clients: SrsClients,
         shutdown_signal: ShutdownHandle,
     ) -> Self {
         Self {
             tts_config,
             srs_config,
-            ipc,
+            rpc,
+            srs_clients,
             shutdown_signal,
         }
+    }
+
+    pub fn clients(&self) -> SrsClients {
+        self.srs_clients.clone()
     }
 }
 
 #[tonic::async_trait]
-impl TtsService for Tts {
+impl SrsService for Srs {
     async fn transmit(
         &self,
-        request: Request<tts::v0::TransmitRequest>,
-    ) -> Result<Response<tts::v0::TransmitResponse>, Status> {
+        request: Request<srs::v0::TransmitRequest>,
+    ) -> Result<Response<srs::v0::TransmitResponse>, Status> {
         let request = request.into_inner();
         let name = request.srs_client_name.as_deref().unwrap_or("DCS-gRPC");
-        let mut client = srs::Client::new(
+        let mut client = ::srs::Client::new(
             name,
             request.frequency,
             match Coalition::from_i32(request.coalition) {
-                Some(Coalition::Red) => srs::Coalition::Red,
-                _ => srs::Coalition::Blue,
+                Some(Coalition::Red) => ::srs::Coalition::Red,
+                _ => ::srs::Coalition::Blue,
             },
         );
         let position = request.position.unwrap_or_default();
         client
-            .set_position(srs::Position {
+            .set_position(::srs::Position {
                 lat: position.lat,
                 lon: position.lon,
                 alt: position.alt,
@@ -76,7 +83,7 @@ impl TtsService for Tts {
             .srs_config
             .addr
             .unwrap_or_else(|| SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 5002));
-        let stream = client
+        let (tx, _) = client
             .start(addr, self.shutdown_signal.signal())
             .await
             .map_err(|err| {
@@ -216,55 +223,84 @@ impl TtsService for Tts {
         let duration_ms = Duration::from_millis(frames.len() as u64 * 20); // ~20m per frame count
 
         if let Some(text) = request.plaintext {
-            self.ipc
-                .event(StreamEventsResponse {
-                    time: event_time(),
-                    event: Some(Event::Tts(TtsEvent {
-                        text,
-                        frequency: request.frequency,
-                        coalition: request.coalition,
-                        srs_client_name: request.srs_client_name,
-                    })),
-                })
-                .await;
+            let event = StreamEventsResponse {
+                time: event_time(),
+                event: Some(Event::Tts(TtsEvent {
+                    text,
+                    frequency: request.frequency,
+                    coalition: request.coalition,
+                    srs_client_name: request.srs_client_name,
+                })),
+            };
+            self.rpc.event(event).await;
         }
 
         if request.r#async {
             let signal = self.shutdown_signal.signal();
             tokio::task::spawn(async move {
-                if let Err(err) = transmit(frames, stream, signal).await {
+                if let Err(err) = transmit(frames, tx, signal).await {
                     log::error!("TTS transmission failed: {}", err);
                 }
             });
         } else {
-            transmit(frames, stream, self.shutdown_signal.signal())
+            transmit(frames, tx, self.shutdown_signal.signal())
                 .await
                 .map_err(|err| Status::internal(err.to_string()))?;
         }
 
-        Ok(Response::new(tts::v0::TransmitResponse {
+        Ok(Response::new(srs::v0::TransmitResponse {
             duration_ms: duration_ms.as_millis() as u32,
         }))
+    }
+
+    async fn get_clients(
+        &self,
+        _request: Request<srs::v0::GetClientsRequest>,
+    ) -> Result<Response<srs::v0::GetClientsResponse>, Status> {
+        #[derive(serde::Serialize)]
+        struct GetUnitByIdRequest {
+            id: u32,
+        }
+        #[derive(Debug, serde::Deserialize)]
+        struct GetUnitByIdResponse {
+            unit: Unit,
+        }
+
+        let clients =
+            futures_util::future::join_all(self.srs_clients.clients.read().await.iter().map(
+                |(id, frequencies)| {
+                    let frequencies = Vec::from_iter(frequencies.iter().copied());
+                    self.rpc
+                        .request::<_, GetUnitByIdResponse>(
+                            "getUnitById",
+                            tonic::Request::new(GetUnitByIdRequest { id: *id }),
+                        )
+                        .map(|unit| {
+                            unit.ok().map(|unit| srs::v0::get_clients_response::Client {
+                                unit: Some(unit.unit),
+                                frequencies,
+                            })
+                        })
+                },
+            ))
+            .await
+            .into_iter()
+            .flatten()
+            .collect();
+
+        Ok(Response::new(srs::v0::GetClientsResponse { clients }))
     }
 }
 
 async fn transmit(
     frames: Vec<Vec<u8>>,
-    stream: VoiceStream,
+    tx: Sender,
     mut shutdown_signal: impl Future<Output = ()> + Unpin,
 ) -> Result<(), Box<dyn error::Error + Send + Sync + 'static>> {
-    let (sink, mut stream) = stream.split::<Vec<u8>>();
-    let mut transmission = Box::pin(transmit_frames(frames, sink));
+    let mut transmission = Box::pin(transmit_frames(frames, tx));
 
     loop {
         tokio::select! {
-            packet = stream.next() => {
-                if let Some(packet) = packet {
-                    packet?;
-                    // Not interested in the received voice packets, so simply discard them
-                }
-            }
-
             result = &mut transmission => {
                 return result;
             }
@@ -280,11 +316,11 @@ async fn transmit(
 
 async fn transmit_frames(
     frames: Vec<Vec<u8>>,
-    mut sink: SplitSink<VoiceStream, Vec<u8>>,
+    tx: Sender,
 ) -> Result<(), Box<dyn error::Error + Send + Sync + 'static>> {
     let start = Instant::now();
     for (i, frame) in frames.into_iter().enumerate() {
-        sink.send(frame).await?;
+        tx.send(frame).await?;
 
         // wait for the current ~playtime before sending the next package
         let playtime = Duration::from_millis((i as u64 + 1) * 20); // 20m per frame count

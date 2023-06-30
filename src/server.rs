@@ -14,19 +14,22 @@ use stubs::hook::v0::hook_service_server::HookServiceServer;
 use stubs::mission::v0::mission_service_server::MissionServiceServer;
 use stubs::mission::v0::StreamEventsResponse;
 use stubs::net::v0::net_service_server::NetServiceServer;
+use stubs::srs::v0::srs_service_server::{SrsService, SrsServiceServer};
+pub use stubs::srs::v0::TransmitRequest;
 use stubs::timer::v0::timer_service_server::TimerServiceServer;
 use stubs::trigger::v0::trigger_service_server::TriggerServiceServer;
-use stubs::tts::v0::tts_service_server::{TtsService, TtsServiceServer};
 use stubs::unit::v0::unit_service_server::UnitServiceServer;
 use stubs::world::v0::world_service_server::WorldServiceServer;
-use tokio::runtime::Runtime;
+use tokio::runtime::{Handle, Runtime};
 use tokio::sync::oneshot::{self, Receiver};
+use tokio::sync::{mpsc, Mutex};
 use tokio::time::sleep;
 use tonic::transport;
 
 use crate::config::{Config, SrsConfig, TtsConfig};
-use crate::rpc::{HookRpc, MissionRpc, Tts};
+use crate::rpc::{HookRpc, MissionRpc, Srs};
 use crate::shutdown::{Shutdown, ShutdownHandle};
+use crate::srs::SrsClients;
 use crate::stats::Stats;
 
 pub struct Server {
@@ -34,7 +37,7 @@ pub struct Server {
     shutdown: Shutdown,
     after_shutdown: Option<oneshot::Sender<()>>,
     state: ServerState,
-    tts: Arc<Tts>,
+    srs_transmit: mpsc::Sender<TransmitRequest>,
 }
 
 #[derive(Clone)]
@@ -46,6 +49,7 @@ struct ServerState {
     stats: Stats,
     tts_config: TtsConfig,
     srs_config: SrsConfig,
+    srs_transmit: Arc<Mutex<mpsc::Receiver<TransmitRequest>>>,
 }
 
 impl Server {
@@ -54,24 +58,21 @@ impl Server {
         let ipc_hook = IPC::default();
         let runtime = Runtime::new()?;
         let shutdown = Shutdown::new();
+        let (tx, rx) = mpsc::channel(128);
         Ok(Self {
             runtime,
             after_shutdown: None,
             state: ServerState {
                 addr: format!("{}:{}", config.host, config.port).parse()?,
                 eval_enabled: config.eval_enabled,
-                ipc_mission: ipc_mission.clone(),
+                ipc_mission,
                 ipc_hook,
                 stats: Stats::new(shutdown.handle()),
                 tts_config: config.tts.clone().unwrap_or_default(),
                 srs_config: config.srs.clone().unwrap_or_default(),
+                srs_transmit: Arc::new(Mutex::new(rx)),
             },
-            tts: Arc::new(Tts::new(
-                config.tts.clone().unwrap_or_default(),
-                config.srs.clone().unwrap_or_default(),
-                ipc_mission,
-                shutdown.handle(),
-            )),
+            srs_transmit: tx,
             shutdown,
         })
     }
@@ -86,6 +87,7 @@ impl Server {
         self.after_shutdown = Some(tx);
 
         self.runtime.spawn(crate::server::run(
+            self.runtime.handle().clone(),
             self.state.clone(),
             self.shutdown.handle(),
             rx,
@@ -129,33 +131,23 @@ impl Server {
     }
 
     pub fn tts(&self, ssml: String, frequency: u64, opts: Option<TtsOptions>) {
-        let tts = self.tts.clone();
         let opts = opts.unwrap_or_default();
         log::debug!("TTS from Lua: `{}` @ {} ({:?})", ssml, frequency, opts);
-
-        self.runtime.spawn(async move {
-            let result = tts
-                .transmit(tonic::Request::new(stubs::tts::v0::TransmitRequest {
-                    ssml,
-                    plaintext: opts.plaintext,
-                    frequency,
-                    srs_client_name: opts.srs_client_name,
-                    position: opts.position,
-                    coalition: opts
-                        .coalition
-                        .unwrap_or(stubs::common::v0::Coalition::Neutral)
-                        .into(),
-                    r#async: false,
-                    provider: opts.provider,
-                }))
-                .await;
-            match result {
-                Ok(_) => {}
-                Err(err) => {
-                    log::error!("Error in TTS transmission from Lua: {}", err);
-                }
-            }
-        });
+        self.srs_transmit
+            .try_send(TransmitRequest {
+                ssml,
+                plaintext: opts.plaintext,
+                frequency,
+                srs_client_name: opts.srs_client_name,
+                position: opts.position,
+                coalition: opts
+                    .coalition
+                    .unwrap_or(stubs::common::v0::Coalition::Neutral)
+                    .into(),
+                r#async: false,
+                provider: opts.provider,
+            })
+            .ok();
     }
 }
 
@@ -166,20 +158,28 @@ pub struct TtsOptions {
     srs_client_name: Option<String>,
     position: Option<stubs::common::v0::InputPosition>,
     coalition: Option<stubs::common::v0::Coalition>,
-    provider: Option<stubs::tts::v0::transmit_request::Provider>,
+    provider: Option<stubs::srs::v0::transmit_request::Provider>,
 }
 
 async fn run(
+    runtime: Handle,
     state: ServerState,
     shutdown_signal: ShutdownHandle,
     mut after_shutdown: Receiver<()>,
 ) {
     loop {
-        match try_run(state.clone(), shutdown_signal.clone(), &mut after_shutdown).await {
+        match try_run(
+            runtime.clone(),
+            state.clone(),
+            shutdown_signal.clone(),
+            &mut after_shutdown,
+        )
+        .await
+        {
             Ok(_) => break,
             Err(err) => {
                 log::error!("{}", err);
-                log::info!("Restarting gIPC Server in 10 seconds ...");
+                log::info!("Restarting gRPC Server in 10 seconds ...");
                 sleep(Duration::from_secs(10)).await;
             }
         }
@@ -187,6 +187,7 @@ async fn run(
 }
 
 async fn try_run(
+    runtime: Handle,
     state: ServerState,
     shutdown_signal: ShutdownHandle,
     after_shutdown: &mut Receiver<()>,
@@ -201,6 +202,7 @@ async fn try_run(
         stats,
         tts_config,
         srs_config,
+        srs_transmit,
     } = state;
 
     let mut mission_rpc =
@@ -211,6 +213,34 @@ async fn try_run(
         mission_rpc.enable_eval();
         hook_rpc.enable_eval();
     }
+
+    let srs_clients = SrsClients::default();
+    runtime.spawn(crate::srs::run_in_background(
+        mission_rpc.clone(),
+        srs_clients.clone(),
+        srs_config.clone(),
+        shutdown_signal.clone(),
+    ));
+
+    let srs = Srs::new(
+        tts_config.clone(),
+        srs_config.clone(),
+        mission_rpc.clone(),
+        srs_clients.clone(),
+        shutdown_signal.clone(),
+    );
+    runtime.spawn(async move {
+        let mut srs_transmit = srs_transmit.lock().await;
+        while let Some(req) = srs_transmit.recv().await {
+            let result = srs.transmit(tonic::Request::new(req)).await;
+            match result {
+                Ok(_) => {}
+                Err(err) => {
+                    log::error!("Error in TTS transmission from Lua: {}", err);
+                }
+            }
+        }
+    });
 
     transport::Server::builder()
         .add_service(AtmosphereServiceServer::new(mission_rpc.clone()))
@@ -223,10 +253,11 @@ async fn try_run(
         .add_service(NetServiceServer::new(mission_rpc.clone()))
         .add_service(TimerServiceServer::new(mission_rpc.clone()))
         .add_service(TriggerServiceServer::new(mission_rpc.clone()))
-        .add_service(TtsServiceServer::new(Tts::new(
+        .add_service(SrsServiceServer::new(Srs::new(
             tts_config,
             srs_config,
-            ipc_mission,
+            mission_rpc.clone(),
+            srs_clients,
             shutdown_signal.clone(),
         )))
         .add_service(UnitServiceServer::new(mission_rpc.clone()))

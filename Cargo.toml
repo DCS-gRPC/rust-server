@@ -40,7 +40,7 @@ crate-type = ["cdylib"]
 dcs-module-ipc = "0.7"
 futures-util.workspace = true
 igrf = "0.2"
-libloading = { version = "0.7", optional = true }
+libloading = { version = "0.8", optional = true }
 log4rs = "1.0"
 log.workspace = true
 mlua = { version = "0.8", default-features = false, features = ["lua51", "module", "serialize"] }

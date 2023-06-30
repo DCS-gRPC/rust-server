@@ -33,7 +33,7 @@ local function init()
   if not GRPC.dllPath then
     GRPC.dllPath = lfs.writedir() .. [[Mods\tech\DCS-gRPC\]]
   end
-  if GRPC.throughputLimit == nil or GRPC.throughputLimit == 0 or not type(GRPC.throughputLimit) == "number" then
+  if GRPC.throughputLimit == nil or GRPC.throughputLimit == 0 or type(GRPC.throughputLimit) ~= "number" then
     GRPC.throughputLimit = 600
   end
 

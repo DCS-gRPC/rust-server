@@ -5,15 +5,87 @@ use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use uuid::Uuid;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum MsgType {
-    Update,
-    Ping,
-    Sync,
-    RadioUpdate,
-    ServerSettings,
-    ClientDisconnect,
-    VersionMismatch,
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase", untagged)]
+pub enum Message {
+    Update(UpdateMessage),
+    Ping(PingMessage),
+    Sync(SyncMessage),
+    RadioUpdate(RadioUpdateMessage),
+    ServerSettings(ServerSettingsMessage),
+    ClientDisconnect(ClientDisconnectMessage),
+    VersionMismatch(VersionMismatchMessage),
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase", untagged)]
+pub enum MessageRequest {
+    Update(UpdateMessage),
+    Sync(SyncMessageRequest),
+    RadioUpdate(RadioUpdateMessage),
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct UpdateMessage {
+    pub msg_type: MsgType<0>,
+    pub client: Client,
+    pub version: String,
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct PingMessage {
+    pub msg_type: MsgType<1>,
+    pub version: String,
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct SyncMessage {
+    pub msg_type: MsgType<2>,
+    pub clients: Vec<Client>,
+    pub server_settings: HashMap<String, String>,
+    pub version: String,
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct SyncMessageRequest {
+    pub msg_type: MsgType<2>,
+    pub client: Client,
+    pub version: String,
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct RadioUpdateMessage {
+    pub msg_type: MsgType<3>,
+    pub client: Client,
+    pub version: String,
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct ServerSettingsMessage {
+    pub msg_type: MsgType<4>,
+    pub server_settings: HashMap<String, String>,
+    pub version: String,
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct ClientDisconnectMessage {
+    pub msg_type: MsgType<5>,
+    pub client: Client,
+    pub version: String,
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct VersionMismatchMessage {
+    pub msg_type: MsgType<6>,
+    pub version: String,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -23,53 +95,15 @@ pub enum Coalition {
     Red,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Radio {
-    #[serde(default)]
     pub enc: bool,
-    #[serde(default)]
     pub enc_key: u8,
-    #[serde(default)]
-    pub enc_mode: EncryptionMode,
-    #[serde(default = "default_freq")]
-    pub freq_max: f64,
-    #[serde(default = "default_freq")]
-    pub freq_min: f64,
-    #[serde(default = "default_freq")]
     pub freq: f64,
-    #[serde(default)]
     pub modulation: Modulation,
-    #[serde(default)]
-    pub name: String,
-    #[serde(default = "default_freq")]
     pub sec_freq: f64,
-    #[serde(default = "default_volume")]
-    pub volume: f32,
-    #[serde(default)]
-    pub freq_mode: FreqMode,
-    #[serde(default)]
-    pub guard_freq_mode: FreqMode,
-    #[serde(default)]
-    pub vol_mode: VolumeMode,
-    #[serde(default)]
-    pub expansion: bool,
-    #[serde(default = "default_channel")]
-    pub channel: i32,
-    #[serde(default)]
-    pub simul: bool,
-}
-
-fn default_freq() -> f64 {
-    1.0
-}
-
-fn default_volume() -> f32 {
-    1.0
-}
-
-fn default_channel() -> i32 {
-    -1
+    pub retransmit: bool,
 }
 
 impl Default for Radio {
@@ -77,58 +111,15 @@ impl Default for Radio {
         Radio {
             enc: false,
             enc_key: 0,
-            enc_mode: EncryptionMode::NoEncryption,
-            freq_max: 1.0,
-            freq_min: 1.0,
             freq: 1.0,
             modulation: Modulation::Disabled,
-            name: "".to_string(),
             sec_freq: 1.0,
-            volume: 1.0,
-            freq_mode: FreqMode::Cockpit,
-            guard_freq_mode: FreqMode::Cockpit,
-            vol_mode: VolumeMode::Cockpit,
-            expansion: false,
-            channel: -1,
-            simul: false,
+            retransmit: false,
         }
     }
 }
 
-#[derive(Serialize_repr, Deserialize_repr, Debug, Clone, Copy)]
-#[repr(u8)]
-#[derive(Default)]
-pub enum EncryptionMode {
-    /// no control
-    #[default]
-    NoEncryption = 0,
-    /// FC3 Gui Toggle + Gui Enc key setting
-    EncryptionJustOverlay = 1,
-    /// InCockpit toggle + Incockpit Enc setting
-    EncryptionFull = 2,
-    /// Incockpit toggle + Gui Enc Key setting
-    EncryptionCockpitToggleOverlayCode = 3,
-}
-
-#[derive(Serialize_repr, Deserialize_repr, Debug, Clone, Copy)]
-#[repr(u8)]
-#[derive(Default)]
-pub enum VolumeMode {
-    #[default]
-    Cockpit = 0,
-    Overlay = 1,
-}
-
-#[derive(Serialize_repr, Deserialize_repr, Debug, Clone, Copy)]
-#[repr(u8)]
-#[derive(Default)]
-pub enum FreqMode {
-    #[default]
-    Cockpit = 0,
-    Overlay = 1,
-}
-
-#[derive(Serialize_repr, Deserialize_repr, Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize_repr, Deserialize_repr)]
 #[repr(u8)]
 #[derive(Default)]
 pub enum Modulation {
@@ -142,45 +133,37 @@ pub enum Modulation {
     Mids = 6,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RadioInfo {
-    #[serde(default)]
-    pub name: String,
-    #[serde(default)]
-    pub ptt: bool,
     pub radios: Vec<Radio>,
-    #[serde(default)]
-    pub control: RadioSwitchControls,
-    #[serde(default)]
-    pub selected: i16,
-    #[serde(default)]
     pub unit: String,
     pub unit_id: u32,
-    #[serde(default)]
-    pub simultaneous_transmission: bool,
+    pub iff: Transponder,
 }
 
-#[derive(Serialize_repr, Deserialize_repr, Debug, Clone, Copy)]
+#[derive(Debug, PartialEq, Default, Clone, Copy, Serialize_repr, Deserialize_repr)]
 #[repr(u8)]
-#[derive(Default)]
 pub enum RadioSwitchControls {
     #[default]
     Hotas = 0,
     InCockpit = 1,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct Client {
     pub client_guid: String,
-    pub name: Option<String>,
-    pub radio_info: Option<RadioInfo>,
+    pub name: String,
+    pub seat: u32,
     pub coalition: Coalition,
-    pub lat_lng_position: Option<Position>,
+    pub allow_record: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub radio_info: Option<RadioInfo>,
+    pub lat_lng_position: Position,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq)]
+#[derive(Debug, PartialEq, Default, Clone, Serialize, Deserialize)]
 pub struct Position {
     pub lat: f64,
     #[serde(rename = "lng")]
@@ -188,19 +171,7 @@ pub struct Position {
     pub alt: f64,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-#[serde(rename_all = "PascalCase")]
-pub struct Message {
-    pub client: Option<Client>,
-    pub msg_type: MsgType,
-    pub server_settings: Option<HashMap<String, String>>,
-    // Clients
-    // ServerSettings
-    // ExternalAWACSModePassword
-    pub version: String,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Transponder {
     control: IffControlMode,
@@ -211,7 +182,7 @@ pub struct Transponder {
     status: IffStatus,
 }
 
-#[derive(Serialize_repr, Deserialize_repr, Debug, Clone, Copy)]
+#[derive(Debug, Serialize_repr, Deserialize_repr, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
 pub enum IffControlMode {
     Cockpit = 0,
@@ -219,12 +190,42 @@ pub enum IffControlMode {
     Disabled = 2,
 }
 
-#[derive(Serialize_repr, Deserialize_repr, Debug, Clone, Copy)]
+#[derive(Debug, Serialize_repr, Deserialize_repr, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
 pub enum IffStatus {
     Off = 0,
     Normal = 1,
     Ident = 2,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+pub struct MsgType<const V: u8>;
+
+#[derive(Debug, thiserror::Error)]
+#[error("Invalid message type")]
+struct MsgTypeError;
+
+impl<const V: u8> Serialize for MsgType<V> {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_u8(V)
+    }
+}
+
+impl<'de, const V: u8> Deserialize<'de> for MsgType<V> {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = u8::deserialize(deserializer)?;
+        if value == V {
+            Ok(MsgType::<V>)
+        } else {
+            Err(serde::de::Error::custom(MsgTypeError))
+        }
+    }
 }
 
 impl Default for Transponder {
@@ -237,66 +238,6 @@ impl Default for Transponder {
             mic: -1,
             status: IffStatus::Off,
         }
-    }
-}
-
-impl ::serde::Serialize for MsgType {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: ::serde::Serializer,
-    {
-        // Serialize the enum as a u64.
-        serializer.serialize_u64(match *self {
-            MsgType::Update => 0,
-            MsgType::Ping => 1,
-            MsgType::Sync => 2,
-            MsgType::RadioUpdate => 3,
-            MsgType::ServerSettings => 4,
-            MsgType::ClientDisconnect => 5,
-            MsgType::VersionMismatch => 6,
-        })
-    }
-}
-
-impl<'de> ::serde::Deserialize<'de> for MsgType {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: ::serde::Deserializer<'de>,
-    {
-        struct Visitor;
-
-        impl<'de> ::serde::de::Visitor<'de> for Visitor {
-            type Value = MsgType;
-
-            fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-                formatter.write_str("positive integer")
-            }
-
-            fn visit_u64<E>(self, value: u64) -> Result<MsgType, E>
-            where
-                E: ::serde::de::Error,
-            {
-                // Rust does not come with a simple way of converting a
-                // number to an enum, so use a big `match`.
-                match value {
-                    0 => Ok(MsgType::Update),
-                    1 => Ok(MsgType::Ping),
-                    2 => Ok(MsgType::Sync),
-                    3 => Ok(MsgType::RadioUpdate),
-                    4 => Ok(MsgType::ServerSettings),
-                    5 => Ok(MsgType::ClientDisconnect),
-                    6 => Ok(MsgType::VersionMismatch),
-                    _ => Err(E::custom(format!(
-                        "unknown {} value: {}",
-                        stringify!(MsgType),
-                        value
-                    ))),
-                }
-            }
-        }
-
-        // Deserialize the enum from a u64.
-        deserializer.deserialize_u64(Visitor)
     }
 }
 
@@ -357,4 +298,197 @@ pub fn create_sguid() -> String {
     let sguid = base64::encode_config(sguid.as_bytes(), base64::URL_SAFE_NO_PAD);
     assert_eq!(sguid.len(), 22);
     sguid
+}
+
+#[cfg(test)]
+mod tests {
+    use pretty_assertions::assert_eq;
+
+    use super::*;
+
+    #[test]
+    fn test_serde_message_update() {
+        let expected = r#"{"MsgType":0,"Client":{"ClientGuid":"BCZSXySXT4WL9zlxNkJwkQ","Name":"DCS-gRPC","Seat":0,"Coalition":2,"AllowRecord":false,"LatLngPosition":{"lat":0.0,"lng":0.0,"alt":0.0}},"Version":"2.0.8.6"}"#;
+        let msg: Message = serde_json::from_str(expected).unwrap();
+        assert_eq!(
+            msg,
+            Message::Update(UpdateMessage {
+                msg_type: MsgType,
+                client: Client {
+                    client_guid: "BCZSXySXT4WL9zlxNkJwkQ".to_string(),
+                    name: "DCS-gRPC".to_string(),
+                    seat: 0,
+                    coalition: Coalition::Blue,
+                    allow_record: false,
+                    radio_info: None,
+                    lat_lng_position: Position::default()
+                },
+                version: "2.0.8.6".to_string()
+            })
+        );
+        assert_eq!(serde_json::to_string(&msg).unwrap(), expected);
+    }
+
+    #[test]
+    fn test_serde_message_sync() {
+        let expected = r#"{"MsgType":2,"Clients":[{"ClientGuid":"BCZSXySXT4WL9zlxNkJwkQ","Name":"DCS-gRPC","Seat":0,"Coalition":2,"AllowRecord":false,"LatLngPosition":{"lat":0.0,"lng":0.0,"alt":0.0}},{"ClientGuid":"7WKyf-Wc5E2xofl7IOc0wg","Name":"PILOT_220624","Seat":0,"Coalition":0,"AllowRecord":false,"RadioInfo":{"radios":[{"enc":false,"encKey":0,"freq":305000000.0,"modulation":0,"secFreq":0.0,"retransmit":false}],"unit":"FA-18C_hornet","unitId":16777472,"iff":{"control":0,"mode1":-1,"mode3":-1,"mode4":true,"mic":-1,"status":1}},"LatLngPosition":{"lat":0.0,"lng":0.0,"alt":0.0}}],"ServerSettings":{"COALITION_AUDIO_SECURITY":"False"},"Version":"2.0.8.6"}"#;
+        let msg: Message = serde_json::from_str(expected).unwrap();
+        assert_eq!(
+            msg,
+            Message::Sync(SyncMessage {
+                msg_type: MsgType,
+                clients: vec![
+                    Client {
+                        client_guid: "BCZSXySXT4WL9zlxNkJwkQ".to_string(),
+                        name: "DCS-gRPC".to_string(),
+                        seat: 0,
+                        coalition: Coalition::Blue,
+                        allow_record: false,
+                        radio_info: None,
+                        lat_lng_position: Position {
+                            lat: 0.0,
+                            lon: 0.0,
+                            alt: 0.0
+                        }
+                    },
+                    Client {
+                        client_guid: "7WKyf-Wc5E2xofl7IOc0wg".to_string(),
+                        name: "PILOT_220624".to_string(),
+                        seat: 0,
+                        coalition: Coalition::Spectator,
+                        allow_record: false,
+                        radio_info: Some(RadioInfo {
+                            radios: vec![Radio {
+                                enc: false,
+                                enc_key: 0,
+                                freq: 305000000.0,
+                                modulation: Modulation::Am,
+                                sec_freq: 0.0,
+                                retransmit: false
+                            }],
+                            unit: "FA-18C_hornet".to_string(),
+                            unit_id: 16777472,
+                            iff: Transponder {
+                                control: IffControlMode::Cockpit,
+                                mode1: -1,
+                                mode3: -1,
+                                mode4: true,
+                                mic: -1,
+                                status: IffStatus::Normal
+                            },
+                        }),
+                        lat_lng_position: Position::default(),
+                    }
+                ],
+                server_settings: HashMap::from([(
+                    "COALITION_AUDIO_SECURITY".to_string(),
+                    "False".to_string()
+                )]),
+                version: "2.0.8.6".to_string()
+            })
+        );
+        assert_eq!(serde_json::to_string(&msg).unwrap(), expected);
+    }
+
+    #[test]
+    fn test_serde_message_radio_update() {
+        let expected = r#"{"MsgType":3,"Client":{"ClientGuid":"BCZSXySXT4WL9zlxNkJwkQ","Name":"DCS-gRPC","Seat":0,"Coalition":2,"AllowRecord":false,"RadioInfo":{"radios":[{"enc":false,"encKey":0,"freq":1.0,"modulation":3,"secFreq":1.0,"retransmit":false}],"unit":"DCS-gRPC","unitId":0,"iff":{"control":2,"mode1":-1,"mode3":-1,"mode4":false,"mic":-1,"status":0}},"LatLngPosition":{"lat":0.0,"lng":0.0,"alt":0.0}},"Version":"2.0.8.6"}"#;
+        let msg: Message = serde_json::from_str(expected).unwrap();
+        assert_eq!(
+            msg,
+            Message::RadioUpdate(RadioUpdateMessage {
+                msg_type: MsgType,
+                client: Client {
+                    client_guid: "BCZSXySXT4WL9zlxNkJwkQ".to_string(),
+                    name: "DCS-gRPC".to_string(),
+                    seat: 0,
+                    coalition: Coalition::Blue,
+                    allow_record: false,
+                    radio_info: Some(RadioInfo {
+                        radios: vec![Radio {
+                            enc: false,
+                            enc_key: 0,
+                            freq: 1.0,
+                            modulation: Modulation::Disabled,
+                            sec_freq: 1.0,
+                            retransmit: false
+                        }],
+                        unit: "DCS-gRPC".to_string(),
+                        unit_id: 0,
+                        iff: Transponder {
+                            control: IffControlMode::Disabled,
+                            mode1: -1,
+                            mode3: -1,
+                            mode4: false,
+                            mic: -1,
+                            status: IffStatus::Off
+                        },
+                    }),
+                    lat_lng_position: Position::default(),
+                },
+                version: "2.0.8.6".to_string()
+            })
+        );
+        assert_eq!(serde_json::to_string(&msg).unwrap(), expected);
+    }
+
+    #[test]
+    fn test_serde_message_server_settings() {
+        let expected = r#"{"MsgType":4,"ServerSettings":{"COALITION_AUDIO_SECURITY":"False"},"Version":"2.0.8.6"}"#;
+        let msg: Message = serde_json::from_str(expected).unwrap();
+        assert_eq!(
+            msg,
+            Message::ServerSettings(ServerSettingsMessage {
+                msg_type: MsgType,
+                server_settings: HashMap::from([(
+                    "COALITION_AUDIO_SECURITY".to_string(),
+                    "False".to_string()
+                )]),
+                version: "2.0.8.6".to_string()
+            })
+        );
+        assert_eq!(serde_json::to_string(&msg).unwrap(), expected);
+    }
+
+    #[test]
+    fn test_serde_message_client_disconnect() {
+        let expected = r#"{"MsgType":5,"Client":{"ClientGuid":"OYOrf4yJdUex5tNuBYnaMQ","Name":"PILOT_220624","Seat":0,"Coalition":0,"AllowRecord":false,"RadioInfo":{"radios":[{"enc":false,"encKey":0,"freq":100.0,"modulation":2,"secFreq":0.0,"retransmit":false}],"unit":"CA","unitId":100000001,"iff":{"control":0,"mode1":0,"mode3":0,"mode4":false,"mic":-1,"status":0}},"LatLngPosition":{"lat":0.0,"lng":0.0,"alt":0.0}},"Version":"2.0.8.6"}"#;
+        let msg: Message = serde_json::from_str(expected).unwrap();
+        assert_eq!(
+            msg,
+            Message::ClientDisconnect(ClientDisconnectMessage {
+                msg_type: MsgType,
+                client: Client {
+                    client_guid: "OYOrf4yJdUex5tNuBYnaMQ".to_string(),
+                    name: "PILOT_220624".to_string(),
+                    seat: 0,
+                    coalition: Coalition::Spectator,
+                    allow_record: false,
+                    radio_info: Some(RadioInfo {
+                        radios: vec![Radio {
+                            enc: false,
+                            enc_key: 0,
+                            freq: 100.0,
+                            modulation: Modulation::Intercom,
+                            sec_freq: 0.0,
+                            retransmit: false
+                        }],
+                        unit: "CA".to_string(),
+                        unit_id: 100000001,
+                        iff: Transponder {
+                            control: IffControlMode::Cockpit,
+                            mode1: 0,
+                            mode3: 0,
+                            mode4: false,
+                            mic: -1,
+                            status: IffStatus::Off
+                        },
+                    }),
+                    lat_lng_position: Position::default(),
+                },
+                version: "2.0.8.6".to_string()
+            })
+        );
+        assert_eq!(serde_json::to_string(&msg).unwrap(), expected);
+    }
 }

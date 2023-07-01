@@ -13,7 +13,7 @@ serde.workspace = true
 tonic.workspace = true
 
 [build-dependencies]
-tonic-build = "0.8"
+tonic-build = "0.9"
 protoc-bundled = { git = "https://github.com/rkusa/protoc-bundled.git", rev = "3.21.6" }
 
 [dev-dependencies]

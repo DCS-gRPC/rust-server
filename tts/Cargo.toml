@@ -22,7 +22,7 @@ thiserror.workspace = true
 tokio.workspace = true
 
 [target.'cfg(target_os = "windows")'.dependencies.windows]
-version = "0.40"
+version = "0.48"
 features = [
   "Foundation",
   "Foundation_Collections",

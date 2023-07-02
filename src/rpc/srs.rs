@@ -7,7 +7,7 @@ use std::time::{Duration, Instant};
 use ::srs::Sender;
 #[cfg(target_os = "windows")]
 use ::tts::WinConfig;
-use ::tts::{AwsConfig, AwsRegion, AzureConfig, GCloudConfig, TtsConfig};
+use ::tts::{AwsConfig, AwsRegion, AzureConfig, CoquiConfig, GCloudConfig, TtsConfig};
 use futures_util::FutureExt;
 use stubs::common::v0::{Coalition, Unit};
 use stubs::mission::v0::stream_events_response::{Event, TtsEvent};
@@ -99,6 +99,9 @@ impl SrsService for Srs {
                 TtsProvider::Azure => {
                     transmit_request::Provider::Azure(transmit_request::Azure { voice: None })
                 }
+                TtsProvider::Coqui => {
+                    transmit_request::Provider::Coqui(transmit_request::Coqui { voice: None })
+                }
                 TtsProvider::GCloud => {
                     transmit_request::Provider::Gcloud(transmit_request::GCloud { voice: None })
                 }
@@ -175,6 +178,23 @@ impl SrsService for Srs {
                         .ok_or_else(|| {
                             Status::failed_precondition("tts.provider.azure.region config not set")
                         })?,
+                })
+            }
+            transmit_request::Provider::Coqui(transmit_request::Coqui { voice }) => {
+                TtsConfig::Coqui(CoquiConfig {
+                    addr: self
+                        .tts_config
+                        .provider
+                        .as_ref()
+                        .and_then(|p| p.coqui.as_ref())
+                        .and_then(|p| p.addr.clone()),
+                    voice: voice.or_else(|| {
+                        self.tts_config
+                            .provider
+                            .as_ref()
+                            .and_then(|p| p.coqui.as_ref())
+                            .and_then(|p| p.voice.clone())
+                    }),
                 })
             }
             transmit_request::Provider::Gcloud(transmit_request::GCloud { voice }) => {

@@ -33,7 +33,7 @@ pub async fn synthesize(text: &str, config: &AwsConfig) -> Result<Vec<Vec<u8>>, 
     let response = client.synthesize_speech(req).await?;
 
     let wav = response.audio_stream.ok_or(AwsError::MissingAudioStream)?;
-    Ok(crate::wav_to_opus(wav).await?)
+    Ok(crate::wav_to_opus(wav, 16_000).await?)
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -43,7 +43,7 @@ pub enum AwsError {
     #[error("AWS Polly response did not contain an audio stream")]
     MissingAudioStream,
     #[error("failed to encode audio data as opus")]
-    Opus(#[from] audiopus::Error),
+    Encode(#[from] crate::WaveToOpsError),
     #[error("failed to synthesize text to speech")]
     Synthesize(#[from] rusoto_core::RusotoError<rusoto_polly::SynthesizeSpeechError>),
 }

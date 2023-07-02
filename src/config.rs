@@ -36,6 +36,7 @@ pub struct TtsConfig {
 pub struct TtsProviderConfig {
     pub aws: Option<AwsConfig>,
     pub azure: Option<AzureConfig>,
+    pub coqui: Option<CoquiConfig>,
     pub gcloud: Option<GCloudConfig>,
     pub win: Option<WinConfig>,
 }
@@ -45,6 +46,7 @@ pub struct TtsProviderConfig {
 pub enum TtsProvider {
     Aws,
     Azure,
+    Coqui,
     GCloud,
     #[default]
     Win,
@@ -65,6 +67,13 @@ pub struct AzureConfig {
     pub key: Option<String>,
     pub region: Option<String>,
     pub default_voice: Option<String>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CoquiConfig {
+    pub addr: Option<String>,
+    pub voice: Option<String>,
 }
 
 #[derive(Clone, Deserialize, Serialize)]

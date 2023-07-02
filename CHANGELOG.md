@@ -13,8 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `ActivateGroup` API which allows to activate groups with late activation.
 - Added `DestroyGroup` API which removes the entire group from the game world.
 - Added `DestroyUnit` API
-- Added `GetClients` to `SrsService`, which retrieves a list of units that are connected to SRS and the frequencies they are connected to.
-- Added `SrsConnectEvent` and `SrsDisconnectEvent` events 
+- Added `GetClients` to `SrsService`, which retrieves a list of units that are connected to SRS and the frequencies they are connected to
+- Added `SrsConnectEvent` and `SrsDisconnectEvent` events
+- Added [Coqui](https://github.com/coqui-ai/TTS) as another TTS provider (that can be run locally)
 
 ### Fixed
 - Fixed `MarkAddEvent`, `MarkChangeEvent` and `MarkRemoveEvent` position

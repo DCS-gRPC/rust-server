@@ -91,7 +91,6 @@ async fn run(
         else {
             continue;
         };
-        log::info!("srs msg: {msg:#?}");
 
         match msg {
             Message::Sync(SyncMessage {
@@ -236,10 +235,7 @@ async fn connected(
             Ok(unit) => unit,
             Err(err) => {
                 if err.code() != Code::NotFound {
-                    log::error!(
-                        "failed to get unit by id for srs connect event: {}",
-                        err
-                    );
+                    log::error!("failed to get unit by id for srs connect event: {}", err);
                 }
                 return None;
             }
@@ -271,10 +267,7 @@ async fn disconnected(
             Ok(unit) => unit,
             Err(err) => {
                 if err.code() != Code::NotFound {
-                    log::error!(
-                        "failed to get unit by id for srs disconnect event: {}",
-                        err
-                    );
+                    log::error!("failed to get unit by id for srs disconnect event: {}", err);
                 }
                 return None;
             }

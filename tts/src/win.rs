@@ -99,7 +99,7 @@ pub async fn synthesize(text: &str, config: &WinConfig) -> Result<Vec<Vec<u8>>, 
 
     drop(lock);
 
-    Ok(crate::wav_to_opus(wav.into()).await?)
+    Ok(crate::wav_to_opus(wav.into(), 16_000).await?)
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -109,7 +109,7 @@ pub enum WinError {
     #[error("Runtime error")]
     Io(#[from] std::io::Error),
     #[error("failed to encode audio data as opus")]
-    Opus(#[from] audiopus::Error),
+    Encode(#[from] crate::WaveToOpsError),
 }
 
 impl From<windows::core::Error> for WinError {

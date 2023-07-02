@@ -105,6 +105,13 @@ tts.provider.aws.region = "eu-central-1"
 -- The default AWS voice to use (see https://docs.aws.amazon.com/polly/latest/dg/voicelist.html).
 tts.provider.aws.defaultVoice = "Brian"
 
+-- The address your Coqui server is running at.
+tts.provider.coqui.addr = "http://localhost:4000"
+
+-- The voice (speaker id) to be used from the active model (default of `p250` assumes that you are
+-- running `tts_models/en/vctk/vits`).
+tts.provider.coqui.voice = "p250"
+
 -- Your Google Cloudd access key.
 tts.provider.gcloud.key = "..."
 
@@ -166,6 +173,16 @@ To confirm that the server is running check the `\Logs\dcs.log` file and look fo
 You can also check for the present of a `\Logs\grpc.log` file.
 
 The server will be running on port 50051 by default.
+
+### Use Coqui for TTS
+
+[Coqui](https://github.com/coqui-ai/TTS) is written in Python and can thus not be directly integrated into DCS-gRPC. This is why you have to run Coqui as a server yourself and point DCS-gRPC to it. The easiest way to run it is using Docker (via [Docker for Windows](https://docs.docker.com/desktop/install/windows-install/)):
+
+```bash
+docker run --rm -it -p 4000:5002 \
+  --entrypoint python3 ghcr.io/coqui-ai/tts-cpu TTS/server/server.py \
+  --model_name tts_models/en/vctk/vits
+```
 
 ## Lua API
 

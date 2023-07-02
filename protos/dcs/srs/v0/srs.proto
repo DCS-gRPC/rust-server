@@ -64,6 +64,11 @@ message TransmitRequest {
     optional string voice = 1;
   }
 
+  message Coqui {
+    // The voice (speaker id) of the model your Coqui server is running.
+    optional string voice = 1;
+  }
+
   message GCloud {
     // The voice the text is synthesized in, see:
     // https://cloud.google.com/text-to-speech/docs/voices
@@ -82,6 +87,7 @@ message TransmitRequest {
     Azure azure = 9;
     GCloud gcloud = 10;
     Windows win = 11;
+    Coqui coqui = 12;
   }
 }
 

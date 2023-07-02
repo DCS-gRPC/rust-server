@@ -1,7 +1,8 @@
-use super::MissionRpc;
 use stubs::unit;
 use stubs::unit::v0::unit_service_server::UnitService;
 use tonic::{Request, Response, Status};
+
+use super::MissionRpc;
 
 #[tonic::async_trait]
 impl UnitService for MissionRpc {
@@ -58,6 +59,14 @@ impl UnitService for MissionRpc {
         request: Request<unit::v0::GetTransformRequest>,
     ) -> Result<Response<unit::v0::GetTransformResponse>, Status> {
         let res = self.request("getUnitTransform", request).await?;
+        Ok(Response::new(res))
+    }
+
+    async fn destroy(
+        &self,
+        request: Request<unit::v0::DestroyRequest>,
+    ) -> Result<Response<unit::v0::DestroyResponse>, Status> {
+        let res = self.request("unitDestroy", request).await?;
         Ok(Response::new(res))
     }
 }

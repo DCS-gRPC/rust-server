@@ -1,17 +1,23 @@
 use std::borrow::Cow;
 
-use windows::{
-    core::HSTRING, Media::SpeechSynthesis::SpeechSynthesizer, Storage::Streams::DataReader,
-};
+use tokio::sync::Mutex;
+use windows::core::HSTRING;
+use windows::Media::SpeechSynthesis::SpeechSynthesizer;
+use windows::Storage::Streams::DataReader;
 
 #[derive(Debug)]
 pub struct WinConfig {
     pub voice: Option<String>,
 }
 
+static MUTEX: Mutex<()> = Mutex::const_new(());
+
 pub async fn synthesize(text: &str, config: &WinConfig) -> Result<Vec<Vec<u8>>, WinError> {
     // Note, there does not seem to be a way to explicitly set 16000kHz, 16 audio bits per
     // sample and mono channel.
+
+    // Prevent concurrent Windows TTS synthesis, as this might cause a crash.
+    let lock = MUTEX.lock().await;
 
     let mut voice_info = None;
     if let Some(voice) = &config.voice {
@@ -80,8 +86,7 @@ pub async fn synthesize(text: &str, config: &WinConfig) -> Result<Vec<Vec<u8>>, 
     // the DataReader is !Send, which is why we have to process it in a local set
     let stream = synth
         .SynthesizeSsmlToStreamAsync(&HSTRING::from(&format!(
-            r#"<speak version="1.0" xml:lang="{}">{}</speak>"#,
-            lang, text
+            r#"<speak version="1.0" xml:lang="{lang}">{text}</speak>"#
         )))?
         .await?;
     let size = stream.Size()?;
@@ -91,6 +96,8 @@ pub async fn synthesize(text: &str, config: &WinConfig) -> Result<Vec<Vec<u8>>, 
 
     let mut wav = vec![0u8; size as usize];
     rd.ReadBytes(wav.as_mut_slice())?;
+
+    drop(lock);
 
     Ok(crate::wav_to_opus(wav.into()).await?)
 }

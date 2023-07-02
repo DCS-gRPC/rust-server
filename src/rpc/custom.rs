@@ -1,9 +1,10 @@
 use std::ops::Neg;
 
-use super::MissionRpc;
 use stubs::custom::v0::custom_service_server::CustomService;
 use stubs::*;
 use tonic::{Request, Response, Status};
+
+use super::MissionRpc;
 
 #[tonic::async_trait]
 impl CustomService for MissionRpc {
@@ -66,8 +67,7 @@ impl CustomService for MissionRpc {
             .or_else(|err| match err {
                 igrf::Error::DateOutOfRange(f) => Ok(f.d),
                 err => Err(Status::internal(format!(
-                    "failed to estimate magnetic declination: {}",
-                    err
+                    "failed to estimate magnetic declination: {err}"
                 ))),
             })?;
 

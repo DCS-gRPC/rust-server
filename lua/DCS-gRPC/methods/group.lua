@@ -24,3 +24,27 @@ GRPC.methods.getUnits = function(params)
 
   return GRPC.success({units = result})
 end
+
+GRPC.methods.groupActivate = function(params)
+  -- https://wiki.hoggitworld.com/view/DCS_func_activate
+  local group = Group.getByName(params.groupName)
+  if group == nil then
+    return GRPC.errorNotFound("group does not exist")
+  end
+
+  group:activate()
+
+  return GRPC.success({})
+end
+
+GRPC.methods.groupDestroy = function(params)
+  -- https://wiki.hoggitworld.com/view/DCS_func_destroy
+  local group = Group.getByName(params.groupName)
+  if group == nil then
+    return GRPC.errorNotFound("group does not exist")
+  end
+
+  group:destroy()
+
+  return GRPC.success({})
+end

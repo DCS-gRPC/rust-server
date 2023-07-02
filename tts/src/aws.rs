@@ -24,7 +24,7 @@ pub async fn synthesize(text: &str, config: &AwsConfig) -> Result<Vec<Vec<u8>>, 
         output_format: "pcm".to_string(),
         sample_rate: None, // defaults to 16,000
         speech_mark_types: None,
-        text: format!(r#"<speak version="1.0" xml:lang="en">{}</speak>"#, text),
+        text: format!(r#"<speak version="1.0" xml:lang="en">{text}</speak>"#),
         text_type: Some("ssml".to_string()),
         voice_id: config.voice.as_deref().unwrap_or("Brian").to_string(),
     };

@@ -37,9 +37,7 @@ pub async fn synthesize(
 
 async fn wav_to_opus(wav: bytes::Bytes) -> Result<Vec<Vec<u8>>, audiopus::Error> {
     use audiopus::coder::Encoder;
-    use audiopus::Application;
-    use audiopus::Channels;
-    use audiopus::SampleRate;
+    use audiopus::{Application, Channels, SampleRate};
 
     tokio::task::spawn_blocking(move || {
         let audio_stream = wav

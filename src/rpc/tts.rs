@@ -11,11 +11,12 @@ use dcs_module_ipc::IPC;
 use futures_util::stream::{SplitSink, StreamExt};
 use futures_util::SinkExt;
 use srs::VoiceStream;
+use stubs::common::v0::Coalition;
 use stubs::mission::v0::stream_events_response::{Event, TtsEvent};
 use stubs::mission::v0::StreamEventsResponse;
+use stubs::tts;
 use stubs::tts::v0::transmit_request;
 use stubs::tts::v0::tts_service_server::TtsService;
-use stubs::{common::v0::Coalition, tts};
 use tokio::time::sleep;
 use tonic::{Request, Response, Status};
 
@@ -79,7 +80,7 @@ impl TtsService for Tts {
             .start(addr, self.shutdown_signal.signal())
             .await
             .map_err(|err| {
-                Status::internal(format!("Failed to establish SRS connection: {}", err))
+                Status::internal(format!("Failed to establish SRS connection: {err}"))
             })?;
 
         let config = match request

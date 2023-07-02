@@ -97,8 +97,10 @@ impl Default for Radio {
 
 #[derive(Serialize_repr, Deserialize_repr, Debug, Clone, Copy)]
 #[repr(u8)]
+#[derive(Default)]
 pub enum EncryptionMode {
     /// no control
+    #[default]
     NoEncryption = 0,
     /// FC3 Gui Toggle + Gui Enc key setting
     EncryptionJustOverlay = 1,
@@ -108,54 +110,36 @@ pub enum EncryptionMode {
     EncryptionCockpitToggleOverlayCode = 3,
 }
 
-impl Default for EncryptionMode {
-    fn default() -> Self {
-        EncryptionMode::NoEncryption
-    }
-}
-
 #[derive(Serialize_repr, Deserialize_repr, Debug, Clone, Copy)]
 #[repr(u8)]
+#[derive(Default)]
 pub enum VolumeMode {
+    #[default]
     Cockpit = 0,
     Overlay = 1,
 }
 
-impl Default for VolumeMode {
-    fn default() -> Self {
-        VolumeMode::Cockpit
-    }
-}
-
 #[derive(Serialize_repr, Deserialize_repr, Debug, Clone, Copy)]
 #[repr(u8)]
+#[derive(Default)]
 pub enum FreqMode {
+    #[default]
     Cockpit = 0,
     Overlay = 1,
 }
 
-impl Default for FreqMode {
-    fn default() -> Self {
-        FreqMode::Cockpit
-    }
-}
-
 #[derive(Serialize_repr, Deserialize_repr, Debug, Clone, Copy)]
 #[repr(u8)]
+#[derive(Default)]
 pub enum Modulation {
     Am = 0,
     Fm = 1,
     Intercom = 2,
+    #[default]
     Disabled = 3,
     HaveQuick = 4,
     Satcom = 5,
     Mids = 6,
-}
-
-impl Default for Modulation {
-    fn default() -> Self {
-        Modulation::Disabled
-    }
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -179,15 +163,11 @@ pub struct RadioInfo {
 
 #[derive(Serialize_repr, Deserialize_repr, Debug, Clone, Copy)]
 #[repr(u8)]
+#[derive(Default)]
 pub enum RadioSwitchControls {
+    #[default]
     Hotas = 0,
     InCockpit = 1,
-}
-
-impl Default for RadioSwitchControls {
-    fn default() -> Self {
-        RadioSwitchControls::Hotas
-    }
 }
 
 #[derive(Serialize, Deserialize, Debug)]

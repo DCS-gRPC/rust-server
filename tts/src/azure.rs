@@ -1,6 +1,7 @@
+use std::io::Cursor;
+
 use ogg::reading::PacketReader;
 use reqwest::StatusCode;
-use std::io::Cursor;
 
 #[derive(Debug)]
 pub struct AzureConfig {
@@ -28,7 +29,7 @@ pub async fn synthesize(text: &str, config: &AzureConfig) -> Result<Vec<Vec<u8>>
 
     if res.status() != StatusCode::OK {
         let err = res.text().await?;
-        return Err(AzureError::Azure(format!("Azure error: {}", err)));
+        return Err(AzureError::Azure(format!("Azure error: {err}")));
     }
 
     let token = res.text().await?;
@@ -42,8 +43,7 @@ pub async fn synthesize(text: &str, config: &AzureConfig) -> Result<Vec<Vec<u8>>
     let (lang, _) = voice.split_at(5);
 
     let tts = format!(
-        r#"<speak version="1.0" xml:lang="{}"><voice xml:lang="{}" name="{}">{}</voice></speak>"#,
-        lang, lang, voice, text
+        r#"<speak version="1.0" xml:lang="{lang}"><voice xml:lang="{lang}" name="{voice}">{text}</voice></speak>"#
     );
 
     // Make actual synthesize request
@@ -63,7 +63,7 @@ pub async fn synthesize(text: &str, config: &AzureConfig) -> Result<Vec<Vec<u8>>
 
     if res.status() != StatusCode::OK {
         let err = res.text().await?;
-        return Err(AzureError::Azure(format!("Azure error: {}", err)));
+        return Err(AzureError::Azure(format!("Azure error: {err}")));
     }
 
     // Convert ogg audio data to opus frames

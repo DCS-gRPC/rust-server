@@ -1,7 +1,9 @@
-use crate::message::Message;
-use bytes::BytesMut;
 use std::{error, fmt, io};
+
+use bytes::BytesMut;
 use tokio_util::codec::{Decoder, Encoder, LinesCodec, LinesCodecError};
+
+use crate::message::Message;
 
 pub struct MessagesCodec {
     lines_codec: LinesCodec,
@@ -63,7 +65,7 @@ pub enum MessagesCodecError {
 impl fmt::Display for MessagesCodecError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            MessagesCodecError::JsonDecode(_, json) => write!(f, "failed to decode JSON: {}", json),
+            MessagesCodecError::JsonDecode(_, json) => write!(f, "failed to decode JSON: {json}"),
             MessagesCodecError::JsonEncode(_) => write!(f, "failed to encode JSON"),
             MessagesCodecError::LinesCodec(err) => err.fmt(f),
             MessagesCodecError::Io(err) => err.fmt(f),

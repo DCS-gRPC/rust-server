@@ -11,5 +11,5 @@ clap = { version = "3.0", features = ["derive"] }
 stubs = { package = "dcs-grpc-stubs", path = "../stubs", features = ["client"] }
 serde_json.workspace = true
 thiserror.workspace = true
-tokio = { version = "1.0", features = ["rt-multi-thread"] }
+tokio = { version = "1.24", features = ["rt-multi-thread"] }
 tonic.workspace = true

@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 use std::time::{Duration, Instant};
 
-use crate::rpc::MissionRpc;
 use futures_util::stream::StreamExt;
 use futures_util::TryFutureExt;
 use stubs::coalition::v0::coalition_service_server::CoalitionService;
@@ -19,6 +18,8 @@ use tokio::sync::mpsc::error::SendError;
 use tokio::sync::mpsc::Sender;
 use tokio::time::MissedTickBehavior;
 use tonic::{Code, Request, Status};
+
+use crate::rpc::MissionRpc;
 
 /// Stream unit updates.
 pub async fn stream_units(

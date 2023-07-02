@@ -1,7 +1,8 @@
-use super::MissionRpc;
 use stubs::timer::v0::timer_service_server::TimerService;
 use stubs::*;
 use tonic::{Request, Response, Status};
+
+use super::MissionRpc;
 
 #[tonic::async_trait]
 impl TimerService for MissionRpc {

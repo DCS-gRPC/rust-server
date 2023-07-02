@@ -1,7 +1,5 @@
 use std::pin::Pin;
 
-use super::MissionRpc;
-use crate::shutdown::AbortableStream;
 use futures_util::{Stream, StreamExt};
 use stubs::mission::v0::mission_service_server::MissionService;
 use stubs::timer::v0::timer_service_server::TimerService;
@@ -12,6 +10,9 @@ use time::{Date, Duration, Month, OffsetDateTime, PrimitiveDateTime, Time, UtcOf
 use tokio::sync::mpsc;
 use tokio_stream::wrappers::ReceiverStream;
 use tonic::{Request, Response, Status};
+
+use super::MissionRpc;
+use crate::shutdown::AbortableStream;
 
 #[tonic::async_trait]
 impl MissionService for MissionRpc {
@@ -67,7 +68,7 @@ impl MissionService for MissionRpc {
         let datetime = Self::get_scenario_start_time(self).await?;
         Ok(Response::new(mission::v0::GetScenarioStartTimeResponse {
             datetime: datetime.format(&Rfc3339).map_err(|err| {
-                Status::internal(format!("failed to format date as ISO 8601 string: {}", err))
+                Status::internal(format!("failed to format date as ISO 8601 string: {err}"))
             })?,
         }))
     }
@@ -83,7 +84,7 @@ impl MissionService for MissionRpc {
         let datetime = to_datetime(current.year, current.month, current.day, current.time)?;
         Ok(Response::new(mission::v0::GetScenarioCurrentTimeResponse {
             datetime: datetime.format(&Rfc3339).map_err(|err| {
-                Status::internal(format!("failed to format date as ISO 8601 string: {}", err))
+                Status::internal(format!("failed to format date as ISO 8601 string: {err}"))
             })?,
         }))
     }
@@ -212,13 +213,13 @@ impl MissionRpc {
 
 fn to_datetime(year: i32, month: u32, day: u32, time: f64) -> Result<OffsetDateTime, Status> {
     let month = u8::try_from(month)
-        .map_err(|err| Status::internal(format!("received invalid month: {}", err)))?;
+        .map_err(|err| Status::internal(format!("received invalid month: {err}")))?;
     let month = Month::try_from(month)
-        .map_err(|err| Status::internal(format!("received invalid month: {}", err)))?;
+        .map_err(|err| Status::internal(format!("received invalid month: {err}")))?;
     let day = u8::try_from(day)
-        .map_err(|err| Status::internal(format!("received invalid day: {}", err)))?;
+        .map_err(|err| Status::internal(format!("received invalid day: {err}")))?;
     let date = Date::from_calendar_date(year, month, day)
-        .map_err(|err| Status::internal(format!("received invalid date: {}", err)))?;
+        .map_err(|err| Status::internal(format!("received invalid date: {err}")))?;
     let time = Time::from_hms(0, 0, 0).unwrap() + Duration::seconds(time as i64);
     let datetime = PrimitiveDateTime::new(date, time).assume_offset(UtcOffset::UTC);
     Ok(datetime)

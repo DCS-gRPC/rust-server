@@ -78,6 +78,9 @@ debug = false
 -- Limit of calls per second that are executed inside of the mission scripting environment.
 throughputLimit = 600
 
+-- Whether the integrity check, meant to spot installation issues, is disabled.
+integrityCheckDisabled = false
+
 -- The default TTS provider to use if a TTS request does not explicitly specify another one.
 tts.defaultProvider = "win"
 
@@ -257,6 +260,8 @@ For development:
   luaPath = [[C:\Development\DCS-gRPC\rust-server\lua\DCS-gRPC\]]
   ```
 - copy the hook script from `lua\Hooks\DCS-gRPC.lua` to `Scripts\Hooks\DCS-gRPC.lua`
+
+- set `integrityCheckDisabled = true` in your `Saved Games\DCS\Config\dcs-grpc.lua` to allow changes to Lua without having to re-compile the dll
 
 ### Debugging
 

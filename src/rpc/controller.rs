@@ -1,7 +1,8 @@
-use super::MissionRpc;
 use stubs::controller;
 use stubs::controller::v0::controller_service_server::ControllerService;
 use tonic::{Request, Response, Status};
+
+use super::MissionRpc;
 
 #[tonic::async_trait]
 impl ControllerService for MissionRpc {

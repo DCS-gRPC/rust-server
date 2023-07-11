@@ -45,6 +45,7 @@ GRPC.exporters.rawTransform = function(object)
 end
 
 GRPC.exporters.group = function(group)
+  if type(group) ~= "table" and getmetatable(group) ~= Group then return {} end
   return {
     id = tonumber(group:getID()),
     name = group:getName(),

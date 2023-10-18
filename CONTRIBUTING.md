@@ -75,6 +75,11 @@ like so:
 Resolves: #123
 ```
 
+## Don't forget to update the `CHANGELOG.md`
+
+Don't forget to update the `CHANGELOG.md` file with your change in the
+`Unreleased` section
+
 ## Squash commits and rebase before merging
 
 When you are ready to merge then squash your commits so that they form a

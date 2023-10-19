@@ -41,7 +41,7 @@ pub struct TtsProviderConfig {
 }
 
 #[derive(Debug, Clone, Default, Deserialize, Serialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "lowercase")]
 pub enum TtsProvider {
     Aws,
     Azure,

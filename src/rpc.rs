@@ -6,7 +6,7 @@ use stubs::mission::v0::StreamEventsResponse;
 use tokio::sync::RwLock;
 use tonic::{Request, Status};
 
-pub use self::tts::Tts;
+pub use self::srs::Srs;
 use crate::shutdown::ShutdownHandle;
 use crate::stats::Stats;
 
@@ -18,9 +18,9 @@ mod group;
 mod hook;
 mod mission;
 mod net;
+mod srs;
 mod timer;
 mod trigger;
-mod tts;
 mod unit;
 mod world;
 
@@ -79,6 +79,11 @@ impl MissionRpc {
 
     pub async fn events(&self) -> impl Stream<Item = StreamEventsResponse> {
         self.ipc.events().await
+    }
+
+    pub async fn event(&self, event: StreamEventsResponse) {
+        log::debug!("Received event: {:#?}", event);
+        self.ipc.event(event).await
     }
 }
 

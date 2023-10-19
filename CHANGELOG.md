@@ -6,10 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Breaking Changes
+- Renamed `TtsService` to `SrsService`
+
 ### Added
 - Added `ActivateGroup` API which allows to activate groups with late activation.
 - Added `DestroyGroup` API which removes the entire group from the game world.
-- `DestroyUnit` API
+- Added `DestroyUnit` API
+- Added `GetClients` to `SrsService`, which retrieves a list of units that are connected to SRS and the frequencies they are connected to.
+- Added `SrsConnectEvent` and `SrsDisconnectEvent` events 
 
 ### Fixed
 - Fixed `MarkAddEvent`, `MarkChangeEvent` and `MarkRemoveEvent` position

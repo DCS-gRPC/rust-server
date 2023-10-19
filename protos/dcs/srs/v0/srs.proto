@@ -1,10 +1,10 @@
 syntax = "proto3";
-package dcs.tts.v0;
+package dcs.srs.v0;
 import "dcs/common/v0/common.proto";
-option csharp_namespace = "RurouniJones.Dcs.Grpc.V0.Tts";
-option go_package = "github.com/DCS-gRPC/go-bindings/dcs/v0/tts";
+option csharp_namespace = "RurouniJones.Dcs.Grpc.V0.Srs";
+option go_package = "github.com/DCS-gRPC/go-bindings/dcs/v0/srs";
 
-service TtsService {
+service SrsService {
   // Synthesize text to speech and transmit it over SRS. By default, this blocks until a
   // transmission completed (unless `async` is set to `true`). This can be used to prevent
   // transmission to overlap each other, by not sending another transmission on the same frequency
@@ -12,6 +12,9 @@ service TtsService {
   // it does not block or prevent any other client from transmitting over the same frequency at the
   // same time.
   rpc Transmit(TransmitRequest) returns (TransmitResponse) {}
+
+  // Retrieve a list of units (players) and their active frequencies that are connected to SRS.
+  rpc GetClients(GetClientsRequest) returns (GetClientsResponse) {}
 }
 
 message TransmitRequest {
@@ -85,4 +88,19 @@ message TransmitRequest {
 message TransmitResponse {
   // The duration in milliseconds it roughly takes to speak the transmission.
   uint32 duration_ms = 1;
+}
+
+message GetClientsRequest {
+}
+
+message GetClientsResponse {
+  message Client {
+    // The unit that is connected to SRS.
+    dcs.common.v0.Unit unit = 1;
+
+    // The radio frequencies in Hz the unit is connected to.
+    repeated uint64 frequencies = 2;
+  }
+
+  repeated Client clients = 1;
 }

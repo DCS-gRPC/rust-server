@@ -9,6 +9,7 @@ mod integrity;
 pub mod rpc;
 mod server;
 mod shutdown;
+mod srs;
 mod stats;
 mod stream;
 

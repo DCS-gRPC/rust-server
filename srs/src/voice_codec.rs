@@ -65,19 +65,13 @@ pub struct VoicePacket {
 }
 
 impl Decoder for VoiceCodec {
-    // UdpFramed, what VoiceCodec is used with, has a strange behavior in Tokio currently. If the
-    // codec would return `None`, which is actually an indication for that the voice codec needs
-    // more data to produce a valid item, the UdpFramed would yield the `None` as well. Though,
-    // a `None` from a stream means the stream is closed. This is planned to be fixed in tokio
-    // 0.2.0. Until then, we are using an option item here instead, so the stream would return
-    // `Some(None)` instead.
-    type Item = Option<VoicePacket>;
+    type Item = VoicePacket;
     type Error = io::Error;
 
     fn decode(&mut self, buf: &mut BytesMut) -> Result<Option<Self::Item>, Self::Error> {
         // discard ping messages
         if self.is_head && buf.len() == 22 {
-            return Ok(Some(None));
+            return Ok(None);
         }
 
         if let Some(bytes) = self.inner.decode(buf)? {
@@ -134,7 +128,7 @@ impl Decoder for VoiceCodec {
 
             assert_eq!(rd.position(), len);
 
-            Ok(Some(Some(VoicePacket {
+            Ok(Some(VoicePacket {
                 audio_part,
                 frequencies,
                 unit_id,
@@ -142,11 +136,15 @@ impl Decoder for VoiceCodec {
                 hop_count,
                 transmission_sguid,
                 client_sguid,
-            })))
+            }))
         } else {
             self.is_head = false;
-            Ok(Some(None))
+            Ok(None)
         }
+    }
+
+    fn decode_eof(&mut self, buf: &mut BytesMut) -> Result<Option<Self::Item>, Self::Error> {
+        self.decode(buf)
     }
 }
 

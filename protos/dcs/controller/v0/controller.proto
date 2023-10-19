@@ -11,6 +11,16 @@ service ControllerService {
   // https://wiki.hoggitworld.com/view/DCS_func_getDetectedTargets
   rpc GetDetectedTargets(GetDetectedTargetsRequest) 
     returns (GetDetectedTargetsResponse) {}
+
+  // We split this into two separate calls to aid in clarity
+  // https://wiki.hoggitworld.com/view/DCS_task_orbit 
+  rpc PerformOrbitTask(PerformOrbitTaskRequest)
+    returns (PerformOrbitTaskResponse) {}
+
+  // We split this into two separate calls to aid in clarity
+  // https://wiki.hoggitworld.com/view/DCS_task_orbit 
+  rpc PerformRacetrackTask(PerformRacetrackTaskRequest)
+    returns (PerformRacetrackTaskResponse) {}
 }
 
 message SetAlarmStateRequest {
@@ -48,4 +58,40 @@ message GetDetectedTargetsRequest {
 
 message GetDetectedTargetsResponse {
   repeated dcs.common.v0.Contact contacts = 1; 
+}
+
+enum TaskingPriority {
+  TASKING_PRIORITY_IMMEDIATE = 0;
+  TASKING_PRIORITY_QUEUE = 1;
+}
+
+message PerformOrbitTaskRequest {
+  oneof name {
+    string group_name = 1;
+    string unit_name = 2;
+  }
+  // The alt field in the Input position is ignored as an optional value is used elsewhere
+  dcs.common.v0.InputPosition orbit_point = 3;
+  TaskingPriority priority = 4;
+  optional int32 speed = 5;
+  optional int32 altitude = 6;
+}
+
+message PerformOrbitTaskResponse {
+}
+
+message PerformRacetrackTaskRequest {
+  oneof name {
+    string group_name = 1;
+    string unit_name = 2;
+  }
+  // The alt field in the Input position is ignored as an optional value is used elsewhere
+  dcs.common.v0.InputPosition start_point = 3;
+  dcs.common.v0.InputPosition end_point = 4;
+  TaskingPriority priority = 5;
+  optional int32 speed = 6;
+  optional int32 altitude = 7;
+}
+
+message PerformRacetrackTaskResponse {
 }

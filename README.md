@@ -105,7 +105,7 @@ tts.provider.aws.region = "eu-central-1"
 -- The default AWS voice to use (see https://docs.aws.amazon.com/polly/latest/dg/voicelist.html).
 tts.provider.aws.defaultVoice = "Brian"
 
--- Your Google Cloudd access key.
+-- Your Google Cloud access key.
 tts.provider.gcloud.key = "..."
 
 -- The default Google Cloud voice to use (see https://cloud.google.com/text-to-speech/docs/voices).

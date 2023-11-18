@@ -17,7 +17,7 @@ GRPC.methods.getRadar = function(params)
     })
   end
 
-  local category = object:getCategory()
+  local category = Object.getCategory(object)-- change for DCS API fixes in getcategory()
   local grpcTable = {}
 
   if(category == Object.Category.UNIT) then

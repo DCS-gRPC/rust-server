@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed crash of concurrent Windows TTS synthesis ([#223](https://github.com/DCS-gRPC/rust-server/issues/223))
 - Fixed file handler left open: Closing config file again after reading it in LUA
 - Fixed the config value for `tts.defaultProvider` for Google Cloud to be lowercase `gcloud` (instead of `gCloud`)
-
+- Fixed error with getCategory due to API changes in DCS ([#246](https://github.com/DCS-gRPC/rust-server/issues/246))
 ## [0.7.1] - 2023-01-08
 
 ### Fixed

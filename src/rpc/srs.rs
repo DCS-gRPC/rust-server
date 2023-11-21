@@ -299,19 +299,15 @@ async fn transmit(
 ) -> Result<(), Box<dyn error::Error + Send + Sync + 'static>> {
     let mut transmission = Box::pin(transmit_frames(frames, tx));
 
-    loop {
-        tokio::select! {
-            result = &mut transmission => {
-                return result;
-            }
+    tokio::select! {
+        result = &mut transmission => {
+             result
+        }
 
-            _ = &mut shutdown_signal => {
-                break;
-            }
+        _ = &mut shutdown_signal => {
+            Ok(())
         }
     }
-
-    Ok(())
 }
 
 async fn transmit_frames(

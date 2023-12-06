@@ -21,9 +21,21 @@ GRPC.methods.getAirbases = function(params)
   end
 
   local result = {}
+  local unit
 
   for i, airbase in ipairs(data) do
-    result[i] = GRPC.exporters.airbase(airbase)
+    if airbase:getDesc()['category'] == 2 then -- SHIP
+        unit = airbase:getUnit()
+        if unit then -- Unit object
+            if unit:isExist() then -- Extant object
+                if unit:getGroup() then -- Unit in group so can be exported
+                    result[#result+1] = GRPC.exporters.airbase(airbase)
+                end -- no group for unit, move to next object
+            end -- unit no longer exists, move to next object
+        end -- no unit, move to next object
+    else -- Aerodrome or Helipad, so can be exported
+        result[#result+1] = GRPC.exporters.airbase(airbase)
+    end    
   end
   return GRPC.success({airbases = result})
 end

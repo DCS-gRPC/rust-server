@@ -23,7 +23,7 @@ GRPC.methods.getAirbases = function(params)
   local result = {}
   local unit
 
-  for i, airbase in ipairs(data) do
+  for _, airbase in pairs(data) do
     if airbase:getDesc()['category'] == 2 then -- SHIP
         unit = airbase:getUnit()
         if unit then -- Unit object
@@ -35,7 +35,7 @@ GRPC.methods.getAirbases = function(params)
         end -- no unit, move to next object
     else -- Aerodrome or Helipad, so can be exported
         result[#result+1] = GRPC.exporters.airbase(airbase)
-    end    
+    end
   end
   return GRPC.success({airbases = result})
 end

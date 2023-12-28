@@ -17,6 +17,10 @@ GRPC.exporters.position = function(pos)
 end
 
 GRPC.exporters.unit = function(unit)
+  local locgroup = Unit.getGroup(unit)
+  if locgroup then
+    locgroup = GRPC.exporters.group(locgroup)
+  end
   return {
     id = tonumber(unit:getID()),
     name = unit:getName(),
@@ -24,7 +28,7 @@ GRPC.exporters.unit = function(unit)
     coalition = unit:getCoalition() + 1, -- Increment for non zero-indexed gRPC enum
     type = unit:getTypeName(),
     playerName = Unit.getPlayerName(unit),
-    group = GRPC.exporters.group(Unit.getGroup(unit)),
+    group = locgroup,
     numberInGroup = unit:getNumber(),
     rawTransform = GRPC.exporters.rawTransform(unit),
   }
@@ -55,7 +59,7 @@ end
 
 GRPC.exporters.weapon = function(weapon)
   return {
-    id = tonumber(weapon:getName()),
+    id = weapon:tonumber(),
     type = weapon:getTypeName(),
     rawTransform = GRPC.exporters.rawTransform(weapon),
   }
@@ -105,6 +109,9 @@ end
 -- in the base object of the hierarchy
 -- https://wiki.hoggitworld.com/view/DCS_Class_Object
 GRPC.exporters.unknown = function(object)
+  if not object.getName then
+    return {}
+  end
   return {
     name = tostring(object:getName()),
   }

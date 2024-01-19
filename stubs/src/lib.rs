@@ -111,6 +111,7 @@ mod tests {
                                 speed: Default::default(),
                                 velocity: Some(Default::default())
                             }),
+                            agl: 0.0,
                         }))
                     }),
                     visibility: Some(event::mark_add_event::Visibility::Coalition(

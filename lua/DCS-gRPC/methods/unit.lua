@@ -149,3 +149,19 @@ GRPC.methods.unitDestroy = function(params)
   unit:destroy()
   return GRPC.success({})
 end
+
+GRPC.methods.getUnitAgl = function (params)
+  local unit = Unit.getByName(params.name)
+  if unit == nil then
+    return GRPC.errorNotFound("unit `" .. tostring(params.name) .. "` does not exist")
+  end
+
+  local pos = unit:getPoint()
+  local asl = pos.y
+  local surfaceheight = land.getHeight({x = pos.x, y = pos.z}) or 0
+  if surfaceheight < 0 then
+    surfaceheight = 0
+  end
+  local agl = asl - surfaceheight
+  return GRPC.success({agl = agl})
+end

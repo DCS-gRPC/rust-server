@@ -236,6 +236,8 @@ message Unit {
   // The number of this unit in the group. Does not change as units are
   // destroyed
   uint32 number_in_group = 11;
+  // Altitude of unit above ground level
+  double agl = 12;
 }
 
 /**

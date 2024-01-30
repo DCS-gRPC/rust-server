@@ -11,3 +11,4 @@ grpcurl.exe
 *.exe
 protos/google
 releases/
+__pycache__/

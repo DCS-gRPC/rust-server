@@ -65,8 +65,8 @@ impl SrsService for Srs {
         let mut client = ::srs::Client::new(
             name,
             request.frequency,
-            match Coalition::from_i32(request.coalition) {
-                Some(Coalition::Red) => ::srs::Coalition::Red,
+            match Coalition::try_from(request.coalition) {
+                Ok(Coalition::Red) => ::srs::Coalition::Red,
                 _ => ::srs::Coalition::Blue,
             },
         );

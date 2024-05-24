@@ -1,5 +1,7 @@
 use std::io::Cursor;
 
+use base64::prelude::BASE64_STANDARD;
+use base64::Engine;
 use ogg::reading::PacketReader;
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
@@ -44,7 +46,7 @@ pub async fn synthesize(text: &str, config: &GCloudConfig) -> Result<Vec<Vec<u8>
 
     // Convert ogg audio data to opus frames
     let data: TextToSpeechResponse = res.json().await?;
-    let data = base64::decode(data.audio_content)?;
+    let data = BASE64_STANDARD.decode(data.audio_content)?;
     let data = Cursor::new(data);
     let mut frames = Vec::new();
     let mut audio = PacketReader::new(data);

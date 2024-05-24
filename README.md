@@ -115,6 +115,12 @@ tts.provider.gcloud.defaultVoice = "en-GB-Neural2-A"
 -- Requires at least Windows Server 2019 to work properly.
 tts.provider.win.defaultVoice = "David"
 
+-- The default Piper language model to use (must be installed manually).
+tts.provider.piper.defaultVoice = "..."
+
+-- The default Piper speech speed (1.0 is the default; lower is quicker, higher is slower).
+tts.provider.piper.defaultSpeed = 1.0
+
 -- Your SRS server's address.
 srs.addr = "127.0.0.1:5002"
 ```
@@ -167,6 +173,17 @@ You can also check for the present of a `\Logs\grpc.log` file.
 
 The server will be running on port 50051 by default.
 
+## Install Piper TTS
+
+This is only necessary if you plan to use Piper as your TTS provider.
+
+1. Download `piper_windows_amd64.zip` from the latest [Piper release](https://github.com/rhasspy/piper/releases).
+2. Extract the `piper` directory from this zip file and place it at `DCS.openbeta\Mods\tech\DCS-gRPC\piper`.
+3. Download at least one voice from [Piper Voices](https://github.com/rhasspy/piper/blob/master/VOICES.md). You need both the `model` and the `config`. For the SRS voice quality, a `low` model is sufficient.
+4. Place the model and config into your `DCS.openbeta\Mods\tech\DCS-gRPC\piper\` directory (e.g. `DCS.openbeta\Mods\tech\DCS-gRPC\piper\en_US-amy-low.onnx` and `DCS.openbeta\Mods\tech\DCS-gRPC\piper\en_US-amy-low.onnx.json`.
+5. Set one of your installed voices as the default voice in your config (`tts.provider.piper.defaultVoice = "..."`, e.g. `tts.provider.piper.defaultVoice = "en_US-amy-low.onnx"`).
+6. If you want to use Piper, don't forget to set it as your default provider, or enable it on a per-transmission basis.
+
 ## Lua API
 
 `DCS-gRPC` provides the following Lua APIs to interact with the server from within Lua.
@@ -202,6 +219,7 @@ The server will be running on port 50051 by default.
         -- `= { azure = {} }` / `= { azure = { voice = "..." } }` enable Azure TTS
         -- `= { gcloud = {} }` / `= { gcloud = { voice = "..." } }` enable Google Cloud TTS
         -- `= { win = {} }` / `= { win = { voice = "..." } }` enable Windows TTS
+        -- `= { piper = {} }` / `= { piper = { voice = "...", speed = 1.0 } }` enable Piper TTS
         provider = null,
     }
     ```

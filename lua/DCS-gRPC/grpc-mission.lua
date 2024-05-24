@@ -1,7 +1,7 @@
 if not GRPC then
   GRPC = {
     -- scaffold nested tables to allow direct assignment in config file
-    tts = { provider = { gcloud = {}, aws = {}, azure = {}, win = {} } },
+    tts = { provider = { gcloud = {}, aws = {}, azure = {}, win = {}, piper = {} } },
     srs = {},
   }
 end

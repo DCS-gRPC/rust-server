@@ -10,7 +10,8 @@ use tonic::{transport, Code, Status};
 #[derive(Parser)]
 #[clap(name = "repl")]
 struct Opts {
-    #[clap(short, long, possible_values = ["mission", "hook"], default_value = "mission")]
+    #[clap(short, long, default_value = "mission",
+        value_parser = clap::builder::PossibleValuesParser::new(["mission", "hook"]))]
     env: String,
 }
 

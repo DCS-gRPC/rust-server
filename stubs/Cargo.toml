@@ -7,14 +7,14 @@ license.workspace = true
 edition.workspace = true
 
 [dependencies]
-prost = "0.11"
-prost-types = "0.11"
+prost = "0.12"
+prost-types = "0.12"
 serde.workspace = true
 tonic.workspace = true
 
 [build-dependencies]
-tonic-build = "0.8"
-protoc-bundled = { git = "https://github.com/rkusa/protoc-bundled.git", rev = "3.21.6" }
+tonic-build = "0.11"
+protoc-bundled = { git = "https://github.com/rkusa/protoc-bundled.git", rev = "27.0.0" }
 
 [dev-dependencies]
 serde_json.workspace = true

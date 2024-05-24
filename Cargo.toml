@@ -10,7 +10,7 @@ members = [
 version = "0.7.1"
 license = "AGPL-3.0-or-later"
 authors = ["Markus Ast <m@rkusa.st>"]
-rust-version = "1.64"
+rust-version = "1.78"
 edition = "2021"
 
 [workspace.dependencies]

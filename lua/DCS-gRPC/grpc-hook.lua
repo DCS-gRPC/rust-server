@@ -54,8 +54,6 @@ function handler.onPlayerTrySendChat(playerID, msg)
       message = msg
     },
   })
-
-  return msg
 end
 
 function handler.onPlayerTryConnect(addr, name, ucid, id)

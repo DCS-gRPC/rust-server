@@ -50,6 +50,15 @@ message GetPositionResponse {
   dcs.common.v0.Position position = 1;
 }
 
+message GetDrawArgumentValueRequest {
+  string name = 1;
+  uint32 argument = 2;
+}
+
+message GetDrawArgumentValueResponse {
+  double value = 1;
+}
+
 message GetTransformRequest {
   string name = 1;
 }

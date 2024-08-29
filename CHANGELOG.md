@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `DestroyUnit` API
 - Added `GetClients` to `SrsService`, which retrieves a list of units that are connected to SRS and the frequencies they are connected to.
 - Added `SrsConnectEvent` and `SrsDisconnectEvent` events 
+- Added `GetDrawArgumentValue` API for units, which returns the value for drawing. (useful for "hook down", "doors open" checks)
 
 ### Fixed
 - Fixed `MarkAddEvent`, `MarkChangeEvent` and `MarkRemoveEvent` position

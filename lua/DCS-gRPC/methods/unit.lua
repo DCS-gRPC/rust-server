@@ -46,6 +46,18 @@ GRPC.methods.getRadar = function(params)
   })
 end
 
+GRPC.methods.getDrawArgumentValue = function (params)
+  -- https://wiki.hoggitworld.com/view/DCS_func_getDrawArgumentValue
+  local unit = Unit.getByName(params.name)
+  if unit == nil then
+    return GRPC.errorNotFound("unit does not exist")
+  end
+
+  return GRPC.success({
+    value = unit:getDrawArgumentValue(params.argument)
+  })
+end
+
 GRPC.methods.getUnitPosition = function(params)
   -- https://wiki.hoggitworld.com/view/DCS_func_getByName
   local unit = Unit.getByName(params.name)

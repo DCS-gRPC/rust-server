@@ -31,6 +31,9 @@ service UnitService {
 
   // https://wiki.hoggitworld.com/view/DCS_func_destroy
   rpc Destroy(DestroyRequest) returns (DestroyResponse) {}
+
+  // https://wiki.hoggitworld.com/view/DCS_func_getDrawArgumentValue
+  rpc GetDrawArgumentValue(GetDrawArgumentValueRequest) returns (GetDrawArgumentValueResponse) {}
 }
 
 message GetRadarRequest {

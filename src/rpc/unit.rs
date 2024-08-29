@@ -49,7 +49,7 @@ impl UnitService for MissionRpc {
     async fn get_draw_argument_value(
         &self,
         request: Request<unit::v0::GetDrawArgumentValueRequest>,
-    ) -> Result<Response<unit::v0::GetDrawArgumentValueResponse>, Status>{
+    ) -> Result<Response<unit::v0::GetDrawArgumentValueResponse>, Status> {
         let res = self.request("getDrawArgumentValue", request).await?;
         Ok(Response::new(res))
     }

@@ -380,7 +380,7 @@ Primarily enhanced with `GRPC.exporters.unit`
   - [ ] `getSensors`
   - [ ] `hasSensors`
   - [ ] `getRadar`
-  - [ ] `getDrawArgumentValue`
+  - [x] `getDrawArgumentValue`
   - [ ] `getNearestCargos`
   - [ ] `enableEmission`
   - [ ] `getDescentCateogry`

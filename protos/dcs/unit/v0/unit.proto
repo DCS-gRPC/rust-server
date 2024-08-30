@@ -31,6 +31,9 @@ service UnitService {
 
   // https://wiki.hoggitworld.com/view/DCS_func_destroy
   rpc Destroy(DestroyRequest) returns (DestroyResponse) {}
+
+  // https://wiki.hoggitworld.com/view/DCS_func_getDrawArgumentValue
+  rpc GetDrawArgumentValue(GetDrawArgumentValueRequest) returns (GetDrawArgumentValueResponse) {}
 }
 
 message GetRadarRequest {
@@ -48,6 +51,15 @@ message GetPositionRequest {
 
 message GetPositionResponse {
   dcs.common.v0.Position position = 1;
+}
+
+message GetDrawArgumentValueRequest {
+  string name = 1;
+  uint32 argument = 2;
+}
+
+message GetDrawArgumentValueResponse {
+  double value = 1;
 }
 
 message GetTransformRequest {

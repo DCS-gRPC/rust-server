@@ -42,6 +42,9 @@ function handler.onSimulationStop()
   grpc = nil
 end
 
+-- None of these methods should return anything as doing so breaks other scripts attempting to
+-- react to the hook as well.
+
 function handler.onPlayerTrySendChat(playerID, msg)
   -- note: currently `all` (third parameter) will always `=true` regardless if the target is to the coalition/team
   --        or to everybody. When ED fixes this, implementation should determine the dcs.common.v0.Coalition
@@ -55,7 +58,6 @@ function handler.onPlayerTrySendChat(playerID, msg)
     },
   })
 
-  return msg
 end
 
 function handler.onPlayerTryConnect(addr, name, ucid, id)
@@ -69,7 +71,6 @@ function handler.onPlayerTryConnect(addr, name, ucid, id)
       id = id,
     },
   })
-  -- not returning `true` here to allow other scripts to handle this hook
 end
 
 function handler.onPlayerDisconnect(id, reason)

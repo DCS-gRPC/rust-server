@@ -8,7 +8,7 @@ use super::MissionRpc;
 #[async_trait]
 impl AdministrationService for MissionRpc {
     async fn get_health(
-        &self,  
+        &self,
         _request: Request<administration::v0::GetHealthRequest>,
     ) -> Result<Response<administration::v0::GetHealthResponse>, Status> {
         let alive: bool = true;

@@ -25,7 +25,6 @@ mod trigger;
 mod unit;
 mod world;
 
-
 #[derive(Clone)]
 pub struct MissionRpc {
     ipc: IPC<StreamEventsResponse>,

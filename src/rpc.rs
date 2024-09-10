@@ -23,6 +23,7 @@ mod timer;
 mod trigger;
 mod unit;
 mod world;
+mod administration;
 
 #[derive(Clone)]
 pub struct MissionRpc {

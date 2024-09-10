@@ -5,6 +5,7 @@ use std::time::Duration;
 
 use dcs_module_ipc::IPC;
 use futures_util::FutureExt;
+use stubs::administration::v0::administration_service_server::AdministrationServiceServer;
 use stubs::atmosphere::v0::atmosphere_service_server::AtmosphereServiceServer;
 use stubs::coalition::v0::coalition_service_server::CoalitionServiceServer;
 use stubs::controller::v0::controller_service_server::ControllerServiceServer;
@@ -205,7 +206,7 @@ async fn try_run(
         srs_transmit,
     } = state;
 
-    let mut mission_rpc =
+    let mut mission_rpc: MissionRpc =
         MissionRpc::new(ipc_mission.clone(), stats.clone(), shutdown_signal.clone());
     let mut hook_rpc = HookRpc::new(ipc_hook, stats, shutdown_signal.clone());
 
@@ -243,6 +244,7 @@ async fn try_run(
     });
 
     transport::Server::builder()
+        .add_service(AdministrationServiceServer::new(mission_rpc.clone()))
         .add_service(AtmosphereServiceServer::new(mission_rpc.clone()))
         .add_service(CoalitionServiceServer::new(mission_rpc.clone()))
         .add_service(ControllerServiceServer::new(mission_rpc.clone()))

@@ -3,6 +3,7 @@
 #![allow(clippy::derive_partial_eq_without_eq)]
 #![allow(clippy::large_enum_variant)]
 
+pub mod administration;
 pub mod atmosphere;
 pub mod coalition;
 pub mod common;

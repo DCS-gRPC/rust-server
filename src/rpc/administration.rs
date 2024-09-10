@@ -11,8 +11,8 @@ impl AdministrationService for MissionRpc {
         &self,  
         _request: Request<administration::v0::GetHealthRequest>,
     ) -> Result<Response<administration::v0::GetHealthResponse>, Status> {
-        let alive : bool = true;
-        return Ok(Response::new(administration::v0::GetHealthResponse { 
+        let alive: bool = true;
+        return Ok(Response::new(administration::v0::GetHealthResponse {
             alive,
         }));
     }

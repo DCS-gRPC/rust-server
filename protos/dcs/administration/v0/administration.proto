@@ -6,9 +6,9 @@ option go_package = "github.com/DCS-gRPC/go-bindings/dcs/v0/administration";
 //A service to get administrative data like health and version
 service AdministrationService {
 
-    rpc GetHealth(GetHealthRequest) returns (GetHealthResponse) {}
+  rpc GetHealth(GetHealthRequest) returns (GetHealthResponse) {}
 
-    rpc GetVersion(GetVersionRequest) returns (GetVersionResponse) {}
+  rpc GetVersion(GetVersionRequest) returns (GetVersionResponse) {}
 }
 
 message GetHealthRequest {

@@ -18,7 +18,7 @@ impl AdministrationService for MissionRpc {
     }
 
     async fn get_version(
-        &self,  
+        &self,
         _request: Request<administration::v0::GetVersionRequest>,
     ) -> Result<Response<administration::v0::GetVersionResponse>, Status> {
         const VERSION: Option<&str> = option_env!("CARGO_PKG_VERSION");

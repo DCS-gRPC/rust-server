@@ -10,6 +10,7 @@ pub use self::srs::Srs;
 use crate::shutdown::ShutdownHandle;
 use crate::stats::Stats;
 
+mod administration;
 mod atmosphere;
 mod coalition;
 mod controller;
@@ -23,7 +24,7 @@ mod timer;
 mod trigger;
 mod unit;
 mod world;
-mod administration;
+
 
 #[derive(Clone)]
 pub struct MissionRpc {

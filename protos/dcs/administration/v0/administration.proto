@@ -15,12 +15,12 @@ message GetHealthRequest {
 }
 
 message GetHealthResponse {
-    bool alive = 1;
+  bool alive = 1;
 }
 
 message GetVersionRequest {
 }
 
 message GetVersionResponse {
-    string version = 1;
+  string version = 1;
 }

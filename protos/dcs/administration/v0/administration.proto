@@ -11,13 +11,15 @@ service AdministrationService {
     rpc GetVersion(GetVersionRequest) returns (GetVersionResponse) {}
 }
 
-message GetHealthRequest {}
+message GetHealthRequest {
+}
 
 message GetHealthResponse {
     bool alive = 1;
 }
 
-message GetVersionRequest {}
+message GetVersionRequest {
+}
 
 message GetVersionResponse {
     string version = 1;

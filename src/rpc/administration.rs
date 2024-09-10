@@ -14,14 +14,13 @@ impl AdministrationService for MissionRpc {
         let alive : bool = true;
         return Ok(Response::new(administration::v0::GetHealthResponse { 
             alive,
-        }))
+        }));
     }
 
     async fn get_version(
         &self,  
         _request: Request<administration::v0::GetVersionRequest>,
-    ) -> Result<Response<administration::v0::GetVersionResponse>, Status>
-    {
+    ) -> Result<Response<administration::v0::GetVersionResponse>, Status> {
         const VERSION: Option<&str> = option_env!("CARGO_PKG_VERSION");
         let version = VERSION.unwrap_or("unknown").to_string();
         return Ok(Response::new(administration::v0::GetVersionResponse {

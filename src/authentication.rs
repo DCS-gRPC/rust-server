@@ -17,7 +17,6 @@ impl RequestInterceptor for AuthInterceptor {
         } else {
             match req.headers().get("X-API-Key").map(|v| v.to_str()) {
                 Some(Ok(token)) => {
-                    //check if token is correct if auth is 
                     let mut client: Option<&String> = None;
                     for key in &self.auth_config.tokens {
                         if key.token == token {

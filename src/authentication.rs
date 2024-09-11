@@ -12,7 +12,7 @@ pub struct AuthInterceptor {
 #[async_trait]
 impl RequestInterceptor for AuthInterceptor {
     async fn intercept(&self, req: Request<Body>) -> Result<Request<Body>, Status> {
-        match req.headers().get("bearer").map(|v| v.to_str()) {
+        match req.headers().get("X-API-Key").map(|v| v.to_str()) {
             Some(Ok(token)) => {
                 //check if token is correct if auth is enabled
                 if self.auth_config.enabled == false || token == self.auth_config.token {

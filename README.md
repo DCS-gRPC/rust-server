@@ -81,6 +81,15 @@ throughputLimit = 600
 -- Whether the integrity check, meant to spot installation issues, is disabled.
 integrityCheckDisabled = false
 
+-- Whether or not authentication is required
+auth.enabled = false 
+-- Authentication tokens table with client names and their tokens for split tokens. 
+auth.tokens = {
+  -- client => clientName, token => Any token. Advice to use UTF-8 only. Length not limited explicitly 
+  { client = "SomeClient", token = "SomeToken" }, 
+  { client = "SomeClient2", token = "SomeOtherToken" }
+}
+
 -- The default TTS provider to use if a TTS request does not explicitly specify another one.
 tts.defaultProvider = "win"
 

@@ -21,6 +21,7 @@ pub struct Config {
     pub integrity_check_disabled: bool,
     pub tts: Option<TtsConfig>,
     pub srs: Option<SrsConfig>,
+    pub auth: Option<AuthConfig>,
 }
 
 #[derive(Debug, Clone, Default, Deserialize, Serialize)]
@@ -85,6 +86,14 @@ pub struct WinConfig {
 pub struct SrsConfig {
     #[serde(default)]
     pub addr: Option<SocketAddr>,
+}
+
+#[derive(Debug, Clone, Default, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AuthConfig {
+    #[serde(default)]
+    pub enabled: bool,
+    pub token: String,
 }
 
 fn default_host() -> String {

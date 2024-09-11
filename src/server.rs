@@ -3,6 +3,12 @@ use std::net::SocketAddr;
 use std::sync::Arc;
 use std::time::Duration;
 
+use crate::authentication::AuthInterceptor;
+use crate::config::{AuthConfig, Config, SrsConfig, TtsConfig};
+use crate::rpc::{HookRpc, MissionRpc, Srs};
+use crate::shutdown::{Shutdown, ShutdownHandle};
+use crate::srs::SrsClients;
+use crate::stats::Stats;
 use dcs_module_ipc::IPC;
 use futures_util::FutureExt;
 use stubs::atmosphere::v0::atmosphere_service_server::AtmosphereServiceServer;
@@ -25,12 +31,7 @@ use tokio::sync::oneshot::{self, Receiver};
 use tokio::sync::{mpsc, Mutex};
 use tokio::time::sleep;
 use tonic::transport;
-
-use crate::config::{Config, SrsConfig, TtsConfig};
-use crate::rpc::{HookRpc, MissionRpc, Srs};
-use crate::shutdown::{Shutdown, ShutdownHandle};
-use crate::srs::SrsClients;
-use crate::stats::Stats;
+use tonic_middleware::RequestInterceptorLayer;
 
 pub struct Server {
     runtime: Runtime,
@@ -50,6 +51,7 @@ struct ServerState {
     tts_config: TtsConfig,
     srs_config: SrsConfig,
     srs_transmit: Arc<Mutex<mpsc::Receiver<TransmitRequest>>>,
+    auth_config: AuthConfig,
 }
 
 impl Server {
@@ -71,6 +73,7 @@ impl Server {
                 tts_config: config.tts.clone().unwrap_or_default(),
                 srs_config: config.srs.clone().unwrap_or_default(),
                 srs_transmit: Arc::new(Mutex::new(rx)),
+                auth_config: config.auth.clone().unwrap_or_default(),
             },
             srs_transmit: tx,
             shutdown,
@@ -203,6 +206,7 @@ async fn try_run(
         tts_config,
         srs_config,
         srs_transmit,
+        auth_config,
     } = state;
 
     let mut mission_rpc =
@@ -242,7 +246,14 @@ async fn try_run(
         }
     });
 
+    let auth_interceptor = AuthInterceptor {
+        auth_config: auth_config.clone(),
+    };
+
+    log::info!("Authentication enabled: {}", auth_config.enabled);
+
     transport::Server::builder()
+        .layer(RequestInterceptorLayer::new(auth_interceptor.clone()))
         .add_service(AtmosphereServiceServer::new(mission_rpc.clone()))
         .add_service(CoalitionServiceServer::new(mission_rpc.clone()))
         .add_service(ControllerServiceServer::new(mission_rpc.clone()))

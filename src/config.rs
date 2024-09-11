@@ -93,6 +93,14 @@ pub struct SrsConfig {
 pub struct AuthConfig {
     #[serde(default)]
     pub enabled: bool,
+    pub tokens: Vec<ApiKey>,
+}
+
+#[derive(Debug, Clone, Default, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ApiKey {
+    #[serde(default)]
+    pub client: String,
     pub token: String,
 }
 

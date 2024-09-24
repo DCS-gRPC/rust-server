@@ -10,13 +10,13 @@ pub use self::srs::Srs;
 use crate::shutdown::ShutdownHandle;
 use crate::stats::Stats;
 
-mod administration;
 mod atmosphere;
 mod coalition;
 mod controller;
 mod custom;
 mod group;
 mod hook;
+mod metadata;
 mod mission;
 mod net;
 mod srs;

@@ -1,10 +1,10 @@
 syntax = "proto3";
-package dcs.administration.v0;
-option csharp_namespace = "RurouniJones.Dcs.Grpc.V0.Administration";
-option go_package = "github.com/DCS-gRPC/go-bindings/dcs/v0/administration";
+package dcs.metadata.v0;
+option csharp_namespace = "RurouniJones.Dcs.Grpc.V0.Metadata";
+option go_package = "github.com/DCS-gRPC/go-bindings/dcs/v0/metadata";
 
-//A service to get administrative data like health and version
-service AdministrationService {
+//A service to get administrative/meta data like server health checks and version
+service MetadataService {
 
   rpc GetHealth(GetHealthRequest) returns (GetHealthResponse) {}
 

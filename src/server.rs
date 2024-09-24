@@ -5,13 +5,13 @@ use std::time::Duration;
 
 use dcs_module_ipc::IPC;
 use futures_util::FutureExt;
-use stubs::administration::v0::administration_service_server::AdministrationServiceServer;
 use stubs::atmosphere::v0::atmosphere_service_server::AtmosphereServiceServer;
 use stubs::coalition::v0::coalition_service_server::CoalitionServiceServer;
 use stubs::controller::v0::controller_service_server::ControllerServiceServer;
 use stubs::custom::v0::custom_service_server::CustomServiceServer;
 use stubs::group::v0::group_service_server::GroupServiceServer;
 use stubs::hook::v0::hook_service_server::HookServiceServer;
+use stubs::metadata::v0::metadata_service_server::MetadataServiceServer;
 use stubs::mission::v0::mission_service_server::MissionServiceServer;
 use stubs::mission::v0::StreamEventsResponse;
 use stubs::net::v0::net_service_server::NetServiceServer;
@@ -244,13 +244,13 @@ async fn try_run(
     });
 
     transport::Server::builder()
-        .add_service(AdministrationServiceServer::new(mission_rpc.clone()))
         .add_service(AtmosphereServiceServer::new(mission_rpc.clone()))
         .add_service(CoalitionServiceServer::new(mission_rpc.clone()))
         .add_service(ControllerServiceServer::new(mission_rpc.clone()))
         .add_service(CustomServiceServer::new(mission_rpc.clone()))
         .add_service(GroupServiceServer::new(mission_rpc.clone()))
         .add_service(HookServiceServer::new(hook_rpc))
+        .add_service(MetadataServiceServer::new(mission_rpc.clone()))
         .add_service(MissionServiceServer::new(mission_rpc.clone()))
         .add_service(NetServiceServer::new(mission_rpc.clone()))
         .add_service(TimerServiceServer::new(mission_rpc.clone()))

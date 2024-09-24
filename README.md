@@ -226,9 +226,9 @@ In order to develop clients for `DCS-gRPC` you must be familiar with gRPC concep
 
 The gRPC .proto files are available in the `Docs/DCS-gRPC` folder and also available in the Github repo
 
-### Authentication
+### Client Authentication
 
-If authentication is enabled you will have to add `X-API-Key` to the metadata/headers. 
+If authentication is enabled on the server you will have to add `X-API-Key` to the metadata/headers. 
 Below are some example on what it could look like in your code.
 
 #### Examples

@@ -226,6 +226,52 @@ In order to develop clients for `DCS-gRPC` you must be familiar with gRPC concep
 
 The gRPC .proto files are available in the `Docs/DCS-gRPC` folder and also available in the Github repo
 
+### Authentication
+
+If authentication is enabled you will have to add `X-API-Key` to the metadata/headers. 
+Below are some example on what it could look like in your code.
+
+#### Examples
+
+<details>
+  <summary>dotnet / c# </summary>
+
+You can either set the `Metadata` for each request or you can create a `GrpcChannel` with an interceptor that will set the key each time.
+
+For a single request: 
+
+```c#
+var client = new MissionService.MissionServiceClient(channel);
+
+Metadata metadata = new Metadata()
+{
+    { "X-API-Key", "<yourKey>" }
+};
+
+var response = client.GetScenarioCurrentTime(new GetScenarioCurrentTimeRequest { }, headers: metadata, deadline: DateTime.UtcNow.AddSeconds(2));
+```
+
+For all requests on a channel: 
+```c#
+public GrpcChannel CreateChannel(string host, string post, string? apiKey)
+{
+  GrpcChannelOptions options = new GrpcChannelOptions();
+  if (apiKey != null)
+  {
+      CallCredentials credentials = CallCredentials.FromInterceptor(async (context, metadata) =>
+      {
+          metadata.Add("X-API-Key", apiKey);
+      });
+
+      options.Credentials = ChannelCredentials.Create(ChannelCredentials.Insecure, credentials) ;
+  }
+
+  return GrpcChannel.ForAddress($"http://{host}:{port}", options);
+}
+```
+
+</details>
+
 ## Server Development
 
 The following section is only applicable to people who want to developer the DCS-gRPC server itself.

@@ -5,7 +5,8 @@ use std::sync::Arc;
 use tokio::sync::RwLock;
 
 use crate::message::{create_sguid, Coalition, Position};
-use crate::voice_stream::{VoiceStream, VoiceStreamError};
+use crate::stream::{Receiver, Sender};
+use crate::StreamError;
 
 #[derive(Debug, Clone)]
 pub struct UnitInfo {
@@ -76,8 +77,7 @@ impl Client {
         self,
         addr: SocketAddr,
         shutdown_signal: impl Future<Output = ()> + Unpin + Send + 'static,
-    ) -> Result<VoiceStream, VoiceStreamError> {
-        let stream = VoiceStream::new(self, addr, shutdown_signal).await?;
-        Ok(stream)
+    ) -> Result<(Sender, Receiver), StreamError> {
+        crate::stream::stream(self, addr, shutdown_signal).await
     }
 }

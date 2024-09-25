@@ -31,6 +31,7 @@ fn embed_lua_file_hashes() {
     let mut out = File::create(path).unwrap();
 
     for (ident, base_path) in [("DCS_GRPC", "./lua/DCS-gRPC"), ("HOOKS", "./lua/Hooks")] {
+        writeln!(out, "#[allow(clippy::needless_raw_string_hashes)]").unwrap();
         writeln!(out, "const {ident}: &[(&str, u64)] = &[").unwrap();
 
         for entry in WalkDir::new(base_path) {

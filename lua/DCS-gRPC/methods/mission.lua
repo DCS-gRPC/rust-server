@@ -5,7 +5,7 @@ local function exporter(object)
     return nil
   end
 
-  local category = object:getCategory()
+  local category = Object.getCategory(object) -- change for DCS API fixes in getcategory()
 
   if category == Object.Category.BASE or object.className_ == 'Airbase' then
     -- carriers are of category unit, but are a Airbase class
@@ -35,7 +35,7 @@ local function typed_exporter(object)
   end
 
   local grpcTable = {}
-  local category = object:getCategory()
+  local category = Object.getCategory(object)
 
   if category == Object.Category.BASE or object.className_ == 'Airbase' then
     grpcTable.airbase = exporter(object)

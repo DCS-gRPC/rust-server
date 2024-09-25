@@ -6,14 +6,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Breaking Changes
+- Renamed `TtsService` to `SrsService`
+
 ### Added
 - Added `ActivateGroup` API which allows to activate groups with late activation.
 - Added `DestroyGroup` API which removes the entire group from the game world.
-- `DestroyUnit` API
+- Added `DestroyUnit` API
+- Added `GetClients` to `SrsService`, which retrieves a list of units that are connected to SRS and the frequencies they are connected to.
+- Added `SrsConnectEvent` and `SrsDisconnectEvent` events 
+- Added `GetDrawArgumentValue` API for units, which returns the value for drawing. (useful for "hook down", "doors open" checks)
 
 ### Fixed
 - Fixed `MarkAddEvent`, `MarkChangeEvent` and `MarkRemoveEvent` position
 - Fixed crash of concurrent Windows TTS synthesis ([#223](https://github.com/DCS-gRPC/rust-server/issues/223))
+- Fixed file handler left open: Closing config file again after reading it in LUA
+- Fixed the config value for `tts.defaultProvider` for Google Cloud to be lowercase `gcloud` (instead of `gCloud`)
+- Fixed error with getCategory due to API changes in DCS ([#246](https://github.com/DCS-gRPC/rust-server/issues/246))
+- Fixed export of airbase objects by filtering out ships that are no longer part of a group due to damage
+- Fixed `onPlayerTrySendChat``returning a value and therefore stopping other scripts from reacting to the event
 
 ## [0.7.1] - 2023-01-08
 

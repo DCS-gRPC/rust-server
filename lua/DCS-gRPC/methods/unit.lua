@@ -17,7 +17,7 @@ GRPC.methods.getRadar = function(params)
     })
   end
 
-  local category = object:getCategory()
+  local category = Object.getCategory(object)-- change for DCS API fixes in getcategory()
   local grpcTable = {}
 
   if(category == Object.Category.UNIT) then
@@ -43,6 +43,18 @@ GRPC.methods.getRadar = function(params)
   return GRPC.success({
     active = active,
     target = grpcTable
+  })
+end
+
+GRPC.methods.getDrawArgumentValue = function (params)
+  -- https://wiki.hoggitworld.com/view/DCS_func_getDrawArgumentValue
+  local unit = Unit.getByName(params.name)
+  if unit == nil then
+    return GRPC.errorNotFound("unit does not exist")
+  end
+
+  return GRPC.success({
+    value = unit:getDrawArgumentValue(params.argument)
   })
 end
 
@@ -114,6 +126,15 @@ GRPC.methods.getUnit = function(params)
   local unit = Unit.getByName(params.name)
   if unit == nil then
     return GRPC.errorNotFound("unit `" .. tostring(params.name) .. "` does not exist")
+  end
+
+  return GRPC.success({unit = GRPC.exporters.unit(unit)})
+end
+
+GRPC.methods.getUnitById = function(params)
+  local unit = Unit.getByName(Unit.getName({ id_ = params.id }))
+  if unit == nil then
+    return GRPC.errorNotFound("unit with id `" .. tostring(params.id) .. "` does not exist")
   end
 
   return GRPC.success({unit = GRPC.exporters.unit(unit)})

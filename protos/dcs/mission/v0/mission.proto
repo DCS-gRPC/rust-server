@@ -458,8 +458,8 @@ message StreamEventsResponse {
   }
 
   /**
-   * Fired for every TTS request that contains the `text_plain` field, for other clients to use e.g.
-   * for accessibility use-cases.
+   * Fired for every TTS request that contains the `text_plain` field, for other
+   * clients to use e.g. for accessibility use-cases.
    */
   message TtsEvent {
     // The plain text that got transmitted.
@@ -473,6 +473,29 @@ message StreamEventsResponse {
 
     // Custom name of the SRS client used for the transmission.
     optional string srs_client_name = 4;
+  }
+
+  /**
+   * Fired every time a player occuping a unit connects to a frequency on SRS.
+   */
+  message SrsConnectEvent {
+    // The unit that connected to a frequency in SRS.
+    dcs.common.v0.Unit unit = 1;
+
+    // The radio frequency in Hz the unit connected to.
+    uint64 frequency = 2;
+  }
+
+  /**
+   * Fired every time a player occuping a unit disconnects from a frequency on
+   * SRS. It is not fired when the player leaves the unit or the unit dies.
+   */
+  message SrsDisconnectEvent {
+    // The unit that disconnected from a frequency in SRS.
+    dcs.common.v0.Unit unit = 1;
+
+    // The radio frequency in Hz the unit disconnected from.
+    uint64 frequency = 2;
   }
 
   // The event's mission time.
@@ -528,6 +551,8 @@ message StreamEventsResponse {
     GroupCommandEvent group_command = 8198;
     SimulationFpsEvent simulation_fps = 8199;
     TtsEvent tts = 8200;
+    SrsConnectEvent srs_connect = 8201;
+    SrsDisconnectEvent srs_disconnect = 8202;
   }
 }
 

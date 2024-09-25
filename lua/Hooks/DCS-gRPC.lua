@@ -20,6 +20,7 @@ local function init()
       local f = assert(loadstring(file:read("*all")))
       setfenv(f, GRPC)
       f()
+      io.close(file)
       log.write("[GRPC-Hook]", log.INFO, "`Config/dcs-grpc.lua` successfully read")
     else
       log.write("[GRPC-Hook]", log.INFO, "`Config/dcs-grpc.lua` not found (" .. tostring(err) .. ")")

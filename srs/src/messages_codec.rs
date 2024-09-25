@@ -3,7 +3,7 @@ use std::{error, fmt, io};
 use bytes::BytesMut;
 use tokio_util::codec::{Decoder, Encoder, LinesCodec, LinesCodecError};
 
-use crate::message::Message;
+use crate::message::{Message, MessageRequest};
 
 pub struct MessagesCodec {
     lines_codec: LinesCodec,
@@ -44,10 +44,10 @@ impl Decoder for MessagesCodec {
     }
 }
 
-impl Encoder<Message> for MessagesCodec {
+impl Encoder<MessageRequest> for MessagesCodec {
     type Error = MessagesCodecError;
 
-    fn encode(&mut self, msg: Message, buf: &mut BytesMut) -> Result<(), Self::Error> {
+    fn encode(&mut self, msg: MessageRequest, buf: &mut BytesMut) -> Result<(), Self::Error> {
         let json = serde_json::to_string(&msg).map_err(MessagesCodecError::JsonEncode)?;
         self.lines_codec.encode(json, buf)?;
         Ok(())

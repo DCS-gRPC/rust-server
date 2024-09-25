@@ -135,12 +135,10 @@ impl Stats {
             let elapsed = last_logged.elapsed();
             if elapsed > log_interval {
                 // average TPS
-                let tps_average =
-                    f64::try_from(calls_count).unwrap_or(f64::MAX) / elapsed.as_secs_f64();
+                let tps_average = f64::from(calls_count) / elapsed.as_secs_f64();
 
                 // average events per second
-                let eps_average =
-                    f64::try_from(events_count).unwrap_or(f64::MAX) / elapsed.as_secs_f64();
+                let eps_average = f64::from(events_count) / elapsed.as_secs_f64();
 
                 // total block time
                 let block_time_total = Duration::from_nanos(
@@ -151,9 +149,8 @@ impl Stats {
                     (block_time_total.as_secs_f64() / elapsed.as_secs_f64()) * 100.0;
 
                 // average queue size
-                let queue_size_average = f64::try_from(interval_stats.queue_size_total)
-                    .unwrap_or(f64::MAX)
-                    / elapsed.as_secs_f64();
+                let queue_size_average =
+                    f64::from(interval_stats.queue_size_total) / elapsed.as_secs_f64();
 
                 // format and log stats
                 log::info!(

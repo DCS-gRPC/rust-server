@@ -31,7 +31,7 @@ pub async fn stream_units(
     let poll_rate = opts.poll_rate.unwrap_or(5);
     let max_backoff = Duration::from_secs(opts.max_backoff.unwrap_or(30).max(poll_rate) as u64);
     let poll_rate = Duration::from_secs(poll_rate as u64);
-    let category = GroupCategory::from_i32(opts.category).unwrap_or(GroupCategory::Unspecified);
+    let category = GroupCategory::try_from(opts.category).unwrap_or(GroupCategory::Unspecified);
     let mut state = State {
         units: HashMap::new(),
         ctx: Context {
@@ -151,7 +151,7 @@ async fn handle_event(
             let unit_category = unit
                 .group
                 .as_ref()
-                .and_then(|group| GroupCategory::from_i32(group.category))
+                .and_then(|group| GroupCategory::try_from(group.category).ok())
                 .unwrap_or(GroupCategory::Unspecified);
             if category == unit_category || category == GroupCategory::Unspecified {
                 state

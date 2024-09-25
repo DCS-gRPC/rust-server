@@ -105,7 +105,7 @@ tts.provider.aws.region = "eu-central-1"
 -- The default AWS voice to use (see https://docs.aws.amazon.com/polly/latest/dg/voicelist.html).
 tts.provider.aws.defaultVoice = "Brian"
 
--- Your Google Cloudd access key.
+-- Your Google Cloud access key.
 tts.provider.gcloud.key = "..."
 
 -- The default Google Cloud voice to use (see https://cloud.google.com/text-to-speech/docs/voices).
@@ -268,7 +268,11 @@ For development:
 - Search for `[GRPC]` in the DCS logs
 - Consult the gRPC Server logs at `Saved Games\DCS.openbeta\Logs\gRPC.log`
 
-Test the running server via [grpcurl](https://github.com/fullstorydev/grpcurl): (Remove the `.exe` when running on Linux)
+Test the running server via [grpcurl](https://github.com/fullstorydev/grpcurl): (Remove the `.exe` when running on Linux).
+
+> [!TIP]
+> FOR WINDOWS USERS on the command prompt, you may need to wrap the JSON in double quotes instead of single quotes in the commands below.
+> Try this if you get "Too Many Arguments" error
 
 ```bash
 grpcurl.exe -plaintext -import-path ./protos -proto ./protos/dcs/dcs.proto -d '{\"text\": \"Works!\", \"display_time\": 10, \"clear_view\": false}' 127.0.0.1:50051 dcs.trigger.v0.TriggerService/OutText

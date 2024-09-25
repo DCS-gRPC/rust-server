@@ -7,9 +7,9 @@ license.workspace = true
 edition.workspace = true
 
 [dependencies]
-clap = { version = "3.0", features = ["derive"] }
+clap = { version = "4.5", features = ["derive"] }
 stubs = { package = "dcs-grpc-stubs", path = "../stubs", features = ["client"] }
 serde_json.workspace = true
 thiserror.workspace = true
-tokio = { version = "1.24", features = ["rt-multi-thread"] }
+tokio = { version = "1.24", features = ["rt-multi-thread", "macros"] }
 tonic.workspace = true

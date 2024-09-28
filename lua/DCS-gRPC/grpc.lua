@@ -21,6 +21,7 @@ if isMissionEnv then
     integrityCheckDisabled = GRPC.integrityCheckDisabled,
     tts = GRPC.tts,
     srs = GRPC.srs,
+    auth = GRPC.auth
   }))
 end
 

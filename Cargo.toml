@@ -65,6 +65,7 @@ time = { version = "0.3", features = ["formatting", "parsing"] }
 tokio.workspace = true
 tokio-stream.workspace = true
 tonic.workspace = true
+tonic-middleware = "0.1.4"
 
 [build-dependencies]
 walkdir = "2.3"

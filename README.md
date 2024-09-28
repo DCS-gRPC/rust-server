@@ -81,6 +81,15 @@ throughputLimit = 600
 -- Whether the integrity check, meant to spot installation issues, is disabled.
 integrityCheckDisabled = false
 
+-- Whether or not authentication is required
+auth.enabled = false 
+-- Authentication tokens table with client names and their tokens for split tokens. 
+auth.tokens = {
+  -- client => clientName, token => Any token. Advice to use UTF-8 only. Length not limited explicitly 
+  { client = "SomeClient", token = "SomeToken" }, 
+  { client = "SomeClient2", token = "SomeOtherToken" }
+}
+
 -- The default TTS provider to use if a TTS request does not explicitly specify another one.
 tts.defaultProvider = "win"
 
@@ -216,6 +225,52 @@ In order to develop clients for `DCS-gRPC` you must be familiar with gRPC concep
 [gRPC documentation](https://grpc.io/docs/) for your language.
 
 The gRPC .proto files are available in the `Docs/DCS-gRPC` folder and also available in the Github repo
+
+### Client Authentication
+
+If authentication is enabled on the server you will have to add `X-API-Key` to the metadata/headers. 
+Below are some example on what it could look like in your code.
+
+#### Examples
+
+<details>
+  <summary>dotnet / c# </summary>
+
+You can either set the `Metadata` for each request or you can create a `GrpcChannel` with an interceptor that will set the key each time.
+
+For a single request: 
+
+```c#
+var client = new MissionService.MissionServiceClient(channel);
+
+Metadata metadata = new Metadata()
+{
+    { "X-API-Key", "<yourKey>" }
+};
+
+var response = client.GetScenarioCurrentTime(new GetScenarioCurrentTimeRequest { }, headers: metadata, deadline: DateTime.UtcNow.AddSeconds(2));
+```
+
+For all requests on a channel: 
+```c#
+public GrpcChannel CreateChannel(string host, string post, string? apiKey)
+{
+  GrpcChannelOptions options = new GrpcChannelOptions();
+  if (apiKey != null)
+  {
+      CallCredentials credentials = CallCredentials.FromInterceptor(async (context, metadata) =>
+      {
+          metadata.Add("X-API-Key", apiKey);
+      });
+
+      options.Credentials = ChannelCredentials.Create(ChannelCredentials.Insecure, credentials) ;
+  }
+
+  return GrpcChannel.ForAddress($"http://{host}:{port}", options);
+}
+```
+
+</details>
 
 ## Server Development
 

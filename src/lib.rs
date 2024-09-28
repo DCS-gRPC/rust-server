@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 #![recursion_limit = "256"]
 
+mod authentication;
 mod config;
 mod fps;
 #[cfg(feature = "hot-reload")]

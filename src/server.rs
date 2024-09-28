@@ -17,6 +17,7 @@ use stubs::controller::v0::controller_service_server::ControllerServiceServer;
 use stubs::custom::v0::custom_service_server::CustomServiceServer;
 use stubs::group::v0::group_service_server::GroupServiceServer;
 use stubs::hook::v0::hook_service_server::HookServiceServer;
+use stubs::metadata::v0::metadata_service_server::MetadataServiceServer;
 use stubs::mission::v0::mission_service_server::MissionServiceServer;
 use stubs::mission::v0::StreamEventsResponse;
 use stubs::net::v0::net_service_server::NetServiceServer;
@@ -209,7 +210,7 @@ async fn try_run(
         auth_config,
     } = state;
 
-    let mut mission_rpc =
+    let mut mission_rpc: MissionRpc =
         MissionRpc::new(ipc_mission.clone(), stats.clone(), shutdown_signal.clone());
     let mut hook_rpc = HookRpc::new(ipc_hook, stats, shutdown_signal.clone());
 
@@ -260,6 +261,7 @@ async fn try_run(
         .add_service(CustomServiceServer::new(mission_rpc.clone()))
         .add_service(GroupServiceServer::new(mission_rpc.clone()))
         .add_service(HookServiceServer::new(hook_rpc))
+        .add_service(MetadataServiceServer::new(mission_rpc.clone()))
         .add_service(MissionServiceServer::new(mission_rpc.clone()))
         .add_service(NetServiceServer::new(mission_rpc.clone()))
         .add_service(TimerServiceServer::new(mission_rpc.clone()))

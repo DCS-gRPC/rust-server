@@ -3,7 +3,7 @@ if not GRPC then
     -- scaffold nested tables to allow direct assignment in config file
     tts = { provider = { gcloud = {}, aws = {}, azure = {}, win = {} } },
     srs = {},
-    auth = {}
+    auth = { tokens = {} }
   }
 end
 

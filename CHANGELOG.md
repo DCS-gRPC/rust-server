@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Events `OnRunwayTouch` and `RunwayTakeoff` for "changed" TakeOff and Landing logic in DCS.
+
 ## [0.8.0]
 
 ### Breaking Changes

@@ -119,8 +119,24 @@ message StreamEventsResponse {
     dcs.common.v0.Airbase place = 2;
   }
 
+  // Occurs when an aircraft takes off from an airbase, farp, or ship.
+  message RunwayTakeoffEvent {
+    // The object that took off.
+    dcs.common.v0.Initiator initiator = 1;
+    // The airbase, farp or ship the unit took off from.
+    dcs.common.v0.Airbase place = 2;
+  }
+
   // Occurs when an aircraft lands at an airbase, farp or ship.
   message LandEvent {
+    // The object that landed.
+    dcs.common.v0.Initiator initiator = 1;
+    // The airbase, farp or ship the unit landed at.
+    dcs.common.v0.Airbase place = 2;
+  }
+
+  // Occurs when an aircraft lands at an airbase, farp or ship.
+  message RunwayTouchEvent {
     // The object that landed.
     dcs.common.v0.Initiator initiator = 1;
     // The airbase, farp or ship the unit landed at.
@@ -538,6 +554,9 @@ message StreamEventsResponse {
     // @exclude 38 reserved for S_EVENT_TRIGGER_ZONE
     LandingQualityMarkEvent landing_quality_mark = 39;
     // @exclude 40 reserved for S_EVENT_BDA
+
+    RunwayTakeoffEvent runway_takeoff = 54;
+    RunwayTouchEvent runway_touch = 55;
 
     // The following events are additions on top of DCS's own event enum,
     // which is why they start at 8192 to give DCS plenty of space for

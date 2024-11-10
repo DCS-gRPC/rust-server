@@ -1,5 +1,6 @@
 use std::future::Future;
 use std::net::SocketAddr;
+use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -51,6 +52,7 @@ struct ServerState {
     stats: Stats,
     tts_config: TtsConfig,
     srs_config: SrsConfig,
+    write_dir: PathBuf,
     srs_transmit: Arc<Mutex<mpsc::Receiver<TransmitRequest>>>,
     auth_config: AuthConfig,
 }
@@ -73,6 +75,7 @@ impl Server {
                 stats: Stats::new(shutdown.handle()),
                 tts_config: config.tts.clone().unwrap_or_default(),
                 srs_config: config.srs.clone().unwrap_or_default(),
+                write_dir: PathBuf::from(&config.write_dir),
                 srs_transmit: Arc::new(Mutex::new(rx)),
                 auth_config: config.auth.clone().unwrap_or_default(),
             },
@@ -206,6 +209,7 @@ async fn try_run(
         stats,
         tts_config,
         srs_config,
+        write_dir,
         srs_transmit,
         auth_config,
     } = state;
@@ -230,6 +234,7 @@ async fn try_run(
     let srs = Srs::new(
         tts_config.clone(),
         srs_config.clone(),
+        write_dir.clone(),
         mission_rpc.clone(),
         srs_clients.clone(),
         shutdown_signal.clone(),
@@ -269,6 +274,7 @@ async fn try_run(
         .add_service(SrsServiceServer::new(Srs::new(
             tts_config,
             srs_config,
+            write_dir,
             mission_rpc.clone(),
             srs_clients,
             shutdown_signal.clone(),

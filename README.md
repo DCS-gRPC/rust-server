@@ -82,11 +82,11 @@ throughputLimit = 600
 integrityCheckDisabled = false
 
 -- Whether or not authentication is required
-auth.enabled = false 
--- Authentication tokens table with client names and their tokens for split tokens. 
+auth.enabled = false
+-- Authentication tokens table with client names and their tokens for split tokens.
 auth.tokens = {
-  -- client => clientName, token => Any token. Advice to use UTF-8 only. Length not limited explicitly 
-  { client = "SomeClient", token = "SomeToken" }, 
+  -- client => clientName, token => Any token. Advice to use UTF-8 only. Length not limited explicitly
+  { client = "SomeClient", token = "SomeToken" },
   { client = "SomeClient2", token = "SomeOtherToken" }
 }
 
@@ -123,6 +123,9 @@ tts.provider.gcloud.defaultVoice = "en-GB-Neural2-A"
 -- The default Windows voice to use (see https://support.microsoft.com/en-us/windows/appendix-a-supported-languages-and-voices-4486e345-7730-53da-fcfe-55cc64300f01).
 -- Requires at least Windows Server 2019 to work properly.
 tts.provider.win.defaultVoice = "David"
+
+-- The default Parler speaker prompt.
+tts.provider.parler.defaultSpeaker = "..."
 
 -- Your SRS server's address.
 srs.addr = "127.0.0.1:5002"
@@ -211,6 +214,7 @@ The server will be running on port 50051 by default.
         -- `= { azure = {} }` / `= { azure = { voice = "..." } }` enable Azure TTS
         -- `= { gcloud = {} }` / `= { gcloud = { voice = "..." } }` enable Google Cloud TTS
         -- `= { win = {} }` / `= { win = { voice = "..." } }` enable Windows TTS
+        -- `= { parler = {} }` / `= { parler = { voice = "...", speed = 1.0 } }` enable Parler TTS
         provider = null,
     }
     ```
@@ -228,7 +232,7 @@ The gRPC .proto files are available in the `Docs/DCS-gRPC` folder and also avail
 
 ### Client Authentication
 
-If authentication is enabled on the server you will have to add `X-API-Key` to the metadata/headers. 
+If authentication is enabled on the server you will have to add `X-API-Key` to the metadata/headers.
 Below are some example on what it could look like in your code.
 
 #### Examples
@@ -238,7 +242,7 @@ Below are some example on what it could look like in your code.
 
 You can either set the `Metadata` for each request or you can create a `GrpcChannel` with an interceptor that will set the key each time.
 
-For a single request: 
+For a single request:
 
 ```c#
 var client = new MissionService.MissionServiceClient(channel);
@@ -251,7 +255,7 @@ Metadata metadata = new Metadata()
 var response = client.GetScenarioCurrentTime(new GetScenarioCurrentTimeRequest { }, headers: metadata, deadline: DateTime.UtcNow.AddSeconds(2));
 ```
 
-For all requests on a channel: 
+For all requests on a channel:
 ```c#
 public GrpcChannel CreateChannel(string host, string post, string? apiKey)
 {

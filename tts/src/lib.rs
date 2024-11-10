@@ -3,12 +3,15 @@ use std::error;
 pub use aws::{AwsConfig, Region as AwsRegion};
 pub use azure::AzureConfig;
 pub use gcloud::GCloudConfig;
+pub use parler::ParlerConfig;
 #[cfg(target_os = "windows")]
 pub use win::WinConfig;
 
 mod aws;
 mod azure;
+mod bs1770;
 mod gcloud;
+mod parler;
 #[cfg(target_os = "windows")]
 mod win;
 
@@ -19,6 +22,7 @@ pub enum TtsConfig {
     GCloud(gcloud::GCloudConfig),
     #[cfg(target_os = "windows")]
     Win(win::WinConfig),
+    Parler(parler::ParlerConfig),
 }
 
 /// Synthesize the `text` to speech. Returns a vec of opus frames.
@@ -32,6 +36,7 @@ pub async fn synthesize(
         TtsConfig::GCloud(config) => gcloud::synthesize(text, config).await?,
         #[cfg(target_os = "windows")]
         TtsConfig::Win(config) => win::synthesize(text, config).await?,
+        TtsConfig::Parler(config) => parler::synthesize(text, config).await?,
     })
 }
 

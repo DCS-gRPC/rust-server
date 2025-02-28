@@ -253,7 +253,7 @@ var response = client.GetScenarioCurrentTime(new GetScenarioCurrentTimeRequest {
 
 For all requests on a channel: 
 ```c#
-public GrpcChannel CreateChannel(string host, string post, string? apiKey)
+public GrpcChannel CreateChannel(string host, string port, string? apiKey)
 {
   GrpcChannelOptions options = new GrpcChannelOptions();
   if (apiKey != null)

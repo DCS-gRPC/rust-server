@@ -39,6 +39,7 @@ pub struct TtsProviderConfig {
     pub azure: Option<AzureConfig>,
     pub gcloud: Option<GCloudConfig>,
     pub win: Option<WinConfig>,
+    pub parler: Option<ParlerConfig>,
 }
 
 #[derive(Debug, Clone, Default, Deserialize, Serialize)]
@@ -49,6 +50,7 @@ pub enum TtsProvider {
     GCloud,
     #[default]
     Win,
+    Parler,
 }
 
 #[derive(Clone, Deserialize, Serialize)]
@@ -79,6 +81,12 @@ pub struct GCloudConfig {
 #[serde(rename_all = "camelCase")]
 pub struct WinConfig {
     pub default_voice: Option<String>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ParlerConfig {
+    pub default_speaker: Option<String>,
 }
 
 #[derive(Debug, Clone, Default, Deserialize, Serialize)]

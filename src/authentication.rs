@@ -1,8 +1,9 @@
-use crate::config::AuthConfig;
 use tonic::codegen::http::Request;
 use tonic::transport::Body;
 use tonic::{async_trait, Status};
 use tonic_middleware::RequestInterceptor;
+
+use crate::config::AuthConfig;
 
 #[derive(Clone)]
 pub struct AuthInterceptor {

@@ -3,12 +3,6 @@ use std::net::SocketAddr;
 use std::sync::Arc;
 use std::time::Duration;
 
-use crate::authentication::AuthInterceptor;
-use crate::config::{AuthConfig, Config, SrsConfig, TtsConfig};
-use crate::rpc::{HookRpc, MissionRpc, Srs};
-use crate::shutdown::{Shutdown, ShutdownHandle};
-use crate::srs::SrsClients;
-use crate::stats::Stats;
 use dcs_module_ipc::IPC;
 use futures_util::FutureExt;
 use stubs::atmosphere::v0::atmosphere_service_server::AtmosphereServiceServer;
@@ -18,21 +12,28 @@ use stubs::custom::v0::custom_service_server::CustomServiceServer;
 use stubs::group::v0::group_service_server::GroupServiceServer;
 use stubs::hook::v0::hook_service_server::HookServiceServer;
 use stubs::metadata::v0::metadata_service_server::MetadataServiceServer;
-use stubs::mission::v0::mission_service_server::MissionServiceServer;
 use stubs::mission::v0::StreamEventsResponse;
+use stubs::mission::v0::mission_service_server::MissionServiceServer;
 use stubs::net::v0::net_service_server::NetServiceServer;
-use stubs::srs::v0::srs_service_server::{SrsService, SrsServiceServer};
 pub use stubs::srs::v0::TransmitRequest;
+use stubs::srs::v0::srs_service_server::{SrsService, SrsServiceServer};
 use stubs::timer::v0::timer_service_server::TimerServiceServer;
 use stubs::trigger::v0::trigger_service_server::TriggerServiceServer;
 use stubs::unit::v0::unit_service_server::UnitServiceServer;
 use stubs::world::v0::world_service_server::WorldServiceServer;
 use tokio::runtime::{Handle, Runtime};
 use tokio::sync::oneshot::{self, Receiver};
-use tokio::sync::{mpsc, Mutex};
+use tokio::sync::{Mutex, mpsc};
 use tokio::time::sleep;
 use tonic::transport;
 use tonic_middleware::RequestInterceptorLayer;
+
+use crate::authentication::AuthInterceptor;
+use crate::config::{AuthConfig, Config, SrsConfig, TtsConfig};
+use crate::rpc::{HookRpc, MissionRpc, Srs};
+use crate::shutdown::{Shutdown, ShutdownHandle};
+use crate::srs::SrsClients;
+use crate::stats::Stats;
 
 pub struct Server {
     runtime: Runtime,

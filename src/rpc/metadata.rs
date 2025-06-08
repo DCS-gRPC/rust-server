@@ -1,7 +1,6 @@
 use stubs::metadata::v0::metadata_service_server::MetadataService;
 use stubs::*;
-use tonic::async_trait;
-use tonic::{Request, Response, Status};
+use tonic::{Request, Response, Status, async_trait};
 
 use super::MissionRpc;
 

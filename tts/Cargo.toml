@@ -16,11 +16,11 @@ reqwest = { version = "0.12", default-features = false, features = [
     "rustls-tls",
     "json",
 ] }
-rusoto_core = { version = "0.48", default_features = false, features = [
+rusoto_core = { version = "0.48", default-features = false, features = [
     "rustls",
 ] }
 rusoto_credential = "0.48"
-rusoto_polly = { version = "0.48", default_features = false, features = [
+rusoto_polly = { version = "0.48", default-features = false, features = [
     "rustls",
 ] }
 serde.workspace = true

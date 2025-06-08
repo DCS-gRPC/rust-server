@@ -78,7 +78,7 @@ impl MissionRpc {
             .map_err(to_status)
     }
 
-    pub async fn events(&self) -> impl Stream<Item = StreamEventsResponse> {
+    pub async fn events(&self) -> impl Stream<Item = StreamEventsResponse> + use<> {
         let ipc = self.ipc.clone();
         ipc.events().await
     }

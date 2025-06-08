@@ -29,10 +29,14 @@ thiserror.workspace = true
 tokio.workspace = true
 
 [target.'cfg(target_os = "windows")'.dependencies.windows]
-version = "0.56"
+version = "0.61"
 features = [
     "Foundation",
     "Foundation_Collections",
     "Storage_Streams",
+    "Media_Core",
     "Media_SpeechSynthesis",
 ]
+
+[target.'cfg(target_os = "windows")'.dependencies.windows-future]
+version = "0.2"

@@ -138,6 +138,7 @@ pub fn next(lua: &Lua, (env, callback): (i32, Function)) -> LuaResult<bool> {
             server.stats().track_call();
 
             let method = next.method().to_string();
+            #[allow(clippy::arc_with_non_send_sync)]
             let params = next
                 .params(lua)
                 .map_err(|err| mlua::Error::ExternalError(Arc::new(Error::SerializeParams(err))))?;
@@ -167,6 +168,7 @@ pub fn next(lua: &Lua, (env, callback): (i32, Function)) -> LuaResult<bool> {
             log::debug!("Receiving: {}", pretty_print_value(res.clone(), 0)?);
 
             next.success(lua, &res).map_err(|err| {
+                #[allow(clippy::arc_with_non_send_sync)]
                 mlua::Error::ExternalError(Arc::new(Error::DeserializeResult {
                     err,
                     method,

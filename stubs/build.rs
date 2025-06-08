@@ -65,6 +65,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         )
         .build_server(cfg!(feature = "server"))
         .build_client(cfg!(feature = "client"))
-        .compile(&["../protos/dcs/dcs.proto"], &["../protos"])?;
+        .compile_protos(&["../protos/dcs/dcs.proto"], &["../protos"])?;
     Ok(())
 }

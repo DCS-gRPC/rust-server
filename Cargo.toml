@@ -16,7 +16,7 @@ futures-util = { version = "0.3", features = ["sink"] }
 log = "0.4"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-thiserror = "1.0"
+thiserror = "2.0"
 tokio = { version = "1.37", features = [
     "rt-multi-thread",
     "io-util",
@@ -27,7 +27,7 @@ tokio = { version = "1.37", features = [
     "macros",
 ] }
 tokio-stream = { version = "0.1", features = ["sync"] }
-tonic = "0.11"
+tonic = "0.13"
 
 [package]
 name = "dcs-grpc"
@@ -65,7 +65,7 @@ time = { version = "0.3", features = ["formatting", "parsing"] }
 tokio.workspace = true
 tokio-stream.workspace = true
 tonic.workspace = true
-tonic-middleware = "0.1.4"
+tonic-middleware = "0.3"
 
 [build-dependencies]
 walkdir = "2.3"

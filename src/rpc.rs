@@ -79,7 +79,8 @@ impl MissionRpc {
     }
 
     pub async fn events(&self) -> impl Stream<Item = StreamEventsResponse> {
-        self.ipc.events().await
+        let ipc = self.ipc.clone();
+        ipc.events().await
     }
 
     pub async fn event(&self, event: StreamEventsResponse) {

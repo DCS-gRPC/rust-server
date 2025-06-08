@@ -163,7 +163,7 @@ pub fn next(lua: &Lua, (env, callback): (i32, Function)) -> LuaResult<bool> {
                 return Ok(true);
             }
 
-            let res: Value<'_> = result.get("result")?;
+            let res: Value = result.get("result")?;
             log::debug!("Receiving: {}", pretty_print_value(res.clone(), 0)?);
 
             next.success(lua, &res).map_err(|err| {
@@ -333,5 +333,6 @@ fn pretty_print_value(val: Value, indent: usize) -> LuaResult<String> {
         Value::Thread(_) => String::new(),
         Value::UserData(_) => String::new(),
         Value::Error(err) => err.to_string(),
+        Value::Other(_) => "(unknown type)".to_string(),
     })
 }

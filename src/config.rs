@@ -112,8 +112,8 @@ fn default_port() -> u16 {
     50051
 }
 
-impl<'lua> mlua::FromLua<'lua> for Config {
-    fn from_lua(lua_value: mlua::Value<'lua>, lua: &'lua mlua::Lua) -> mlua::Result<Self> {
+impl mlua::FromLua for Config {
+    fn from_lua(lua_value: mlua::Value, lua: &mlua::Lua) -> mlua::Result<Self> {
         use mlua::LuaSerdeExt;
         let config: Config = lua.from_value(lua_value)?;
         Ok(config)

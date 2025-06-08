@@ -42,13 +42,13 @@ crate-type = ["cdylib"]
 
 [dependencies]
 backoff = { version = "0.4", features = ["tokio"] }
-dcs-module-ipc = "0.8"
+dcs-module-ipc = "0.9"
 futures-util.workspace = true
 igrf = "0.2"
 libloading = { version = "0.8", optional = true }
 log4rs = "1.0"
 log.workspace = true
-mlua = { version = "0.9", default-features = false, features = [
+mlua = { version = "0.10", default-features = false, features = [
     "lua51",
     "module",
     "serialize",

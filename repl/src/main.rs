@@ -68,6 +68,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 }
 
+#[allow(clippy::result_large_err)]
 fn handle_respone(json: Result<String, Status>) -> Result<Value, Error> {
     let json = json?;
     let json: Value = serde_json::from_str(&json)?;

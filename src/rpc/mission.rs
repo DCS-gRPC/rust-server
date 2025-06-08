@@ -211,6 +211,7 @@ impl MissionRpc {
     }
 }
 
+#[allow(clippy::result_large_err)]
 fn to_datetime(year: i32, month: u32, day: u32, time: f64) -> Result<OffsetDateTime, Status> {
     let month = u8::try_from(month)
         .map_err(|err| Status::internal(format!("received invalid month: {err}")))?;

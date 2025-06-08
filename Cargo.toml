@@ -6,8 +6,8 @@ resolver = "2"
 version = "0.8.1"
 license = "AGPL-3.0-or-later"
 authors = ["Markus Ast <m@rkusa.st>"]
-rust-version = "1.78"
-edition = "2021"
+rust-version = "1.85"
+edition = "2024"
 
 [workspace.dependencies]
 base64 = "0.22"

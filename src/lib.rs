@@ -73,7 +73,7 @@ pub fn init(config: &Config) {
     log4rs::init_config(log_config).unwrap();
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub fn start(_: &Lua, config: Config) -> LuaResult<(bool, Option<String>)> {
     {
         if SERVER.read().unwrap().is_some() {
@@ -108,7 +108,7 @@ pub fn start(_: &Lua, config: Config) -> LuaResult<(bool, Option<String>)> {
     Ok((true, None))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub fn stop(_: &Lua, _: ()) -> LuaResult<()> {
     log::info!("Stopping ...");
 
@@ -121,7 +121,7 @@ pub fn stop(_: &Lua, _: ()) -> LuaResult<()> {
     Ok(())
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub fn next(lua: &Lua, (env, callback): (i32, Function)) -> LuaResult<bool> {
     let start = Instant::now();
 
@@ -184,7 +184,7 @@ pub fn next(lua: &Lua, (env, callback): (i32, Function)) -> LuaResult<bool> {
     Ok(false)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub fn tts(_lua: &Lua, (ssml, freq, opts): (String, u64, Option<TtsOptions>)) -> LuaResult<()> {
     let start = Instant::now();
     if let Some(server) = &*SERVER.read().unwrap() {
@@ -195,7 +195,7 @@ pub fn tts(_lua: &Lua, (ssml, freq, opts): (String, u64, Option<TtsOptions>)) ->
     Ok(())
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub fn event(lua: &Lua, event: Value) -> LuaResult<()> {
     let start = Instant::now();
 
@@ -223,32 +223,32 @@ pub fn event(lua: &Lua, event: Value) -> LuaResult<()> {
 
 // This method is called on each simulation frame, so make sure to do as few as possible (avoid
 // even getting a lock on [SERVER]).
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub fn simulation_frame(_lua: &Lua, time: f64) -> LuaResult<()> {
     crate::fps::frame(time);
 
     Ok(())
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub fn log_error(_: &Lua, err: String) -> LuaResult<()> {
     log::error!("{}", err);
     Ok(())
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub fn log_warning(_: &Lua, err: String) -> LuaResult<()> {
     log::warn!("{}", err);
     Ok(())
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub fn log_info(_: &Lua, err: String) -> LuaResult<()> {
     log::info!("{}", err);
     Ok(())
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub fn log_debug(_: &Lua, err: String) -> LuaResult<()> {
     log::debug!("{}", err);
     Ok(())

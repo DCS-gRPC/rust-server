@@ -1,9 +1,9 @@
 use std::borrow::Cow;
 
 use tokio::sync::Mutex;
-use windows::core::HSTRING;
 use windows::Media::SpeechSynthesis::SpeechSynthesizer;
 use windows::Storage::Streams::DataReader;
+use windows::core::HSTRING;
 
 #[derive(Debug)]
 pub struct WinConfig {

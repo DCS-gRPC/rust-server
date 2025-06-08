@@ -1,5 +1,5 @@
-use rusoto_core::request::HttpClient;
 pub use rusoto_core::Region;
+use rusoto_core::request::HttpClient;
 use rusoto_credential::StaticProvider;
 use rusoto_polly::{Polly, PollyClient, SynthesizeSpeechInput};
 

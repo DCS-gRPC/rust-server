@@ -11,8 +11,8 @@ use mlua::prelude::*;
 use mlua::{Function, Value};
 use once_cell::sync::Lazy;
 
-use crate::server::TtsOptions;
 use crate::Config;
+use crate::server::TtsOptions;
 
 static LIBRARY: Lazy<RwLock<Option<Library>>> = Lazy::new(|| RwLock::new(None));
 

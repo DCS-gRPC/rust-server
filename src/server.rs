@@ -291,8 +291,8 @@ pub enum StartError {
     AddrParse(#[from] std::net::AddrParseError),
 }
 
-impl<'lua> mlua::FromLua<'lua> for TtsOptions {
-    fn from_lua(lua_value: mlua::Value<'lua>, lua: &'lua mlua::Lua) -> mlua::Result<Self> {
+impl mlua::FromLua for TtsOptions {
+    fn from_lua(lua_value: mlua::Value, lua: &mlua::Lua) -> mlua::Result<Self> {
         use mlua::LuaSerdeExt;
         let opts: TtsOptions = lua.from_value(lua_value)?;
         Ok(opts)

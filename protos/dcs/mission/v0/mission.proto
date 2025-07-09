@@ -387,6 +387,12 @@ message StreamEventsResponse {
     uint32 player_id = 1;
     // what was typed
     string message = 2;
+    // player's coalition
+    dcs.common.v0.Coalition coalition = 3;
+    // player's name
+    string player_name = 4;
+    // sent to all chat
+    bool to_all = 5;
   }
 
   // fired when the player changes across to a slot

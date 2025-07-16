@@ -21,8 +21,13 @@ local function exporter(object)
   elseif category == Object.Category.Cargo then
     return GRPC.exporters.cargo(object)
   else
+    local id
+    if object.getID then
+      id = object:getID()
+    end
+
     GRPC.logWarning(
-      "Could not determine object category of object with ID: " .. object:getID()
+      "Could not determine object category of object with ID: " .. (id or "nil")
         .. ", Category: " .. category
     )
     return nil

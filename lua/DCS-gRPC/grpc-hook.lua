@@ -49,7 +49,7 @@ function handler.onPlayerTrySendChat(playerID, msg)
   -- note: currently `all` (third parameter) will always `=true` regardless if the target is to the coalition/team
   --        or to everybody. When ED fixes this, implementation should determine the dcs.common.v0.Coalition
 
-  local modelTime = 0
+  local modelTime
   if DCS then --Backwards compatibility with DCS 2.9.17 and before
     modelTime = DCS.getModelTime()
   else
@@ -67,7 +67,7 @@ function handler.onPlayerTrySendChat(playerID, msg)
 end
 
 function handler.onPlayerTryConnect(addr, name, ucid, id)
-  local modelTime = 0
+  local modelTime
   if DCS then --Backwards compatibility with DCS 2.9.17 and before
     modelTime = DCS.getModelTime()
   else
@@ -87,7 +87,7 @@ function handler.onPlayerTryConnect(addr, name, ucid, id)
 end
 
 function handler.onPlayerDisconnect(id, reason)
-  local modelTime = 0
+  local modelTime
   if DCS then --Backwards compatibility with DCS 2.9.17 and before
     modelTime = DCS.getModelTime()
   else
@@ -106,11 +106,11 @@ end
 
 function handler.onPlayerChangeSlot(playerId)
   local playerInfo = net.get_player_info(playerId)
-  local modelTime = 0
+  local modelTime
   if DCS then --Backwards compatibility with DCS 2.9.17 and before
-    modelTime = DCS.getModelTime() 
-  else 
-    modelTime = Sim.getModelTime() 
+    modelTime = DCS.getModelTime()
+  else
+    modelTime = Sim.getModelTime()
   end
 
   grpc.event({

@@ -152,7 +152,7 @@ end
 
 GRPC.methods.getUnitType = function(params)
   -- https://wiki.hoggitworld.com/view/DCS_func_getUnitType
-  local unit_type = nil
+  local unit_type
   if DCS then --Backwards compatibility with DCS 2.9.17 and before
     unit_type = DCS.getUnitType(params.id)
   else

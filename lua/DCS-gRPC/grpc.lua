@@ -265,7 +265,7 @@ else -- hook env
   local skipFrames = math.ceil(interval / 0.016) -- 0.016 = 16ms = 1 frame at 60fps
   local frame = 0
   function GRPC.onSimulationFrame()
-    local modelTime = 0
+    local modelTime
     if DCS then --Backwards compatibility with DCS 2.9.17 and before
       modelTime = DCS.getModelTime()
     else

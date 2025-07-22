@@ -4,24 +4,41 @@
 --
 
 local DCS = DCS
+local Sim = Sim
 local GRPC = GRPC
 local net = net
 local Export = Export
 
 GRPC.methods.getMissionName = function()
-  return GRPC.success({name = DCS.getMissionName()})
+  if DCS then --Backwards compatibility with DCS 2.9.17 and before
+     GRPC.success({name = DCS.getMissionName()})
+  else
+      GRPC.success({name = Sim.getMissionName()})
+  end
 end
 
 GRPC.methods.getMissionFilename = function()
-  return GRPC.success({name = DCS.getMissionFilename()})
+  if DCS then --Backwards compatibility with DCS 2.9.17 and before
+    return GRPC.success({name = DCS.getMissionFilename()})
+  else
+    return GRPC.success({name = Sim.getMissionFilename()})
+  end
 end
 
 GRPC.methods.getMissionDescription = function()
-  return GRPC.success({description = DCS.getMissionDescription()})
+  if DCS then --Backwards compatibility with DCS 2.9.17 and before
+    return GRPC.success({name = DCS.getMissionDescription()})
+  else
+    return GRPC.success({name = Sim.getMissionDescription()})
+  end
 end
 
 GRPC.methods.reloadCurrentMission = function()
-  net.load_mission(DCS.getMissionFilename())
+  if DCS then --Backwards compatibility with DCS 2.9.17 and before
+    net.load_mission(DCS.getMissionFilename())
+  else
+    net.load_mission(Sim.getMissionFilename())
+  end
   return GRPC.success({})
 end
 
@@ -34,21 +51,37 @@ GRPC.methods.loadMission = function(params)
 end
 
 GRPC.methods.getPaused = function()
-  return GRPC.success({paused = DCS.getPause()})
+  if DCS then --Backwards compatibility with DCS 2.9.17 and before
+    return GRPC.success({paused = DCS.getPause()})
+  else
+    return GRPC.success({paused = Sim.getPause()})
+  end
 end
 
 GRPC.methods.setPaused = function(params)
-  DCS.setPause(params.paused)
+  if DCS then --Backwards compatibility with DCS 2.9.17 and before
+    DCS.setPause(params.paused)
+  else
+    Sim.setPause(params.paused)
+  end
   return GRPC.success({})
 end
 
 GRPC.methods.stopMission = function()
-  DCS.stopMission()
+   if DCS then --Backwards compatibility with DCS 2.9.17 and before
+    DCS.stopMission()
+  else
+    Sim.stopMission()
+  end
   return GRPC.success({})
 end
 
 GRPC.methods.exitProcess = function()
-  DCS.exitProcess()
+  if DCS then --Backwards compatibility with DCS 2.9.17 and before
+    DCS.exitProcess()
+  else
+    Sim.exitProcess()
+  end
   return GRPC.success({})
 end
 
@@ -67,11 +100,19 @@ GRPC.methods.hookEval = function(params)
 end
 
 GRPC.methods.isMultiplayer = function()
-  return GRPC.success({multiplayer = DCS.isMultiplayer()})
+  if DCS then --Backwards compatibility with DCS 2.9.17 and before
+    return GRPC.success({multiplayer = DCS.isMultiplayer()})
+  else
+    return GRPC.success({multiplayer = Sim.isMultiplayer()})
+  end
 end
 
 GRPC.methods.isServer = function()
-  return GRPC.success({server = DCS.isServer()})
+  if DCS then --Backwards compatibility with DCS 2.9.17 and before
+    return GRPC.success({server = DCS.isServer()})
+  else
+    return GRPC.success({server = Sim.isServer()})
+  end
 end
 
 GRPC.methods.banPlayer = function(params)
@@ -111,7 +152,12 @@ end
 
 GRPC.methods.getUnitType = function(params)
   -- https://wiki.hoggitworld.com/view/DCS_func_getUnitType
-  local unit_type = DCS.getUnitType(params.id)
+  local unit_type
+  if DCS then --Backwards compatibility with DCS 2.9.17 and before
+    unit_type = DCS.getUnitType(params.id)
+  else
+    unit_type = Sim.getUnitType(params.id)
+  end
   -- getUnitType returns an empty string if the unit doesn't exist, ensure we catch eventual nils too
   if unit_type == nil or unit_type == "" then
     return GRPC.errorNotFound("unit `" .. tostring(params.id) .. "` does not exist")
@@ -122,7 +168,11 @@ end
 
 GRPC.methods.getRealTime = function()
   -- https://wiki.hoggitworld.com/view/DCS_func_getRealTime
-  return GRPC.success({time = DCS.getRealTime()})
+  if DCS then --Backwards compatibility with DCS 2.9.17 and before
+    return GRPC.success({time = DCS.getRealTime()})
+  else
+    return GRPC.success({time = Sim.getRealTime()})
+  end
 end
 
 GRPC.methods.getBallisticsCount = function()

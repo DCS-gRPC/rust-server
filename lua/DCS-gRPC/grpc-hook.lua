@@ -25,7 +25,7 @@ local handler = {}
 function handler.onMissionLoadEnd()
   local ok, err = pcall(load)
   if not ok then
-    log.write("[GRPC-Hook]", log.ERROR, "Failed to set up gRPC listener: "..tostring(err))
+    log.write("[GRPC-Hook]", log.ERROR, "Failed to set up gRPC listener: " .. tostring(err))
   end
 end
 
@@ -49,20 +49,33 @@ function handler.onPlayerTrySendChat(playerID, msg)
   -- note: currently `all` (third parameter) will always `=true` regardless if the target is to the coalition/team
   --        or to everybody. When ED fixes this, implementation should determine the dcs.common.v0.Coalition
 
+  local modelTime
+  if DCS then --Backwards compatibility with DCS 2.9.17 and before
+    modelTime = DCS.getModelTime()
+  else
+    modelTime = Sim.getModelTime()
+  end
+
   grpc.event({
-    time = DCS.getModelTime(),
+    time = modelTime,
     event = {
       type = "playerSendChat",
       playerId = playerID,
       message = msg
     },
   })
-
 end
 
 function handler.onPlayerTryConnect(addr, name, ucid, id)
+  local modelTime
+  if DCS then --Backwards compatibility with DCS 2.9.17 and before
+    modelTime = DCS.getModelTime()
+  else
+    modelTime = Sim.getModelTime()
+  end
+
   grpc.event({
-    time = DCS.getModelTime(),
+    time = modelTime,
     event = {
       type = "connect",
       addr = addr,
@@ -74,8 +87,15 @@ function handler.onPlayerTryConnect(addr, name, ucid, id)
 end
 
 function handler.onPlayerDisconnect(id, reason)
+  local modelTime
+  if DCS then --Backwards compatibility with DCS 2.9.17 and before
+    modelTime = DCS.getModelTime()
+  else
+    modelTime = Sim.getModelTime()
+  end
+
   grpc.event({
-    time = DCS.getModelTime(),
+    time = modelTime,
     event = {
       type = "disconnect",
       id = id,
@@ -86,9 +106,15 @@ end
 
 function handler.onPlayerChangeSlot(playerId)
   local playerInfo = net.get_player_info(playerId)
+  local modelTime
+  if DCS then --Backwards compatibility with DCS 2.9.17 and before
+    modelTime = DCS.getModelTime()
+  else
+    modelTime = Sim.getModelTime()
+  end
 
   grpc.event({
-    time = DCS.getModelTime(),
+    time = modelTime,
     event = {
       type = "playerChangeSlot",
       playerId = playerId,

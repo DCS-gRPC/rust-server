@@ -10,6 +10,7 @@ read_globals = {
   "net",
   "coord",
   "DCS",
+  "Sim",
   "env",
   "Group",
   "land",

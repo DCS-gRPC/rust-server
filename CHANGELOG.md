@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+ - `DCS` singleton to be deprecated for `Sim` by DCS. 
+   All `DCS` calls replaced with conditional calls and fallback to `Sim` once `DCS` gets deprecated for backwards compatibility.
+
 ## [0.8.1] 2024-11-05
 
 ### Added

@@ -166,6 +166,8 @@ message IrstSensor {
   double detection_distance_maximal = 3;
 }
 
-message RwrSensor {}
+message RwrSensor {
+}
 
-message OpticalSensor {}
+message OpticalSensor {
+}

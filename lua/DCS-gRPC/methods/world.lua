@@ -100,7 +100,13 @@ GRPC.methods.searchObjects = function(params)
   end
 
   -- Detect sphere
-  if (discriminator == "sphere") or v.sphere ~= nil or (v.center ~= nil and v.radius ~= nil and v.min == nil and v.from == nil and v.forward == nil) then
+  if (discriminator == "sphere")
+    or v.sphere ~= nil
+    or (
+      v.center ~= nil and v.radius ~= nil and
+      v.min == nil and v.from == nil and v.forward == nil
+    )
+  then
     local s = v.sphere or v
     local center = s.center
     local radius = s.radius
@@ -153,7 +159,15 @@ GRPC.methods.searchObjects = function(params)
       }
     }
   -- Detect pyramid
-  elseif (discriminator == "pyramid") or v.pyramid ~= nil or (v.center ~= nil and v.forward ~= nil and v.right ~= nil and v.up ~= nil and v.length ~= nil and (v.halfAngleHorizontal ~= nil and v.halfAngleVertical ~= nil)) then
+  elseif (discriminator == "pyramid")
+    or v.pyramid ~= nil
+    or (
+      v.center ~= nil and v.forward ~= nil and v.right ~= nil and v.up ~= nil and
+      v.length ~= nil and (
+        v.halfAngleHorizontal ~= nil and v.halfAngleVertical ~= nil
+      )
+    )
+  then
     local pv = v.pyramid or v
     if pv.center == nil or pv.length == nil or pv.halfAngleHorizontal == nil or pv.halfAngleVertical == nil then
       return GRPC.errorInvalidArgument("pyramid center, length and angles are required")
@@ -163,10 +177,10 @@ GRPC.methods.searchObjects = function(params)
     local up = pv.up
     local right = pv.right
 
-    local function normalize(v)
-      local mag = math.sqrt((v.x or 0)^2 + (v.y or 0)^2 + (v.z or 0)^2)
+    local function normalize(vec)
+      local mag = math.sqrt((vec.x or 0)^2 + (vec.y or 0)^2 + (vec.z or 0)^2)
       if mag == 0 then return { x = 0, y = 1, z = 0 } end
-      return { x = v.x / mag, y = v.y / mag, z = v.z / mag }
+      return { x = vec.x / mag, y = vec.y / mag, z = vec.z / mag }
     end
 
     if fwd == nil or right == nil or up == nil then

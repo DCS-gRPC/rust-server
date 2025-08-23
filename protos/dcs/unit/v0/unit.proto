@@ -34,6 +34,9 @@ service UnitService {
 
   // https://wiki.hoggitworld.com/view/DCS_func_getDrawArgumentValue
   rpc GetDrawArgumentValue(GetDrawArgumentValueRequest) returns (GetDrawArgumentValueResponse) {}
+
+  // https://wiki.hoggitworld.com/view/DCS_func_getSensors
+  rpc GetSensors(GetSensorsRequest) returns (GetSensorsResponse) {}
 }
 
 message GetRadarRequest {
@@ -116,3 +119,53 @@ message DestroyRequest {
 
 message DestroyResponse {
 }
+
+// Sensors
+message GetSensorsRequest {
+  string name = 1;
+}
+
+message GetSensorsResponse {
+  repeated SensorCategory sensors = 1;
+}
+
+message SensorCategory {
+  // DCS’ outer sensor array index (1..n)
+  uint32 category = 1;
+  repeated Sensor sensors = 2;
+}
+
+message Sensor {
+  uint32 type = 1;
+  string type_name = 2;
+  oneof sensor {
+    RadarSensor radar = 3;
+    IrstSensor irst = 4;
+    RwrSensor rwr = 5;
+    OpticalSensor optical = 6;
+  }
+}
+
+message RadarSensor {
+  DetectionDistanceAir detection_distance_air = 1;
+}
+
+message DetectionDistanceAir {
+  Hemisphere upper_hemisphere = 1;
+  Hemisphere lower_hemisphere = 2;
+}
+
+message Hemisphere {
+  double tail_on = 1;
+  double head_on = 2;
+}
+
+message IrstSensor {
+  double detection_distance_idle = 1;
+  double detection_distance_afterburner = 2;
+  double detection_distance_maximal = 3;
+}
+
+message RwrSensor {}
+
+message OpticalSensor {}

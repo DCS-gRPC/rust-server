@@ -149,3 +149,108 @@ GRPC.methods.unitDestroy = function(params)
   unit:destroy()
   return GRPC.success({})
 end
+
+GRPC.methods.getSensors = function(params)
+  local unit = Unit.getByName(params.name)
+  if unit == nil then
+    return GRPC.errorNotFound("unit does not exist")
+  end
+
+  local s = unit:getSensors()
+  local categories = {}
+
+  if s == nil then
+    return GRPC.success({ sensors = categories })
+  end
+
+  -- include category 0 (optical) by iterating and sorting all keys
+  local catIndices = {}
+  for k, _ in pairs(s) do
+    table.insert(catIndices, k)
+  end
+  table.sort(catIndices, function(a, b)
+    if type(a) == "number" and type(b) == "number" then return a < b end
+    return tostring(a) < tostring(b)
+  end)
+
+  for _, catIndex in ipairs(catIndices) do
+    local list = s[catIndex]
+    local cat = { category = catIndex, sensors = {} }
+
+    for i, sensor in ipairs(list or {}) do
+      local out = {
+        type = sensor.type,
+        typeName = sensor.typeName,
+      }
+
+      -- Prefer explicit type ids when present: 0=Optical, 1=Radar, 2=IRST, 3=RWR
+      if sensor.type == 1 then
+        -- Radar
+        local dda = sensor.detectionDistanceAir or {}
+        local radar = {
+          detectionDistanceAir = {
+            upperHemisphere = {
+              tailOn = dda.upperHemisphere and dda.upperHemisphere.tailOn,
+              headOn = dda.upperHemisphere and dda.upperHemisphere.headOn,
+            },
+            lowerHemisphere = {
+              tailOn = dda.lowerHemisphere and dda.lowerHemisphere.tailOn,
+              headOn = dda.lowerHemisphere and dda.lowerHemisphere.headOn,
+            },
+          }
+        }
+        out.radar = radar
+        out.sensor = { radar = radar }
+      elseif sensor.type == 2 then
+        -- IRST
+        local irst = {
+          detectionDistanceIdle = sensor.detectionDistanceIdle,
+          detectionDistanceAfterburner = sensor.detectionDistanceAfterburner,
+          detectionDistanceMaximal = sensor.detectionDistanceMaximal,
+        }
+        out.irst = irst
+        out.sensor = { irst = irst }
+      elseif sensor.type == 0 then
+        -- Optical (generic EO/TV)
+        out.optical = {}
+        out.sensor = { optical = {} }
+      elseif sensor.type == 3 then
+        -- RWR
+        out.rwr = {}
+        out.sensor = { rwr = {} }
+      elseif sensor.detectionDistanceAir ~= nil then
+        local dda = sensor.detectionDistanceAir
+        local radar = {
+          detectionDistanceAir = {
+            upperHemisphere = {
+              tailOn = dda.upperHemisphere and dda.upperHemisphere.tailOn,
+              headOn = dda.upperHemisphere and dda.upperHemisphere.headOn,
+            },
+            lowerHemisphere = {
+              tailOn = dda.lowerHemisphere and dda.lowerHemisphere.tailOn,
+              headOn = dda.lowerHemisphere and dda.lowerHemisphere.headOn,
+            },
+          }
+        }
+        out.radar = radar
+        out.sensor = { radar = radar }
+      elseif sensor.detectionDistanceIdle ~= nil
+        or sensor.detectionDistanceAfterburner ~= nil
+        or sensor.detectionDistanceMaximal ~= nil then
+        local irst = {
+          detectionDistanceIdle = sensor.detectionDistanceIdle,
+          detectionDistanceAfterburner = sensor.detectionDistanceAfterburner,
+          detectionDistanceMaximal = sensor.detectionDistanceMaximal,
+        }
+        out.irst = irst
+        out.sensor = { irst = irst }
+      end
+
+      cat.sensors[i] = out
+    end
+
+    categories[#categories + 1] = cat
+  end
+
+  return GRPC.success({ sensors = categories })
+end

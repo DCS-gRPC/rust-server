@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- UnitService: `GetSensors` RPC to expose DCS `Unit:getSensors()` data (radar/IRST/RWR/optical).
+- Protos for sensors: `SensorCategory`, `Sensor`, `RadarSensor`, `IrstSensor`, `RwrSensor`, `OpticalSensor`, `DetectionDistanceAir`, `Hemisphere`.
+- Lua: `GRPC.methods.getSensors` implementation.
+
 ## [0.8.1] 2024-11-05
 
 ### Added

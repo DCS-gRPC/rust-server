@@ -77,4 +77,12 @@ impl UnitService for MissionRpc {
         let res = self.request("unitDestroy", request).await?;
         Ok(Response::new(res))
     }
+
+    async fn get_sensors(
+        &self,
+        request: Request<unit::v0::GetSensorsRequest>,
+    ) -> Result<Response<unit::v0::GetSensorsResponse>, Status> {
+        let res = self.request("getSensors", request).await?;
+        Ok(Response::new(res))
+    }
 }

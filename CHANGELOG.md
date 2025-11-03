@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - UnitService: `GetSensors` RPC to expose DCS `Unit:getSensors()` data (radar/IRST/RWR/optical).
 - Protos for sensors: `SensorCategory`, `Sensor`, `RadarSensor`, `IrstSensor`, `RwrSensor`, `OpticalSensor`, `DetectionDistanceAir`, `Hemisphere`.
 - Lua: `GRPC.methods.getSensors` implementation.
+- World: `SearchObjects` RPC mirroring `world.searchObjects` with full volume support (sphere, box, segment, pyramid).
+  - Request uses `dcs.common.v0.ObjectCategory[]` and `SearchVolume` (with `InputPosition` for geo points).
+  - Response returns `dcs.common.v0.Target[]` for consistent object union across services.
+  - Lua implementation unwraps grpcui oneof wrapper (`volume.shape`) and supports both wrapped and flattened shapes.
 
 ## [0.8.1] 2024-11-05
 

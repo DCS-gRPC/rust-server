@@ -1,13 +1,14 @@
 use std::error;
 use std::future::Future;
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
+use std::path::PathBuf;
 use std::str::FromStr;
 use std::time::{Duration, Instant};
 
 use ::srs::Sender;
 #[cfg(target_os = "windows")]
 use ::tts::WinConfig;
-use ::tts::{AwsConfig, AwsRegion, AzureConfig, GCloudConfig, TtsConfig};
+use ::tts::{AwsConfig, AwsRegion, AzureConfig, GCloudConfig, PiperConfig, TtsConfig};
 use futures_util::FutureExt;
 use stubs::common::v0::{Coalition, Unit};
 use stubs::mission::v0::StreamEventsResponse;
@@ -27,6 +28,7 @@ use crate::srs::SrsClients;
 pub struct Srs {
     tts_config: crate::config::TtsConfig,
     srs_config: crate::config::SrsConfig,
+    write_dir: PathBuf,
     rpc: MissionRpc,
     srs_clients: SrsClients,
     shutdown_signal: ShutdownHandle,
@@ -36,6 +38,7 @@ impl Srs {
     pub fn new(
         tts_config: crate::config::TtsConfig,
         srs_config: crate::config::SrsConfig,
+        write_dir: PathBuf,
         rpc: MissionRpc,
         srs_clients: SrsClients,
         shutdown_signal: ShutdownHandle,
@@ -43,6 +46,7 @@ impl Srs {
         Self {
             tts_config,
             srs_config,
+            write_dir,
             rpc,
             srs_clients,
             shutdown_signal,
@@ -105,6 +109,10 @@ impl SrsService for Srs {
                 TtsProvider::Win => {
                     transmit_request::Provider::Win(transmit_request::Windows { voice: None })
                 }
+                TtsProvider::Piper => transmit_request::Provider::Piper(transmit_request::Piper {
+                    voice: None,
+                    speed: None,
+                }),
             }) {
             transmit_request::Provider::Aws(transmit_request::Aws { voice }) => {
                 TtsConfig::Aws(AwsConfig {
@@ -214,6 +222,32 @@ impl SrsService for Srs {
                 return Err(Status::unavailable(
                     "Windows TTS is only available on Windows",
                 ));
+            }
+            transmit_request::Provider::Piper(transmit_request::Piper { voice, speed }) => {
+                TtsConfig::Piper(PiperConfig {
+                    voice: voice
+                        .or_else(|| {
+                            self.tts_config
+                                .provider
+                                .as_ref()
+                                .and_then(|p| p.piper.as_ref())
+                                .and_then(|p| p.default_voice.clone())
+                        })
+                        .filter(|v| !v.is_empty())
+                        .ok_or_else(|| {
+                            Status::failed_precondition("tts.provider.piper.default_voice not set")
+                        })?,
+                    speed: speed
+                        .or_else(|| {
+                            self.tts_config
+                                .provider
+                                .as_ref()
+                                .and_then(|p| p.piper.as_ref())
+                                .and_then(|p| p.default_speed)
+                        })
+                        .unwrap_or(1.0),
+                    piper_path: self.write_dir.join("Mods/tech/DCS-gRPC/piper"),
+                })
             }
         };
 

@@ -75,6 +75,16 @@ message TransmitRequest {
     optional string voice = 1;
   }
 
+  message Piper {
+    // The voice model the text is synthesized in (corresponds to a model placed in your
+    // `DCS.openbeta\Mods\tech\DCS-gRPC\piper\` directory).
+    optional string voice = 1;
+
+    // The speed of the generated speech; 1.0 is the default; lower is quicker, higher is slower.
+    optional float speed = 2;
+  }
+
+
   // Optional TTS provider to be use. Defaults to the one configured in your
   // config or to Windows' built-in TTS.
   oneof provider {
@@ -82,6 +92,8 @@ message TransmitRequest {
     Azure azure = 9;
     GCloud gcloud = 10;
     Windows win = 11;
+    // Piper does not support SSML, only use it with plain text.
+    Piper piper = 12;
   }
 }
 

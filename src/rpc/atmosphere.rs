@@ -39,7 +39,7 @@ impl AtmosphereService for MissionRpc {
 }
 
 fn get_wind_heading_and_strength(v: &common::v0::Vector) -> (f32, f32) {
-    let mut heading = v.x.atan2(v.z).to_degrees();
+    let mut heading = v.z.atan2(v.x).to_degrees();
     if heading < 0.0 {
         heading += 360.0;
     }

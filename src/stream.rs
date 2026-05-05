@@ -13,7 +13,7 @@ use stubs::mission::v0::stream_events_response::{BirthEvent, DeadEvent, Event};
 use stubs::mission::v0::stream_units_response::{UnitGone, Update};
 use stubs::mission::v0::{StreamUnitsRequest, StreamUnitsResponse};
 use stubs::unit::v0::unit_service_server::UnitService;
-use stubs::unit::v0::{GetTransformRequest, GetTransformResponse, GetAglRequest, GetAglResponse};
+use stubs::unit::v0::{GetAglRequest, GetAglResponse, GetTransformRequest, GetTransformResponse};
 use tokio::sync::mpsc::Sender;
 use tokio::sync::mpsc::error::SendError;
 use tokio::time::MissedTickBehavior;
@@ -316,9 +316,7 @@ impl UnitState {
             }),
         )
         .await?;
-        let GetAglResponse {
-            agl
-        } = res.into_inner();
+        let GetAglResponse { agl } = res.into_inner();
 
         self.unit.agl = agl;
 

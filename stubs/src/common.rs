@@ -106,7 +106,7 @@ pub mod v0 {
                 group,
                 number_in_group,
                 raw_transform,
-                agl
+                agl,
             } = i;
             let transform = Transform::from(raw_transform.unwrap_or_default());
             Unit {

@@ -52,6 +52,7 @@ impl CustomService for MissionRpc {
         Ok(Response::new(custom::v0::EvalResponse { json }))
     }
 
+    #[allow(clippy::result_large_err)]
     async fn get_magnetic_declination(
         &self,
         request: Request<custom::v0::GetMagneticDeclinationRequest>,

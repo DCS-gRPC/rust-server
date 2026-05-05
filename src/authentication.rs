@@ -26,11 +26,12 @@ impl RequestInterceptor for AuthInterceptor {
                         }
                     }
 
-                    if client.is_some() {
-                        log::debug!("Authenticated client: {}", client.unwrap());
-                        Ok(req)
-                    } else {
-                        Err(Status::unauthenticated("Unauthenticated"))
+                    match client {
+                        Some(client_name) => {
+                            log::debug!("Authenticated client: {}", client_name);
+                            Ok(req)
+                        }
+                        _ => Err(Status::unauthenticated("Unauthenticated")),
                     }
                 }
                 _ => Err(Status::unauthenticated("Unauthenticated")),

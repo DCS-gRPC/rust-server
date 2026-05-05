@@ -62,7 +62,8 @@ mod tests {
                                     "coalition": 3,
                                     "type": "FA-18C_hornet",
                                     "playerName": "New callsign",
-                                    "numberInGroup": 1
+                                    "numberInGroup": 1,
+                                    "agl": 0.0
                                 }
                             }
 		                },

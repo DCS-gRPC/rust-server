@@ -48,8 +48,12 @@ end
 function handler.onPlayerTrySendChat(playerID, msg, all)
   -- note: currently `all` (third parameter) will always `=true` regardless if the target is to the coalition/team
   --        or to everybody. When ED fixes this, implementation should determine the dcs.common.v0.Coalition
-  local coalition = net.get_player_info(playerID, "side")
-  local playerName = net.get_player_info(playerID, "name")
+  local playerInfo = net.get_player_info(playerID)
+  local coalition, playerName
+  if playerInfo ~= nil then
+    coalition = net.get_player_info(playerID, "side")
+    playerName = net.get_player_info(playerID, "name")
+  end
   local toAll = true
   if coalition ~= nil then coalition = coalition + 1 end
   if all == -2 then toAll = false end

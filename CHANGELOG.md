@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Request uses `dcs.common.v0.ObjectCategory[]` and `SearchVolume` (with `InputPosition` for geo points).
   - Response returns `dcs.common.v0.Target[]` for consistent object union across services.
   - Lua implementation unwraps grpcui oneof wrapper (`volume.shape`) and supports both wrapped and flattened shapes.
+
+### Fixed
 - Fixed output of `AtmosphereService.GetWind` to match Mission Editor settings.
 
 ## [0.8.1] 2024-11-05

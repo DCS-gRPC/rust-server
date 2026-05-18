@@ -59,7 +59,7 @@ end
 
 GRPC.exporters.weapon = function(weapon)
   return {
-    id = weapon:tonumber(),
+    id = weapon.id_,
     type = weapon:getTypeName(),
     rawTransform = GRPC.exporters.rawTransform(weapon),
   }
@@ -110,7 +110,9 @@ end
 -- https://wiki.hoggitworld.com/view/DCS_Class_Object
 GRPC.exporters.unknown = function(object)
   if not object.getName then
-    return {}
+    return {
+      name = tostring(object.id_),
+    }
   end
   return {
     name = tostring(object:getName()),

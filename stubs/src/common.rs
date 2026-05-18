@@ -91,6 +91,7 @@ pub mod v0 {
         group: Option<Group>,
         number_in_group: u32,
         raw_transform: Option<RawTransform>,
+        agl: f64,
     }
 
     impl From<UnitIntermediate> for Unit {
@@ -105,6 +106,7 @@ pub mod v0 {
                 group,
                 number_in_group,
                 raw_transform,
+                agl,
             } = i;
             let transform = Transform::from(raw_transform.unwrap_or_default());
             Unit {
@@ -119,6 +121,7 @@ pub mod v0 {
                 player_name,
                 group,
                 number_in_group,
+                agl,
             }
         }
     }

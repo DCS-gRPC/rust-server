@@ -77,4 +77,12 @@ impl UnitService for MissionRpc {
         let res = self.request("unitDestroy", request).await?;
         Ok(Response::new(res))
     }
+
+    async fn get_agl(
+        &self,
+        request: Request<unit::v0::GetAglRequest>,
+    ) -> Result<Response<unit::v0::GetAglResponse>, Status> {
+        let res = self.request("getUnitAgl", request).await?;
+        Ok(Response::new(res))
+    }
 }

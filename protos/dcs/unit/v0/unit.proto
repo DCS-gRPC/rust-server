@@ -34,6 +34,8 @@ service UnitService {
 
   // https://wiki.hoggitworld.com/view/DCS_func_getDrawArgumentValue
   rpc GetDrawArgumentValue(GetDrawArgumentValueRequest) returns (GetDrawArgumentValueResponse) {}
+  
+  rpc GetAgl(GetAglRequest) returns (GetAglResponse) {}
 }
 
 message GetRadarRequest {
@@ -115,4 +117,12 @@ message DestroyRequest {
 }
 
 message DestroyResponse {
+}
+
+message GetAglRequest {
+  string name = 1;
+}
+
+message GetAglResponse {
+  double agl = 1;
 }

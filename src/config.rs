@@ -21,6 +21,7 @@ pub struct Config {
     pub integrity_check_disabled: bool,
     pub tts: Option<TtsConfig>,
     pub srs: Option<SrsConfig>,
+    pub auth: Option<AuthConfig>,
 }
 
 #[derive(Debug, Clone, Default, Deserialize, Serialize)]
@@ -87,6 +88,22 @@ pub struct SrsConfig {
     pub addr: Option<SocketAddr>,
 }
 
+#[derive(Debug, Clone, Default, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AuthConfig {
+    #[serde(default)]
+    pub enabled: bool,
+    pub tokens: Vec<ApiKey>,
+}
+
+#[derive(Debug, Clone, Default, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ApiKey {
+    #[serde(default)]
+    pub client: String,
+    pub token: String,
+}
+
 fn default_host() -> String {
     String::from("127.0.0.1")
 }
@@ -95,8 +112,8 @@ fn default_port() -> u16 {
     50051
 }
 
-impl<'lua> mlua::FromLua<'lua> for Config {
-    fn from_lua(lua_value: mlua::Value<'lua>, lua: &'lua mlua::Lua) -> mlua::Result<Self> {
+impl mlua::FromLua for Config {
+    fn from_lua(lua_value: mlua::Value, lua: &mlua::Lua) -> mlua::Result<Self> {
         use mlua::LuaSerdeExt;
         let config: Config = lua.from_value(lua_value)?;
         Ok(config)

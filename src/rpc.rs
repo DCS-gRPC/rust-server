@@ -16,6 +16,7 @@ mod controller;
 mod custom;
 mod group;
 mod hook;
+mod metadata;
 mod mission;
 mod net;
 mod srs;
@@ -77,8 +78,9 @@ impl MissionRpc {
             .map_err(to_status)
     }
 
-    pub async fn events(&self) -> impl Stream<Item = StreamEventsResponse> {
-        self.ipc.events().await
+    pub async fn events(&self) -> impl Stream<Item = StreamEventsResponse> + use<> {
+        let ipc = self.ipc.clone();
+        ipc.events().await
     }
 
     pub async fn event(&self, event: StreamEventsResponse) {

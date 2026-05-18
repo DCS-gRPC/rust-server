@@ -96,11 +96,31 @@ GRPC.onDcsEvent = function(event)
       },
     }
 
+  elseif event.id == world.event.S_EVENT_RUNWAY_TAKEOFF then
+    return {
+      time = event.time,
+      event = {
+        type = "runwayTakeoff",
+        initiator = {initiator = typed_exporter(event.initiator)},
+        place = exporter(event.place),
+      },
+    }
+
   elseif event.id == world.event.S_EVENT_LAND then
     return {
       time = event.time,
       event = {
         type = "land",
+        initiator = {initiator = typed_exporter(event.initiator)},
+        place = exporter(event.place),
+      },
+    }
+
+  elseif event.id == world.event.S_EVENT_RUNWAY_TOUCH then
+    return {
+      time = event.time,
+      event = {
+        type = "runwayTouch",
         initiator = {initiator = typed_exporter(event.initiator)},
         place = exporter(event.place),
       },

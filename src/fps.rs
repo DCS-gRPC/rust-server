@@ -3,9 +3,9 @@ use std::sync::atomic::{AtomicU32, Ordering};
 use std::time::Duration;
 
 use dcs_module_ipc::IPC;
-use stubs::mission::v0::stream_events_response::{Event, SimulationFpsEvent};
 use stubs::mission::v0::StreamEventsResponse;
-use tokio::time::{interval, MissedTickBehavior};
+use stubs::mission::v0::stream_events_response::{Event, SimulationFpsEvent};
+use tokio::time::{MissedTickBehavior, interval};
 
 static FPS: AtomicU32 = AtomicU32::new(0);
 static TIME: AtomicU32 = AtomicU32::new(0);

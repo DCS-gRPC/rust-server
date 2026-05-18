@@ -5,7 +5,7 @@ use serde_json::Value;
 use stubs::custom::v0::custom_service_client::CustomServiceClient;
 use stubs::hook::v0::hook_service_client::HookServiceClient;
 use stubs::{custom, hook};
-use tonic::{transport, Code, Status};
+use tonic::{Code, Status, transport};
 
 #[derive(Parser)]
 #[clap(name = "repl")]
@@ -68,6 +68,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 }
 
+#[allow(clippy::result_large_err)]
 fn handle_respone(json: Result<String, Status>) -> Result<Value, Error> {
     let json = json?;
     let json: Value = serde_json::from_str(&json)?;

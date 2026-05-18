@@ -1,21 +1,21 @@
 use std::collections::HashMap;
 use std::time::{Duration, Instant};
 
-use futures_util::stream::StreamExt;
 use futures_util::TryFutureExt;
-use stubs::coalition::v0::coalition_service_server::CoalitionService;
+use futures_util::stream::StreamExt;
 use stubs::coalition::v0::GetGroupsRequest;
+use stubs::coalition::v0::coalition_service_server::CoalitionService;
 use stubs::common;
 use stubs::common::v0::{Coalition, GroupCategory, Orientation, Position, Unit, Vector, Velocity};
-use stubs::group::v0::group_service_server::GroupService;
 use stubs::group::v0::GetUnitsRequest;
+use stubs::group::v0::group_service_server::GroupService;
 use stubs::mission::v0::stream_events_response::{BirthEvent, DeadEvent, Event};
 use stubs::mission::v0::stream_units_response::{UnitGone, Update};
 use stubs::mission::v0::{StreamUnitsRequest, StreamUnitsResponse};
 use stubs::unit::v0::unit_service_server::UnitService;
 use stubs::unit::v0::{GetTransformRequest, GetTransformResponse};
-use tokio::sync::mpsc::error::SendError;
 use tokio::sync::mpsc::Sender;
+use tokio::sync::mpsc::error::SendError;
 use tokio::time::MissedTickBehavior;
 use tonic::{Code, Request, Status};
 

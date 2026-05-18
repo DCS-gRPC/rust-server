@@ -14,6 +14,9 @@ service WorldService {
 
   // Returns the theatre (Map name) of the mission
   rpc GetTheatre(GetTheatreRequest) returns (GetTheatreResponse) {}
+
+  // https://wiki.hoggitworld.com/view/DCS_func_searchObjects
+  rpc SearchObjects(SearchObjectsRequest) returns (SearchObjectsResponse) {}
 }
 
 message GetAirbasesRequest {
@@ -36,4 +39,66 @@ message GetTheatreRequest {
 
 message GetTheatreResponse {
   string theatre = 1;
+}
+
+/**
+ * Search objects inside a 3D volume by category.
+ *
+ */
+message SearchObjectsRequest {
+  // Object categories to search for. If empty, no objects will be returned.
+  repeated dcs.common.v0.ObjectCategory categories = 1;
+
+  // The search volume.
+  SearchVolume volume = 2;
+}
+
+message SearchObjectsResponse {
+  // Objects found inside the volume.
+  repeated dcs.common.v0.Target objects = 1;
+}
+
+// Volume used by world.searchObjects.
+message SearchVolume {
+  oneof shape {
+    SphereVolume sphere = 1;
+    BoxVolume box = 2;
+    SegmentVolume segment = 3;
+    PyramidVolume pyramid = 4;
+  }
+}
+
+message SphereVolume {
+  // Center point in geographic coordinates.
+  dcs.common.v0.InputPosition center = 1;
+  // Radius in meters.
+  double radius = 2;
+}
+
+message BoxVolume {
+  // Minimum corner in geographic coordinates.
+  dcs.common.v0.InputPosition min = 1;
+  // Maximum corner in geographic coordinates.
+  dcs.common.v0.InputPosition max = 2;
+}
+
+message SegmentVolume {
+  // Start point in geographic coordinates.
+  dcs.common.v0.InputPosition from = 1;
+  // End point in geographic coordinates.
+  dcs.common.v0.InputPosition to = 2;
+}
+
+message PyramidVolume {
+  // Center point of the pyramid vertex in geographic coordinates.
+  dcs.common.v0.InputPosition center = 1;
+  // Orientation unit vectors defining the pyramid. Should be normalized.
+  dcs.common.v0.Vector forward = 2;
+  dcs.common.v0.Vector right = 3;
+  dcs.common.v0.Vector up = 4;
+  // Max distance from vertex to objects considered inside the pyramid.
+  double length = 5;
+  // Horizontal and vertical half-angles in radians.
+  double half_angle_horizontal = 6;
+  double half_angle_vertical = 7;
 }

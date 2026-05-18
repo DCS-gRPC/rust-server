@@ -112,7 +112,7 @@ pub async fn stream(
 
                         // update server settings
                         if let Message::ServerSettings(ServerSettingsMessage {
-                            ref server_settings,
+                            server_settings,
                             ..
                         }) = &msg
                         {

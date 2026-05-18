@@ -294,8 +294,8 @@ impl<'de> ::serde::Deserialize<'de> for Coalition {
 }
 
 pub fn create_sguid() -> String {
-    use base64::prelude::BASE64_URL_SAFE_NO_PAD;
     use base64::Engine;
+    use base64::prelude::BASE64_URL_SAFE_NO_PAD;
 
     let sguid = Uuid::new_v4();
     let sguid = BASE64_URL_SAFE_NO_PAD.encode(sguid.as_bytes());

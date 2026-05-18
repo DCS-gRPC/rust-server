@@ -1,4 +1,4 @@
-use std::future::{ready, Future};
+use std::future::{Future, ready};
 use std::pin::Pin;
 use std::task::{Context, Poll};
 
@@ -58,7 +58,7 @@ impl Shutdown {
 }
 
 impl ShutdownHandle {
-    pub fn signal(&self) -> impl Future<Output = ()> {
+    pub fn signal(&self) -> impl Future<Output = ()> + use<> {
         match self.signal.as_ref() {
             Some(signal) => signal
                 .upgrade()

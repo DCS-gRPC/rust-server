@@ -203,6 +203,8 @@ should use their independent logging and tracing functions.
 - [x] `S_EVENT_HIT`
 - [x] `S_EVENT_TAKEOFF`
 - [x] `S_EVENT_LAND`
+- [x] `S_EVENT_RUNWAY_TAKEOFF`
+- [x] `S_EVENT_RUNWAY_TOUCH`
 - [x] `S_EVENT_CRASH`
 - [x] `S_EVENT_EJECTION`
 - [x] `S_EVENT_REFUELING`

@@ -6,6 +6,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- World: `SearchObjects` RPC mirroring `world.searchObjects` with full volume support (sphere, box, segment, pyramid).
+  - Request uses `dcs.common.v0.ObjectCategory[]` and `SearchVolume` (with `InputPosition` for geo points).
+  - Response returns `dcs.common.v0.Target[]` for consistent object union across services.
+  - Lua implementation unwraps grpcui oneof wrapper (`volume.shape`) and supports both wrapped and flattened shapes.
+
+## [0.8.1] 2024-11-05
+
+### Added
+- Events `OnRunwayTouch` and `RunwayTakeoff` for "changed" TakeOff and Landing logic in DCS.
+
+## [0.8.0]
+
 ### Breaking Changes
 - Renamed `TtsService` to `SrsService`
 
@@ -16,6 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `GetClients` to `SrsService`, which retrieves a list of units that are connected to SRS and the frequencies they are connected to.
 - Added `SrsConnectEvent` and `SrsDisconnectEvent` events 
 - Added `GetDrawArgumentValue` API for units, which returns the value for drawing. (useful for "hook down", "doors open" checks)
+- Added `MetadataService` with `GetHealth` and `GetVersion` for quick checks on health (even when DCS mission is unresponsive) and version.
+- Added Authentication Interceptor. This enables authentication on a per client basis.
 
 ### Fixed
 - Fixed `MarkAddEvent`, `MarkChangeEvent` and `MarkRemoveEvent` position

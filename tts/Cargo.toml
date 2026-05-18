@@ -16,11 +16,11 @@ reqwest = { version = "0.12", default-features = false, features = [
     "rustls-tls",
     "json",
 ] }
-rusoto_core = { version = "0.48", default_features = false, features = [
+rusoto_core = { version = "0.48", default-features = false, features = [
     "rustls",
 ] }
 rusoto_credential = "0.48"
-rusoto_polly = { version = "0.48", default_features = false, features = [
+rusoto_polly = { version = "0.48", default-features = false, features = [
     "rustls",
 ] }
 serde.workspace = true
@@ -29,10 +29,14 @@ thiserror.workspace = true
 tokio.workspace = true
 
 [target.'cfg(target_os = "windows")'.dependencies.windows]
-version = "0.56"
+version = "0.61"
 features = [
     "Foundation",
     "Foundation_Collections",
     "Storage_Streams",
+    "Media_Core",
     "Media_SpeechSynthesis",
 ]
+
+[target.'cfg(target_os = "windows")'.dependencies.windows-future]
+version = "0.2"

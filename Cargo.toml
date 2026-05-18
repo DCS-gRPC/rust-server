@@ -3,11 +3,11 @@ members = ["repl", "srs", "stubs", "tts"]
 resolver = "2"
 
 [workspace.package]
-version = "0.7.1"
+version = "0.8.1"
 license = "AGPL-3.0-or-later"
 authors = ["Markus Ast <m@rkusa.st>"]
-rust-version = "1.78"
-edition = "2021"
+rust-version = "1.85"
+edition = "2024"
 
 [workspace.dependencies]
 base64 = "0.22"
@@ -16,7 +16,7 @@ futures-util = { version = "0.3", features = ["sink"] }
 log = "0.4"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-thiserror = "1.0"
+thiserror = "2.0"
 tokio = { version = "1.37", features = [
     "rt-multi-thread",
     "io-util",
@@ -27,7 +27,7 @@ tokio = { version = "1.37", features = [
     "macros",
 ] }
 tokio-stream = { version = "0.1", features = ["sync"] }
-tonic = "0.11"
+tonic = "0.13"
 
 [package]
 name = "dcs-grpc"
@@ -42,13 +42,13 @@ crate-type = ["cdylib"]
 
 [dependencies]
 backoff = { version = "0.4", features = ["tokio"] }
-dcs-module-ipc = "0.8"
+dcs-module-ipc = "0.9"
 futures-util.workspace = true
 igrf = "0.2"
 libloading = { version = "0.8", optional = true }
 log4rs = "1.0"
 log.workspace = true
-mlua = { version = "0.9", default-features = false, features = [
+mlua = { version = "0.10", default-features = false, features = [
     "lua51",
     "module",
     "serialize",
@@ -65,6 +65,7 @@ time = { version = "0.3", features = ["formatting", "parsing"] }
 tokio.workspace = true
 tokio-stream.workspace = true
 tonic.workspace = true
+tonic-middleware = "0.3"
 
 [build-dependencies]
 walkdir = "2.3"

@@ -10,6 +10,7 @@ pub mod controller;
 pub mod custom;
 pub mod group;
 pub mod hook;
+pub mod metadata;
 pub mod mission;
 pub mod net;
 pub mod srs;
@@ -22,9 +23,9 @@ pub mod world;
 #[cfg(test)]
 mod tests {
     use super::common::v0::{
-        initiator, Airbase, AirbaseCategory, Coalition, Initiator, Position, Unit,
+        Airbase, AirbaseCategory, Coalition, Initiator, Position, Unit, initiator,
     };
-    use super::mission::v0::{stream_events_response as event, StreamEventsResponse};
+    use super::mission::v0::{StreamEventsResponse, stream_events_response as event};
     use super::world::v0::GetAirbasesResponse;
     use crate::common::v0::{Orientation, Velocity};
 

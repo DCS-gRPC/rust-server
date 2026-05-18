@@ -76,10 +76,10 @@ impl fmt::Display for MessagesCodecError {
 impl error::Error for MessagesCodecError {
     fn source(&self) -> Option<&(dyn error::Error + 'static)> {
         match self {
-            MessagesCodecError::JsonDecode(ref err, _) => Some(err),
-            MessagesCodecError::JsonEncode(ref err) => Some(err),
-            MessagesCodecError::LinesCodec(ref err) => Some(err),
-            MessagesCodecError::Io(ref err) => Some(err),
+            MessagesCodecError::JsonDecode(err, _) => Some(err),
+            MessagesCodecError::JsonEncode(err) => Some(err),
+            MessagesCodecError::LinesCodec(err) => Some(err),
+            MessagesCodecError::Io(err) => Some(err),
         }
     }
 }

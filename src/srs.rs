@@ -10,8 +10,8 @@ use srs::{
     ServerSettingsMessage, StreamError, SyncMessage, UpdateMessage,
 };
 use stubs::common::v0::Unit;
-use stubs::mission::v0::stream_events_response::{Event, SrsConnectEvent, SrsDisconnectEvent};
 use stubs::mission::v0::StreamEventsResponse;
+use stubs::mission::v0::stream_events_response::{Event, SrsConnectEvent, SrsDisconnectEvent};
 use tokio::sync::RwLock;
 use tonic::{Code, Status};
 
@@ -202,9 +202,9 @@ async fn run(
             Message::ServerSettings(ServerSettingsMessage {
                 server_settings, ..
             }) => {
-                if !server_settings
+                if server_settings
                     .get("SHOW_TUNED_COUNT")
-                    .is_some_and(|s| s == "True")
+                    .is_none_or(|s| s != "True")
                 {
                     log::warn!(
                         "`Show Tuned/Client Count` is disabled on your SRS server. \

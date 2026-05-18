@@ -4,9 +4,9 @@ use std::sync::Arc;
 
 use tokio::sync::RwLock;
 
-use crate::message::{create_sguid, Coalition, Position};
-use crate::stream::{Receiver, Sender};
 use crate::StreamError;
+use crate::message::{Coalition, Position, create_sguid};
+use crate::stream::{Receiver, Sender};
 
 #[derive(Debug, Clone)]
 pub struct UnitInfo {

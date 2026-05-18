@@ -1,7 +1,7 @@
 use std::io::Cursor;
 
-use base64::prelude::BASE64_STANDARD;
 use base64::Engine;
+use base64::prelude::BASE64_STANDARD;
 use ogg::reading::PacketReader;
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};

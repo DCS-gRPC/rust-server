@@ -11,22 +11,25 @@ use stubs::controller::v0::controller_service_server::ControllerServiceServer;
 use stubs::custom::v0::custom_service_server::CustomServiceServer;
 use stubs::group::v0::group_service_server::GroupServiceServer;
 use stubs::hook::v0::hook_service_server::HookServiceServer;
-use stubs::mission::v0::mission_service_server::MissionServiceServer;
+use stubs::metadata::v0::metadata_service_server::MetadataServiceServer;
 use stubs::mission::v0::StreamEventsResponse;
+use stubs::mission::v0::mission_service_server::MissionServiceServer;
 use stubs::net::v0::net_service_server::NetServiceServer;
-use stubs::srs::v0::srs_service_server::{SrsService, SrsServiceServer};
 pub use stubs::srs::v0::TransmitRequest;
+use stubs::srs::v0::srs_service_server::{SrsService, SrsServiceServer};
 use stubs::timer::v0::timer_service_server::TimerServiceServer;
 use stubs::trigger::v0::trigger_service_server::TriggerServiceServer;
 use stubs::unit::v0::unit_service_server::UnitServiceServer;
 use stubs::world::v0::world_service_server::WorldServiceServer;
 use tokio::runtime::{Handle, Runtime};
 use tokio::sync::oneshot::{self, Receiver};
-use tokio::sync::{mpsc, Mutex};
+use tokio::sync::{Mutex, mpsc};
 use tokio::time::sleep;
 use tonic::transport;
+use tonic_middleware::RequestInterceptorLayer;
 
-use crate::config::{Config, SrsConfig, TtsConfig};
+use crate::authentication::AuthInterceptor;
+use crate::config::{AuthConfig, Config, SrsConfig, TtsConfig};
 use crate::rpc::{HookRpc, MissionRpc, Srs};
 use crate::shutdown::{Shutdown, ShutdownHandle};
 use crate::srs::SrsClients;
@@ -50,6 +53,7 @@ struct ServerState {
     tts_config: TtsConfig,
     srs_config: SrsConfig,
     srs_transmit: Arc<Mutex<mpsc::Receiver<TransmitRequest>>>,
+    auth_config: AuthConfig,
 }
 
 impl Server {
@@ -71,6 +75,7 @@ impl Server {
                 tts_config: config.tts.clone().unwrap_or_default(),
                 srs_config: config.srs.clone().unwrap_or_default(),
                 srs_transmit: Arc::new(Mutex::new(rx)),
+                auth_config: config.auth.clone().unwrap_or_default(),
             },
             srs_transmit: tx,
             shutdown,
@@ -203,9 +208,10 @@ async fn try_run(
         tts_config,
         srs_config,
         srs_transmit,
+        auth_config,
     } = state;
 
-    let mut mission_rpc =
+    let mut mission_rpc: MissionRpc =
         MissionRpc::new(ipc_mission.clone(), stats.clone(), shutdown_signal.clone());
     let mut hook_rpc = HookRpc::new(ipc_hook, stats, shutdown_signal.clone());
 
@@ -242,13 +248,21 @@ async fn try_run(
         }
     });
 
+    let auth_interceptor = AuthInterceptor {
+        auth_config: auth_config.clone(),
+    };
+
+    log::info!("Authentication enabled: {}", auth_config.enabled);
+
     transport::Server::builder()
+        .layer(RequestInterceptorLayer::new(auth_interceptor.clone()))
         .add_service(AtmosphereServiceServer::new(mission_rpc.clone()))
         .add_service(CoalitionServiceServer::new(mission_rpc.clone()))
         .add_service(ControllerServiceServer::new(mission_rpc.clone()))
         .add_service(CustomServiceServer::new(mission_rpc.clone()))
         .add_service(GroupServiceServer::new(mission_rpc.clone()))
         .add_service(HookServiceServer::new(hook_rpc))
+        .add_service(MetadataServiceServer::new(mission_rpc.clone()))
         .add_service(MissionServiceServer::new(mission_rpc.clone()))
         .add_service(NetServiceServer::new(mission_rpc.clone()))
         .add_service(TimerServiceServer::new(mission_rpc.clone()))
@@ -278,8 +292,8 @@ pub enum StartError {
     AddrParse(#[from] std::net::AddrParseError),
 }
 
-impl<'lua> mlua::FromLua<'lua> for TtsOptions {
-    fn from_lua(lua_value: mlua::Value<'lua>, lua: &'lua mlua::Lua) -> mlua::Result<Self> {
+impl mlua::FromLua for TtsOptions {
+    fn from_lua(lua_value: mlua::Value, lua: &mlua::Lua) -> mlua::Result<Self> {
         use mlua::LuaSerdeExt;
         let opts: TtsOptions = lua.from_value(lua_value)?;
         Ok(opts)

@@ -29,4 +29,12 @@ impl WorldService for MissionRpc {
         let res = self.request("getTheatre", request).await?;
         Ok(Response::new(res))
     }
+
+    async fn search_objects(
+        &self,
+        request: Request<world::v0::SearchObjectsRequest>,
+    ) -> Result<Response<world::v0::SearchObjectsResponse>, Status> {
+        let res = self.request("searchObjects", request).await?;
+        Ok(Response::new(res))
+    }
 }

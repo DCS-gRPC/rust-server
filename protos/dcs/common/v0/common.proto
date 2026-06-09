@@ -222,7 +222,7 @@ message Unit {
   // The coalition the unit belongs to
   Coalition coalition = 4;
   // The DCS type-name of the unit. e.g "MiG-29A", "ZSU_57_2" or "Hawk ln"
-  string type = 5;
+  optional string type = 5;
   // The position of the unit
   Position position = 6;
   // The orientation of the unit in both 2D and 3D space
@@ -271,7 +271,7 @@ message Weapon {
   uint32 id = 1;
   // The DCS type-name of the weapon. e.g "Matra_S530D", "HAWK_RAKETA" or
   // "weapons.shells.53-UOR-281U"
-  string type = 2;
+  optional string type = 2;
   // The position of the Weapon
   Position position = 3;
   // The orientation of the unit in both 2D and 3D space
@@ -290,7 +290,7 @@ message Static {
   // The DCS generated ID
   uint32 id = 1;
   // The DCS type-name of the static
-  string type = 2;
+  optional string type = 2;
   // The name of the static
   string name = 3;
   // The coalition the static belongs to

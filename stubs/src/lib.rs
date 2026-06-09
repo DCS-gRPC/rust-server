@@ -91,7 +91,7 @@ mod tests {
                             id: 1,
                             name: "Aerial-1-1".to_string(),
                             callsign: "Enfield11".to_string(),
-                            r#type: "FA-18C_hornet".to_string(),
+                            r#type: Some("FA-18C_hornet".to_string()),
                             coalition: Coalition::Blue.into(),
                             player_name: Some("New callsign".to_string()),
                             group: None,

@@ -86,7 +86,7 @@ pub mod v0 {
         name: String,
         callsign: String,
         coalition: i32,
-        r#type: String,
+        r#type: Option<String>,
         player_name: Option<String>,
         group: Option<Group>,
         number_in_group: u32,
@@ -127,7 +127,7 @@ pub mod v0 {
     #[serde(rename_all = "camelCase")]
     struct WeaponIntermediate {
         id: u32,
-        r#type: String,
+        r#type: Option<String>,
         raw_transform: Option<RawTransform>,
     }
 

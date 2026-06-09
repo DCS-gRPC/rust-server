@@ -19,6 +19,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fixed output of `AtmosphereService.GetWind` to match Mission Editor settings.
 
+### Changed
+- Changed `weapon` and `unknown` object exporters to return the `id_` (runtime ID) property. For `unknown` objects it is a fall-back condition used in cases where the object has no name.
+- Changed `dcs.common.v0.Unit`, `dcs.common.v0.Weapon`, and `dcs.common.v0.Static` to set the `type` field as `Optional` as DCS doesn't always enforce this and the resulting log bloat was excessive.
+- Changed catch-all for objects whose category could not be determined to no longer include `getID` in log message as not all object types implement the method.
+- Changed `GRPC.onDCSEvent` to protect against an empty initiator for `S_EVENT_HIT`.
+- Changed `handler.onPlayerChangeSlot` callback to protect against a nil return from `net.get_player_info`.
+- Changed the `Unit` exporter to protect against `Group` being nil.
+
 ## [0.8.1] 2024-11-05
 
 ### Added

@@ -21,10 +21,7 @@ local function exporter(object)
   elseif category == Object.Category.Cargo then
     return GRPC.exporters.cargo(object)
   else
-    GRPC.logWarning(
-      "Could not determine object category of object with ID: " .. object:getID()
-        .. ", Category: " .. category
-    )
+    GRPC.logWarning("mission:exporter - Could not determine object category")
     return nil
   end
 end
@@ -50,10 +47,7 @@ local function typed_exporter(object)
   elseif category == Object.Category.Cargo then
     grpcTable.cargo = exporter(object)
   else
-    GRPC.logWarning(
-      "Could not determine object category of object with ID: " .. object:getID()
-        .. ", Category: " .. category
-    )
+    GRPC.logWarning("mission:typed_exporter - Could not determine object category")
     grpcTable.unknown = GRPC.exporters.unknown(object)
   end
 
@@ -75,11 +69,15 @@ GRPC.onDcsEvent = function(event)
     }
 
   elseif event.id == world.event.S_EVENT_HIT then
+    -- Initiator is optional, but if we have an empty map we get an error
+    local initiator = {initiator = typed_exporter(event.initiator)}
+    if initiator.initiator == nil then initiator = nil end
+
     return {
       time = event.time,
       event = {
         type = "hit",
-        initiator = {initiator = typed_exporter(event.initiator)},
+        initiator = initiator,
         weapon = exporter(event.weapon),
         target = {target = typed_exporter(event.target)},
         weaponName = event.weapon_name,

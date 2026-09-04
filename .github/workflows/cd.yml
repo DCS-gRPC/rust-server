@@ -169,6 +169,10 @@ jobs:
       - name: "Main Code"
         run: |
           cargo build --release
+          ls -R target
+         
+      - name: "Copy Build Artifacts"
+        run: |
           cp target/release/dcs_grpc.dll "$RUNNER_TEMP/release/Mods/Tech/DCS-gRPC/dcs_grpc.dll"
           cp target/release/dcs_grpc.pdb "$RUNNER_TEMP/release/Mods/Tech/DCS-gRPC/dcs_grpc.pdb"
 

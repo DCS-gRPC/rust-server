@@ -78,12 +78,15 @@ jobs:
           
           if [ "$OVERWRITE_VERSION" = "true" ]; then
             echo "STRATEGY=overwrite-version" >> $GITHUB_OUTPUT
+            echo "PRERELEASE=false" >> $GITHUB_OUTPUT
             echo "Strategy: Overwriting version tag ($VERSION)"
           elif [ "$TAG_EXISTS" = "true" ]; then
             echo "STRATEGY=update-beta" >> $GITHUB_OUTPUT
+            echo "PRERELEASE=true" >> $GITHUB_OUTPUT
             echo "Strategy: Updating beta tag with current version"
           else
             echo "STRATEGY=create-release" >> $GITHUB_OUTPUT
+            echo "PRERELEASE=false" >> $GITHUB_OUTPUT
             echo "Strategy: Creating new release tag ($VERSION)"
           fi
 
@@ -111,6 +114,7 @@ jobs:
       TAG: "${{ steps.final_tag.outputs.VERSION }}"
       TAG_EXISTS: ${{ steps.tag_check.outputs.TAG_EXISTS }}
       STRATEGY: ${{ steps.strategy.outputs.STRATEGY }}
+      PRERELEASE: ${{ steps.strategy.outputs.PRERELEASE }}
   
   parse_changelog:
     runs-on: ubuntu-latest
@@ -231,17 +235,15 @@ jobs:
           $TAG = "${{ needs.verify_version.outputs.TAG }}"
           git tag $TAG
           git push origin $TAG
-
-      - name: Create Release and Upload Assets
-        uses: akkuman/gitea-release-action@v1
+      
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ needs.verify_version.outputs.TAG }}
-          name: Release ${{ needs.verify_version.outputs.TAG }}
+          release_name: Release ${{ needs.verify_version.outputs.TAG }}
           body: ${{ needs.parse_changelog.outputs.body }}
-          prerelease: true
           draft: true
-          files: |-
-            ${{ runner.temp }}/DCS-gRPC-${{ needs.verify_version.outputs.VERSION }}.zip
-        env:
-          NODE_OPTIONS: '--experimental-fetch'
-      
+          prerelease: ${{ needs.verify_version.outputs.PRERELEASE }}

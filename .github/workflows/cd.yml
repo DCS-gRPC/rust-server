@@ -133,13 +133,18 @@ jobs:
             found { print }
           ' CHANGELOG.md)
           
+          # Store in a temporary file
+          echo "$RELEASE_NOTES" > release_notes.txt
+          
           echo "body<<EOF" >> "$GITHUB_OUTPUT"
           printf '%s\n' "$RELEASE_NOTES" >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
+      
       - name: "Display Release Notes"
         run: |
           echo "Release Notes for version ${{ needs.verify_version.outputs.VERSION }}:"
-          echo "${{ steps.release_notes.outputs.body }}"
+          echo ""
+          cat release_notes.txt
     outputs:
       body: ${{ steps.release_notes.outputs.body }}
     

@@ -153,57 +153,61 @@ jobs:
   package_and_release:
     needs: [verify_version, parse_changelog]
     name: "Package and Release"
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
     
       - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: x86_64-pc-windows-gnu
 
       - name: "Create Release Folder"
         run: |
-          mkdir -p "$RUNNER_TEMP/release/Mods/Tech/DCS-gRPC"
-          mkdir -p "$RUNNER_TEMP/release/Scripts/DCS-gRPC"
-          mkdir -p "$RUNNER_TEMP/release/Scripts/Hooks"
-          mkdir -p "$RUNNER_TEMP/release/Docs/DCS-gRPC/protos"
+          mkdir "$env:RUNNER_TEMP\release\Mods\Tech\DCS-gRPC"
+          mkdir "$env:RUNNER_TEMP\release\Scripts\DCS-gRPC"
+          mkdir "$env:RUNNER_TEMP\release\Scripts\Hooks"
+          mkdir "$env:RUNNER_TEMP\release\Docs\DCS-gRPC\protos"
+        shell: pwsh
 
       - name: "Main Code"
         run: |
-          cargo build --release --target x86_64-pc-windows-gnu
-          ls -R target
+          cargo build --release
+          Get-ChildItem -Path target -Recurse | Select-Object FullName
+        shell: pwsh
          
       - name: "Copy Build Artifacts"
         run: |
-          cp target/release/dcs_grpc.dll "$RUNNER_TEMP/release/Mods/Tech/DCS-gRPC/dcs_grpc.dll"
-          cp target/release/dcs_grpc.pdb "$RUNNER_TEMP/release/Mods/Tech/DCS-gRPC/dcs_grpc.pdb"
+          Copy-Item "target\release\dcs_grpc.dll" "$env:RUNNER_TEMP\release\Mods\Tech\DCS-gRPC\dcs_grpc.dll"
+          Copy-Item "target\release\dcs_grpc.pdb" "$env:RUNNER_TEMP\release\Mods\Tech\DCS-gRPC\dcs_grpc.pdb"
+        shell: pwsh
 
       - name: "Copy Scripts"
         run: |
-          cp -r lua/DCS-gRPC "$RUNNER_TEMP/release/Scripts/DCS-gRPC"
-          cp -r lua/Hooks "$RUNNER_TEMP/release/Scripts/Hooks"
+          Copy-Item -Recurse "lua\DCS-gRPC" "$env:RUNNER_TEMP\release\Scripts\"
+          Copy-Item -Recurse "lua\Hooks" "$env:RUNNER_TEMP\release\Scripts\"
+        shell: pwsh
 
       - name: "Docs"
         run: |
-          cp README.md "$RUNNER_TEMP/release/Docs/DCS-gRPC/README.md"
-          cp CHANGELOG.md "$RUNNER_TEMP/release/Docs/DCS-gRPC/CHANGELOG.md"
-          cp STATUS.md "$RUNNER_TEMP/release/Docs/DCS-gRPC/STATUS.md"
+          Copy-Item "README.md" "$env:RUNNER_TEMP\release\Docs\DCS-gRPC\README.md"
+          Copy-Item "CHANGELOG.md" "$env:RUNNER_TEMP\release\Docs\DCS-gRPC\CHANGELOG.md"
+          Copy-Item "STATUS.md" "$env:RUNNER_TEMP\release\Docs\DCS-gRPC\STATUS.md"
+        shell: pwsh
 
       - name: "Copy Proto Files"
         run: |
-          cp -r proto/* "$RUNNER_TEMP/release/Docs/DCS-gRPC/protos"
+          Copy-Item -Recurse "protos\*" "$env:RUNNER_TEMP\release\Docs\DCS-gRPC\protos"
+        shell: pwsh
       
       - name: "Zip Release Folder"
         run: |
-          cd "$RUNNER_TEMP/release"
-          zip -r DCS-gRPC-${{ needs.verify_version.outputs.VERSION }}.zip .
+          Compress-Archive -Path "$env:RUNNER_TEMP\release\*" -DestinationPath "$env:RUNNER_TEMP\DCS-gRPC-${{ needs.verify_version.outputs.VERSION }}.zip"
+        shell: pwsh
 
       - uses: actions/upload-artifact@v7
         with:
           name: DCS-gRPC-${{ needs.verify_version.outputs.VERSION }}.zip
-          path: "$RUNNER_TEMP/release/DCS-gRPC-${{ needs.verify_version.outputs.VERSION }}.zip"
+          path: "${{ env.RUNNER_TEMP }}/DCS-gRPC-${{ needs.verify_version.outputs.VERSION }}.zip"
           retention-days: 1
       
       # - name: Remove existing tag if it exists

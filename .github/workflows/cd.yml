@@ -106,51 +106,51 @@ jobs:
       TAG_EXISTS: ${{ steps.tag_check.outputs.TAG_EXISTS }}
       STRATEGY: ${{ steps.strategy.outputs.STRATEGY }}
   
-  parse_changelog:
-    runs-on: ubuntu-latest
-    needs: verify_version
-    steps:
-      - uses: actions/checkout@v4
+  # parse_changelog:
+  #   runs-on: ubuntu-latest
+  #   needs: verify_version
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - name: Parse Changelog
-        id: release_notes
-        run: |
-          VERSION=${{ needs.verify_version.outputs.VERSION }}
-          # Remove 'v' prefix if present for changelog lookup
-          CHANGELOG_VERSION=${VERSION#v}
+  #     - name: Parse Changelog
+  #       id: release_notes
+  #       run: |
+  #         VERSION=${{ needs.verify_version.outputs.VERSION }}
+  #         # Remove 'v' prefix if present for changelog lookup
+  #         CHANGELOG_VERSION=${VERSION#v}
           
-          RELEASE_NOTES=$(awk -v ver="$CHANGELOG_VERSION" '
-            /^## \[/ {
-              if (found) exit
-              if (index($0, "[" ver "]") > 0) found = 1
-              next
-            }
-            found { print }
-          ' CHANGELOG.md)
+  #         RELEASE_NOTES=$(awk -v ver="$CHANGELOG_VERSION" '
+  #           /^## \[/ {
+  #             if (found) exit
+  #             if (index($0, "[" ver "]") > 0) found = 1
+  #             next
+  #           }
+  #           found { print }
+  #         ' CHANGELOG.md)
           
-          echo "body<<EOF" >> "$GITHUB_OUTPUT"
-          echo "$RELEASE_NOTES" >> "$GITHUB_OUTPUT"
-          echo "EOF" >> "$GITHUB_OUTPUT"
-    outputs:
-      body: ${{ steps.release_notes.outputs.body }}
+  #         echo "body<<EOF" >> "$GITHUB_OUTPUT"
+  #         echo "$RELEASE_NOTES" >> "$GITHUB_OUTPUT"
+  #         echo "EOF" >> "$GITHUB_OUTPUT"
+  #   outputs:
+  #     body: ${{ steps.release_notes.outputs.body }}
     
-  package_and_release:
-    needs: [verify_version, parse_changelog]
-    name: "Package and Release"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+  # package_and_release:
+  #   needs: [verify_version, parse_changelog]
+  #   name: "Package and Release"
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: dtolnay/rust-toolchain@stable
 
-      - name: "Create Release Folder"
-        run: |
-          mkdir -p $(RUNNER_TEMP)/release
+  #     - name: "Create Release Folder"
+  #       run: |
+  #         mkdir -p $(RUNNER_TEMP)/release
       
-      - name: "Main Code"
-        run: |
-          cargo build --release
-          cp target/release/dcs_grpc.dll $(RUNNER_TEMP)/release/
-          cp target/release/dcs_grpc.pdb $(RUNNER_TEMP)/release/
+  #     - name: "Main Code"
+  #       run: |
+  #         cargo build --release
+  #         cp target/release/dcs_grpc.dll $(RUNNER_TEMP)/release/
+  #         cp target/release/dcs_grpc.pdb $(RUNNER_TEMP)/release/
 
 
       

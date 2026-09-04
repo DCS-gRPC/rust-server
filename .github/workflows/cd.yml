@@ -148,29 +148,55 @@ jobs:
     outputs:
       body: ${{ steps.release_notes.outputs.body }}
     
-  # package_and_release:
-  #   needs: [verify_version, parse_changelog]
-  #   name: "Package and Release"
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: 0
+  package_and_release:
+    needs: [verify_version, parse_changelog]
+    name: "Package and Release"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
     
-  #     - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@stable
 
-  #     - name: "Create Release Folder"
-  #       run: |
-  #         mkdir -p $(RUNNER_TEMP)/release
+      - name: "Create Release Folder"
+        run: |
+          mkdir -p $(RUNNER_TEMP)/release/Mods/Tech/DCS-gRPC
+          mkdir -p $(RUNNER_TEMP)/release/Scripts/DCS-gRPC
+          mkdir -p $(RUNNER_TEMP)/release/Scripts/Hooks
+          mkdir -p $(RUNNER_TEMP)/release/Docs/DCS-gRPC/protos
+
+      - name: "Main Code"
+        run: |
+          cargo build --release
+          cp target/release/dcs_grpc.dll $(RUNNER_TEMP)/release/Mods/Tech/DCS-gRPC/dcs_grpc.dll
+          cp target/release/dcs_grpc.pdb $(RUNNER_TEMP)/release/Mods/Tech/DCS-gRPC/dcs_grpc.pdb
+
+      - name: "Copy Scripts"
+        run: |
+          cp -r lua/DCS-gRPC $(RUNNER_TEMP)/release/Scripts/DCS-gRPC
+          cp -r lua/Hooks $(RUNNER_TEMP)/release/Scripts/Hooks
+
+      - name: "Docs"
+        run: |
+          cp README.md $(RUNNER_TEMP)/release/Docs/DCS-gRPC/README.md
+          cp CHANGELOG.md $(RUNNER_TEMP)/release/Docs/DCS-gRPC/CHANGELOG.md
+          cp STATUS.md $(RUNNER_TEMP)/release/Docs/DCS-gRPC/STATUS.md
+
+      - name: "Copy Proto Files"
+        run: |
+          cp -r proto/* $(RUNNER_TEMP)/release/Docs/DCS-gRPC/protos
       
-  #     - name: "Main Code"
-  #       run: |
-  #         cargo build --release
-  #         cp target/release/dcs_grpc.dll $(RUNNER_TEMP)/release/
-  #         cp target/release/dcs_grpc.pdb $(RUNNER_TEMP)/release/
+      - name: "Zip Release Folder"
+        run: |
+          cd $(RUNNER_TEMP)/release
+          zip -r DCS-gRPC-${{ needs.verify_version.outputs.VERSION }}.zip .
 
+      - uses: actions/upload-artifact@v7
+        with:
+          name: DCS-gRPC-${{ needs.verify_version.outputs.VERSION }}.zip
+          path: $(RUNNER_TEMP)/release/DCS-gRPC-${{ needs.verify_version.outputs.VERSION }}.zip
 
-      
       # - name: Remove existing tag if it exists
       #   if: ${{ needs.verify_version.outputs.STRATEGY == 'overwrite-version' || needs.verify_version.outputs.STRATEGY == 'update-beta' }}
       #   id: check_tag

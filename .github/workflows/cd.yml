@@ -1,0 +1,188 @@
+
+##################################
+# CD Pipeline
+# Goal: 
+# The goal of this pipeline is to continuous update the released assets.
+# This will both include a real version. 
+# Additionally this will keep an pre-release version updated with merges and features that have not yet been put in a release.
+#
+# Logic:
+# 1. Retrieve the version and check against refs/tags
+# 2a. If the tag does not exist:
+#    - Create the tag
+#    - Build and release the assets 
+# 2b. If the tag exists:
+#    - Overwrite the "unreleased/beta" version with the currently merged version.
+# 
+# Additional:
+# - A manual overwrite option with an ability to overwrite the version if necessary.
+##################################
+
+on: 
+  push:
+    branches:
+      - main
+      - contiuousDelivery
+  workflow_dispatch:
+    inputs:
+      overwrite_version:
+        description: 'Overwrite the version'
+        type: boolean
+        default: false
+      
+jobs:
+  ##################################
+  # Verify Version
+  # First retrieves the version. 
+  # Then checks if that specific TAG already exists.
+
+  # Output: 
+  #   VERSION: The retrieved version from the VERSION file.
+  #   TAG_EXISTS: Boolean indicating if the tag already exists.
+  ##################################
+  verify_version:
+    runs-on: ubuntu-latest
+    name: "Verify Version"
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: "Verify Version"
+        id: version
+        run: |
+          VERSION=$(grep -A 1 '\[workspace.package\]' Cargo.toml | grep 'version' | sed -E 's/.*version = "([^"]+)".*/\1/')
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "Retrieving version: $VERSION"
+      
+      - name: "Check if tag exists"
+        id: tag_check
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION }}
+          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+            echo "TAG_EXISTS=true" >> $GITHUB_OUTPUT
+            echo "Tag v$VERSION already exists"
+          else
+            echo "TAG_EXISTS=false" >> $GITHUB_OUTPUT
+            echo "Tag v$VERSION does not exist"
+          fi
+
+      - name: "Determine Release Strategy"
+        id: strategy
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION }}
+          TAG_EXISTS=${{ steps.tag_check.outputs.TAG_EXISTS }}
+          OVERWRITE_VERSION=${{ github.event.inputs.overwrite_version == 'true' && 'true' || 'false' }}
+          
+          if [ "$OVERWRITE_VERSION" = "true" ]; then
+            echo "STRATEGY=overwrite-version" >> $GITHUB_OUTPUT
+            echo "Strategy: Overwriting version tag (v$VERSION)"
+          elif [ "$TAG_EXISTS" = "true" ]; then
+            echo "STRATEGY=update-beta" >> $GITHUB_OUTPUT
+            echo "Strategy: Updating beta tag with current version"
+          else
+            echo "STRATEGY=create-release" >> $GITHUB_OUTPUT
+            echo "Strategy: Creating new release tag (v$VERSION)"
+          fi
+
+      - name: "Final Version Tag"
+        id: final_tag
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION }}
+          STRATEGY=${{ steps.strategy.outputs.STRATEGY }}
+
+          if [ "$STRATEGY" = "update-beta" ]; then
+            echo "VERSION=Unreleased" >> $GITHUB_OUTPUT
+          fi
+
+          if [ "$STRATEGY" = "create-release" ]; then
+            echo "VERSION=v$VERSION" >> $GITHUB_OUTPUT
+          fi
+
+          if [ "$STRATEGY" = "overwrite-version" ]; then
+            echo "VERSION=v$VERSION" >> $GITHUB_OUTPUT
+          fi
+    outputs:
+      VERSION: ${{ steps.final_tag.outputs.VERSION }}
+      TAG: "v${{ steps.final_tag.outputs.VERSION }}"
+      TAG_EXISTS: ${{ steps.tag_check.outputs.TAG_EXISTS }}
+      STRATEGY: ${{ steps.strategy.outputs.STRATEGY }}
+  
+  parse_changelog:
+    runs-on: ubuntu-latest
+    needs: verify_version
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Parse Changelog
+        id: release_notes
+        run: |
+          VERSION=${{ needs.verify_version.outputs.VERSION }}
+          # Remove 'v' prefix if present for changelog lookup
+          CHANGELOG_VERSION=${VERSION#v}
+          
+          RELEASE_NOTES=$(awk -v ver="$CHANGELOG_VERSION" '
+            /^## \[/ {
+              if (found) exit
+              if (index($0, "[" ver "]") > 0) found = 1
+              next
+            }
+            found { print }
+          ' CHANGELOG.md)
+          
+          echo "body<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$RELEASE_NOTES" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+    outputs:
+      body: ${{ steps.release_notes.outputs.body }}
+    
+  package_and_release:
+    needs: [verify_version, parse_changelog]
+    name: "Package and Release"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: "Create Release Folder"
+        run: |
+          mkdir -p $(RUNNER_TEMP)/release
+      
+      - name: "Main Code"
+        run: |
+          cargo build --release
+          cp target/release/dcs_grpc.dll $(RUNNER_TEMP)/release/
+          cp target/release/dcs_grpc.pdb $(RUNNER_TEMP)/release/
+
+
+      
+      # - name: Remove existing tag if it exists
+      #   if: ${{ needs.verify_version.outputs.STRATEGY == 'overwrite-version' || needs.verify_version.outputs.STRATEGY == 'update-beta' }}
+      #   id: check_tag
+      #   run: |
+      #     TAG="${{ needs.verify_version.outputs.TAG }}"
+      #     if git tag | grep -q "^$TAG$"; then
+      #       echo "Tag exists. Removing it..."
+      #       git push origin :refs/tags/"$TAG" || true
+      #       git tag -d "$TAG" || true
+      #     fi
+      #     echo "Ready to create fresh tag: $TAG"
+
+      # - name: Create new tag
+      #   run: |
+      #     git config user.name "github-actions[bot]"
+      #     git config user.email "github-actions@github.com"
+      #     TAG="${{ needs.verify_version.outputs.TAG }}"
+      #     git tag "$TAG"
+      #     git push origin "$TAG"
+
+      # - name: Create Release and Upload Assets
+      #   uses: akkuman/gitea-release-action@v1
+      #   with:
+      #     tag_name: ${{ needs.verify_version.outputs.TAG }}
+      #     name: Release ${{ needs.verify_version.outputs.TAG }}
+      #     body: ${{ needs.parse_changelog.outputs.body }}
+      #     prerelease: true
+      #     files: |-
+            
+      #   env:
+      #     NODE_OPTIONS: '--experimental-fetch'
+      

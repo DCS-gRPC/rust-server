@@ -163,7 +163,7 @@ jobs:
 
       - name: "Create Release Folder"
         run: |
-          mkdir "$env:RUNNER_TEMP\release\Mods\Tech\DCS-gRPC"
+          mkdir "$env:RUNNER_TEMP\release\Mods\tech\DCS-gRPC"
           mkdir "$env:RUNNER_TEMP\release\Scripts\DCS-gRPC"
           mkdir "$env:RUNNER_TEMP\release\Scripts\Hooks"
           mkdir "$env:RUNNER_TEMP\release\Docs\DCS-gRPC\protos"
@@ -176,8 +176,8 @@ jobs:
          
       - name: "Copy Build Artifacts"
         run: |
-          Copy-Item "target\release\dcs_grpc.dll" "$env:RUNNER_TEMP\release\Mods\Tech\DCS-gRPC\dcs_grpc.dll"
-          Copy-Item "target\release\dcs_grpc.pdb" "$env:RUNNER_TEMP\release\Mods\Tech\DCS-gRPC\dcs_grpc.pdb"
+          Copy-Item "target\release\dcs_grpc.dll" "$env:RUNNER_TEMP\release\Mods\tech\DCS-gRPC\dcs_grpc.dll"
+          Copy-Item "target\release\dcs_grpc.pdb" "$env:RUNNER_TEMP\release\Mods\tech\DCS-gRPC\dcs_grpc.pdb"
         shell: pwsh
 
       - name: "Copy Scripts"
@@ -209,35 +209,36 @@ jobs:
           path: ${{ runner.temp }}\DCS-gRPC-${{ needs.verify_version.outputs.VERSION }}.zip
           retention-days: 1
       
-      # - name: Remove existing tag if it exists
-      #   if: ${{ needs.verify_version.outputs.STRATEGY == 'overwrite-version' || needs.verify_version.outputs.STRATEGY == 'update-beta' }}
-      #   id: check_tag
-      #   run: |
-      #     TAG="${{ needs.verify_version.outputs.TAG }}"
-      #     if git tag | grep -q "^$TAG$"; then
-      #       echo "Tag exists. Removing it..."
-      #       git push origin :refs/tags/"$TAG" || true
-      #       git tag -d "$TAG" || true
-      #     fi
-      #     echo "Ready to create fresh tag: $TAG"
+      - name: Remove existing tag if it exists
+        if: ${{ needs.verify_version.outputs.STRATEGY == 'overwrite-version' || needs.verify_version.outputs.STRATEGY == 'update-beta' }}
+        id: check_tag
+        run: |
+          TAG="${{ needs.verify_version.outputs.TAG }}"
+          if git tag | grep -q "^$TAG$"; then
+            echo "Tag exists. Removing it..."
+            git push origin :refs/tags/"$TAG" || true
+            git tag -d "$TAG" || true
+          fi
+          echo "Ready to create fresh tag: $TAG"
 
-      # - name: Create new tag
-      #   run: |
-      #     git config user.name "github-actions[bot]"
-      #     git config user.email "github-actions@github.com"
-      #     TAG="${{ needs.verify_version.outputs.TAG }}"
-      #     git tag "$TAG"
-      #     git push origin "$TAG"
+      - name: Create new tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions@github.com"
+          TAG="${{ needs.verify_version.outputs.TAG }}"
+          git tag "$TAG"
+          git push origin "$TAG"
 
-      # - name: Create Release and Upload Assets
-      #   uses: akkuman/gitea-release-action@v1
-      #   with:
-      #     tag_name: ${{ needs.verify_version.outputs.TAG }}
-      #     name: Release ${{ needs.verify_version.outputs.TAG }}
-      #     body: ${{ needs.parse_changelog.outputs.body }}
-      #     prerelease: true
-      #     files: |-
-            
-      #   env:
-      #     NODE_OPTIONS: '--experimental-fetch'
+      - name: Create Release and Upload Assets
+        uses: akkuman/gitea-release-action@v1
+        with:
+          tag_name: ${{ needs.verify_version.outputs.TAG }}
+          name: Release ${{ needs.verify_version.outputs.TAG }}
+          body: ${{ needs.parse_changelog.outputs.body }}
+          prerelease: true
+          draft: true
+          files: |-
+            ${{ runner.temp }}\DCS-gRPC-${{ needs.verify_version.outputs.VERSION }}.zip
+        env:
+          NODE_OPTIONS: '--experimental-fetch'
       

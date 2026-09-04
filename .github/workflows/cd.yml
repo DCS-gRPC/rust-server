@@ -57,12 +57,12 @@ jobs:
         id: tag_check
         run: |
           VERSION=${{ steps.version.outputs.VERSION }}
-          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+          if git rev-parse "$VERSION" >/dev/null 2>&1; then
             echo "TAG_EXISTS=true" >> $GITHUB_OUTPUT
-            echo "Tag v$VERSION already exists"
+            echo "Tag $VERSION already exists"
           else
             echo "TAG_EXISTS=false" >> $GITHUB_OUTPUT
-            echo "Tag v$VERSION does not exist"
+            echo "Tag $VERSION does not exist"
           fi
 
       - name: "Determine Release Strategy"
@@ -74,13 +74,13 @@ jobs:
           
           if [ "$OVERWRITE_VERSION" = "true" ]; then
             echo "STRATEGY=overwrite-version" >> $GITHUB_OUTPUT
-            echo "Strategy: Overwriting version tag (v$VERSION)"
+            echo "Strategy: Overwriting version tag ($VERSION)"
           elif [ "$TAG_EXISTS" = "true" ]; then
             echo "STRATEGY=update-beta" >> $GITHUB_OUTPUT
             echo "Strategy: Updating beta tag with current version"
           else
             echo "STRATEGY=create-release" >> $GITHUB_OUTPUT
-            echo "Strategy: Creating new release tag (v$VERSION)"
+            echo "Strategy: Creating new release tag ($VERSION)"
           fi
 
       - name: "Final Version Tag"
@@ -94,15 +94,15 @@ jobs:
           fi
 
           if [ "$STRATEGY" = "create-release" ]; then
-            echo "VERSION=v$VERSION" >> $GITHUB_OUTPUT
+            echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
           fi
 
           if [ "$STRATEGY" = "overwrite-version" ]; then
-            echo "VERSION=v$VERSION" >> $GITHUB_OUTPUT
+            echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
           fi
     outputs:
       VERSION: ${{ steps.final_tag.outputs.VERSION }}
-      TAG: "v${{ steps.final_tag.outputs.VERSION }}"
+      TAG: "${{ steps.final_tag.outputs.VERSION }}"
       TAG_EXISTS: ${{ steps.tag_check.outputs.TAG_EXISTS }}
       STRATEGY: ${{ steps.strategy.outputs.STRATEGY }}
   

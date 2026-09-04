@@ -206,7 +206,7 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: DCS-gRPC-${{ needs.verify_version.outputs.VERSION }}.zip
-          path: "${{ env.RUNNER_TEMP }}/DCS-gRPC-${{ needs.verify_version.outputs.VERSION }}.zip"
+          path: ${{ runner.temp }}\DCS-gRPC-${{ needs.verify_version.outputs.VERSION }}.zip
           retention-days: 1
       
       # - name: Remove existing tag if it exists

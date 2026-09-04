@@ -212,22 +212,25 @@ jobs:
       - name: Remove existing tag if it exists
         if: ${{ needs.verify_version.outputs.STRATEGY == 'overwrite-version' || needs.verify_version.outputs.STRATEGY == 'update-beta' }}
         id: check_tag
+        shell: pwsh
         run: |
-          TAG="${{ needs.verify_version.outputs.TAG }}"
-          if git tag | grep -q "^$TAG$"; then
-            echo "Tag exists. Removing it..."
-            git push origin :refs/tags/"$TAG" || true
-            git tag -d "$TAG" || true
-          fi
-          echo "Ready to create fresh tag: $TAG"
+          $TAG = "${{ needs.verify_version.outputs.TAG }}"
+          $tagExists = git tag | Where-Object { $_ -eq $TAG }
+          if ($tagExists) {
+            Write-Host "Tag exists. Removing it..."
+            git push origin ":refs/tags/$TAG" 2>$null || $true
+            git tag -d $TAG 2>$null || $true
+          }
+          Write-Host "Ready to create fresh tag: $TAG"
 
       - name: Create new tag
+        shell: pwsh
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions@github.com"
-          TAG="${{ needs.verify_version.outputs.TAG }}"
-          git tag "$TAG"
-          git push origin "$TAG"
+          $TAG = "${{ needs.verify_version.outputs.TAG }}"
+          git tag $TAG
+          git push origin $TAG
 
       - name: Create Release and Upload Assets
         uses: akkuman/gitea-release-action@v1
@@ -238,7 +241,7 @@ jobs:
           prerelease: true
           draft: true
           files: |-
-            ${{ runner.temp }}\DCS-gRPC-${{ needs.verify_version.outputs.VERSION }}.zip
+            ${{ runner.temp }}/DCS-gRPC-${{ needs.verify_version.outputs.VERSION }}.zip
         env:
           NODE_OPTIONS: '--experimental-fetch'
       

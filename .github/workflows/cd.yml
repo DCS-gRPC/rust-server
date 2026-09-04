@@ -245,5 +245,5 @@ jobs:
           tag_name: ${{ needs.verify_version.outputs.TAG }}
           release_name: Release ${{ needs.verify_version.outputs.TAG }}
           body: ${{ needs.parse_changelog.outputs.body }}
-          draft: true
+          draft: false
           prerelease: ${{ needs.verify_version.outputs.PRERELEASE }}

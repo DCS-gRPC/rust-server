@@ -163,7 +163,6 @@ jobs:
         with:
           targets: x86_64-pc-windows-gnu
 
-          
       - name: "Create Release Folder"
         run: |
           mkdir -p "$RUNNER_TEMP/release/Mods/Tech/DCS-gRPC"
@@ -173,7 +172,7 @@ jobs:
 
       - name: "Main Code"
         run: |
-          cargo build --release
+          cargo build --release --target x86_64-pc-windows-gnu
           ls -R target
          
       - name: "Copy Build Artifacts"

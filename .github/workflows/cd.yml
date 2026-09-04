@@ -172,7 +172,6 @@ jobs:
       - name: "Main Code"
         run: |
           cargo build --release
-          Get-ChildItem -Path target -Recurse | Select-Object FullName
         shell: pwsh
          
       - name: "Copy Build Artifacts"
@@ -183,8 +182,8 @@ jobs:
 
       - name: "Copy Scripts"
         run: |
-          Copy-Item -Recurse "lua\DCS-gRPC" "$env:RUNNER_TEMP\release\Scripts\"
-          Copy-Item -Recurse "lua\Hooks" "$env:RUNNER_TEMP\release\Scripts\"
+          Copy-Item -Recurse -Force "lua\DCS-gRPC" "$env:RUNNER_TEMP\release\Scripts\"
+          Copy-Item -Recurse -Force "lua\Hooks" "$env:RUNNER_TEMP\release\Scripts\"
         shell: pwsh
 
       - name: "Docs"
@@ -196,7 +195,7 @@ jobs:
 
       - name: "Copy Proto Files"
         run: |
-          Copy-Item -Recurse "protos\*" "$env:RUNNER_TEMP\release\Docs\DCS-gRPC\protos"
+          Copy-Item -Recurse -Force "protos\*" "$env:RUNNER_TEMP\release\Docs\DCS-gRPC\protos"
         shell: pwsh
       
       - name: "Zip Release Folder"

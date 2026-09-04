@@ -102,6 +102,8 @@ jobs:
           if [ "$STRATEGY" = "overwrite-version" ]; then
             echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
           fi
+
+          echo "Final version tag: $VERSION"
     outputs:
       VERSION: ${{ steps.final_tag.outputs.VERSION }}
       TAG: "${{ steps.final_tag.outputs.VERSION }}"
@@ -132,7 +134,7 @@ jobs:
           ' CHANGELOG.md)
           
           echo "body<<EOF" >> "$GITHUB_OUTPUT"
-          echo "$RELEASE_NOTES" >> "$GITHUB_OUTPUT"
+          printf '%s\n' "$RELEASE_NOTES" >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
       - name: "Display Release Notes"
         run: |

@@ -45,6 +45,8 @@ jobs:
     name: "Verify Version"
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       
       - name: "Verify Version"
         id: version

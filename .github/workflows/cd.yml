@@ -2,20 +2,37 @@
 ##################################
 # CD Pipeline
 # Goal: 
-# The goal of this pipeline is to continuous update the released assets.
+# The goal of this pipeline is to continuously update the released assets.
 # This will both include a real version. 
 # Additionally this will keep an pre-release version updated with merges and features that have not yet been put in a release.
 #
-# Logic:
-# 1. Retrieve the version and check against refs/tags
-# 2a. If the tag does not exist:
-#    - Create the tag
-#    - Build and release the assets 
-# 2b. If the tag exists:
-#    - Overwrite the "unreleased/beta" version with the currently merged version.
-# 
-# Additional:
-# - A manual overwrite option with an ability to overwrite the version if necessary.
+# Tag Strategy Logic:
+#
+#                         START
+#                           |
+#                           v
+#             Manual Override (overwrite_version)?  (default, false)
+#                       /                        \
+#                      /                          \
+#                    YES                           NO
+#                     |                             \
+#                     v                              v
+#              STRATEGY:                      Tag Exists in refs/tags?
+#              overwrite-version              /                     \
+#              PRERELEASE=false              /                       \
+#              VERSION=from Cargo.toml      YES                       NO
+#              Exception use only            |                         \
+#                                           v                         v
+#                                       STRATEGY:                   STRATEGY:
+#                                       update-beta                 create-release
+#                                       PRERELEASE=true             PRERELEASE=false
+#                                       VERSION="Unreleased"        VERSION=from Cargo.toml
+#                                                                   
+#                                       Scenario:                   Scenario:
+#                                       Merge/Push to master        Merge/Push to master
+#                                       with an updated version.     without an updated version (no release cut)
+#                                       "Cutting a release"
+#
 ##################################
 
 name: CD

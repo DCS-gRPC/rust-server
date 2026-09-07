@@ -30,7 +30,10 @@ on:
         description: 'Overwrite the version'
         type: boolean
         default: false
-      
+  
+permissions:
+  contents: write
+
 jobs:
   ##################################
   # Verify Version
@@ -60,7 +63,7 @@ jobs:
         id: tag_check
         run: |
           VERSION=${{ steps.version.outputs.VERSION }}
-          if git rev-parse "$VERSION" >/dev/null 2>&1; then
+          if git show-ref --verify --quiet "refs/tags/$VERSION"; then
             echo "TAG_EXISTS=true" >> $GITHUB_OUTPUT
             echo "Tag $VERSION already exists"
           else
@@ -206,12 +209,6 @@ jobs:
           Compress-Archive -Path "$env:RUNNER_TEMP\release\*" -DestinationPath "$env:RUNNER_TEMP\DCS-gRPC-${{ needs.verify_version.outputs.VERSION }}.zip"
         shell: pwsh
 
-      - uses: actions/upload-artifact@v7
-        with:
-          name: DCS-gRPC-${{ needs.verify_version.outputs.VERSION }}.zip
-          path: ${{ runner.temp }}\DCS-gRPC-${{ needs.verify_version.outputs.VERSION }}.zip
-          retention-days: 1
-      
       - name: Remove existing tag if it exists
         if: ${{ needs.verify_version.outputs.STRATEGY == 'overwrite-version' || needs.verify_version.outputs.STRATEGY == 'update-beta' }}
         id: check_tag
@@ -237,12 +234,13 @@ jobs:
       
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 #v3.0.3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          name: Release ${{ needs.verify_version.outputs.TAG }}
           tag_name: ${{ needs.verify_version.outputs.TAG }}
-          release_name: Release ${{ needs.verify_version.outputs.TAG }}
           body: ${{ needs.parse_changelog.outputs.body }}
+          files: ${{ runner.temp }}\DCS-gRPC-${{ needs.verify_version.outputs.VERSION }}.zip
           draft: false
           prerelease: ${{ needs.verify_version.outputs.PRERELEASE }}
